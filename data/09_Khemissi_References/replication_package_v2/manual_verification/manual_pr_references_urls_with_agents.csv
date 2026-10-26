@@ -1,0 +1,503 @@
+Target PR URL,Source Commit URL,Source PR URL,Target Agent,Source Agent,Source Commit Message,type
+https://github.com/KomodoPlatform/komodo-wallet/pull/2822,https://github.com/KomodoPlatform/komodo-wallet/commit/de28ea74d9c4c64d68921cfc4412e099678a6c4e,https://github.com/KomodoPlatform/komodo-wallet/pull/2810,OpenAI_Codex,OpenAI_Codex,feat(wallet): enable global scroll (#2822),add
+https://github.com/imbhargav5/rooks/pull/1840,https://github.com/imbhargav5/rooks/commit/1b0bad59cd915b404ed59a7d5f86c3b8089b3e33,https://github.com/imbhargav5/rooks/pull/1841,Cursor,Cursor,Enhance and document useAudio hook (#1840),add
+https://github.com/crewAIInc/crewAI/pull/2081,https://github.com/crewAIInc/crewAI/commit/f838909220b2d5e917b2b569d9a5261a92e2ac78,https://github.com/crewAIInc/crewAI/pull/2082,Devin,Devin,"feat: enable custom LLM support for Crew.test()
+- Added new llm parameter to Crew.test() that accepts string or LLM instance
+- Maintained backward compatibility with openai_model_name parameter
+- Updated CrewEvaluator to handle any LLM implementation
+- Added comprehensive test coverage
+
+Fixes #2081",add
+https://github.com/crewAIInc/crewAI/pull/1828,https://github.com/crewAIInc/crewAI/commit/122cdb5145a57212a97ca726beb4161a6aa2de77,https://github.com/crewAIInc/crewAI/pull/2083,Devin,Devin,"Docstring, Error Handling, and Type Hints Improvements (#1828)
+* docs: add comprehensive docstrings to Flow class and methods
+
+- Added NumPy-style docstrings to all decorator functions
+- Added detailed documentation to Flow class methods
+- Included parameter types, return types, and examples
+- Enhanced documentation clarity and completeness
+
+Co-Authored-By: Joe Moura <joao@crewai.com>
+
+* feat: add secure path handling utilities
+
+- Add path_utils.py with safe path handling functions
+- Implement path validation and security checks
+- Integrate secure path handling in flow_visualizer.py
+- Add path validation in html_template_handler.py
+- Add comprehensive error handling for path operations
+
+Co-Authored-By: Joe Moura <joao@crewai.com>",add
+https://github.com/pyth-network/pyth-crosschain/pull/2355,https://github.com/pyth-network/pyth-crosschain/commit/8cefc1f620233cd4ac36513b7e49592a7cb7eed8,https://github.com/pyth-network/pyth-crosschain/pull/2357,Devin,Devin,"feat: add rust-cache to all Rust workflows (#2355)
+- Added Swatinem/rust-cache@v2 to all workflows that run Rust commands
+- Configured workspace paths for each workflow
+- Maintains existing workflow functionality while adding caching
+
+Co-authored-by: Devin AI <158243242+devin-ai-integration[bot]@users.noreply.github.com>
+Co-authored-by: Jayant Krishnamurthy <jayant@dourolabs.xyz>",add
+https://github.com/antiwork/flexile/pull/433,https://github.com/antiwork/flexile/commit/eac850946318e5544a76b993cb293173f40d2b5c,https://github.com/antiwork/flexile/pull/437,Devin,Devin,"Add form inheritance rule to cursor rules and copilot instructions
+- Forms for adding new objects to the database should inherit values from the last object added to the table
+- Follows pattern demonstrated in PR #433 for contractor form inheritance
+- Updated both .cursorrules and .github/copilot-instructions.md to keep them synchronized
+
+Co-Authored-By: sahil.lavingia@gmail.com <sahil.lavingia@gmail.com>",add
+https://github.com/ComposioHQ/composio/pull/1163,https://github.com/ComposioHQ/composio/commit/1417801180301a1a03fb4af69efc19cd3b10c4a8,https://github.com/ComposioHQ/composio/pull/1164,Devin,Devin,"fix: add missing improvements from PR #1163 to PR #1162
+Co-Authored-By: Soham Ganatra <soham@composio.dev>",add
+https://github.com/crewAIInc/crewAI/pull/1811,https://github.com/crewAIInc/crewAI/commit/465f88d754944aedb49ca45cbc5e00be1763d208,https://github.com/crewAIInc/crewAI/pull/2083,Devin,Devin,"docs: add agent-specific knowledge documentation and examples (#1811)
+Co-authored-by: Devin AI <158243242+devin-ai-integration[bot]@users.noreply.github.com>
+Co-authored-by: Joe Moura <joao@crewai.com>",add
+https://github.com/secretlint/secretlint/pull/1058,https://github.com/secretlint/secretlint/commit/2b2af08309eaf9c2625499f74c402dfdbf584d95,https://github.com/secretlint/secretlint/pull/1059,Devin,Devin,"feat: use escapePath instead of convertPathToPattern for glob escaping
+- Replace convertPathToPattern with escapePath from fast-glob
+- escapePath focuses purely on escaping special characters
+- Should handle combined special characters like (group).[test].md more reliably
+- Alternative approach to fallback mechanism in PR #1058
+
+Related to Issue #1057",alternative
+https://github.com/imfing/hextra/pull/707,https://github.com/imfing/hextra/commit/07ddeac20dc78c5a5f3efd3c77bf8b79759add6a,https://github.com/imfing/hextra/pull/700,OpenAI_Codex,OpenAI_Codex,"feat(math): add optional MathJax support (#707)
+* feat: add MathJax option
+
+* docs: move math engine note
+
+* refactor: update LaTeX documentation and improve MathJax integration
+
+- Adjusted LaTeX documentation for clarity and formatting.
+- Enhanced MathJax configuration in the templates to support both KaTeX and MathJax rendering.
+- Removed deprecated comments and streamlined the script loading process for MathJax.
+- Updated the passthrough extension settings in the Hugo configuration for better compatibility with LaTeX math expressions.
+
+* docs: simplify LaTeX documentation and clarify configuration steps
+
+- Updated LaTeX documentation to reflect that KaTeX is enabled by default, removing the need for manual activation.
+- Added examples for using LaTeX math expressions and clarified the configuration for the passthrough extension in Hugo.
+- Enhanced MathJax section to emphasize its use as an alternative rendering engine.",context
+https://github.com/airbytehq/airbyte/pull/53238,https://github.com/airbytehq/airbyte/commit/841880ea3aab0d4ebbbe5c2e1b1a9d79fd93e80a,https://github.com/airbytehq/airbyte/pull/53606,Devin,Devin,"feat: only publish connectors with version increments
+Add version increment check to connector publishing pipeline:
+- Add version increment check before building
+- Skip check for manual GitHub workflow runs
+- Reuse existing version check logic from PR #53238
+- Fix title property type errors in pipeline steps
+
+Co-Authored-By: natik@airbyte.io <natik@airbyte.io>",context
+https://github.com/onlook-dev/onlook/pull/2049,https://github.com/onlook-dev/onlook/commit/483d2253b9139b7f5e0367d657d0282ab1ba5442,https://github.com/onlook-dev/onlook/pull/2074,OpenAI_Codex,OpenAI_Codex,"chore: refactor ide manager into editor (#2049)",context
+https://github.com/near/nearcore/pull/13272,https://github.com/near/nearcore/commit/4af6194bfdfae74ea93dbdee143cff406d2a63b4,https://github.com/near/nearcore/pull/13269,Devin,Devin,"Deprecate protocol features: Ed25519Verify, ZeroBalanceAccount, DelegateAction (#13272)
+This PR deprecates three protocol features that are now always enabled:
+Ed25519Verify, ZeroBalanceAccount, and DelegateAction.
+
+As per the protocol deprecation strategy:
+1. The features are renamed with '_Deprecated' prefix in the
+ProtocolFeature enum
+2. Conditional logic that depends on these features has been removed
+3. The enum definitions are kept for backward compatibility
+4. Added #[allow(deprecated)] annotations to tests that use these
+features
+
+Link to Devin run:
+https://app.devin.ai/sessions/2046ba41f41243d081144abf0e45e4dc
+User: shreyan@nearone.org
+
+---------
+
+Co-authored-by: Devin AI <158243242+devin-ai-integration[bot]@users.noreply.github.com>
+Co-authored-by: shreyan@nearone.org <shreyan@nearone.org>
+Co-authored-by: Shreyan Gupta <shreyan.gupta96@gmail.com>",deprecate
+https://github.com/near/nearcore/pull/13268,https://github.com/near/nearcore/commit/6dd8a1077de36f8186a572e70ea03d29932dccea,https://github.com/near/nearcore/pull/13269,Devin,Devin,"Deprecate AccessKeyNonceForImplicitAccounts protocol feature (#13268)
+This PR deprecates the AccessKeyNonceForImplicitAccounts protocol
+feature, following the pattern of other deprecated features in the
+codebase. The feature is now treated as always enabled.
+
+Changes:
+- Added #[deprecated] attribute to the feature
+- Renamed it to _DeprecatedAccessKeyNonceForImplicitAccounts
+- Removed conditional logic in actions.rs that depends on this feature
+- Updated integration tests to use the new name with
+
+Link to Devin run:
+https://app.devin.ai/sessions/002a41c49d8e4a299b9c97532f81f3e2
+Requested by: shreyan@nearone.org
+
+---------
+
+Co-authored-by: Devin AI <158243242+devin-ai-integration[bot]@users.noreply.github.com>
+Co-authored-by: shreyan@nearone.org <shreyan@nearone.org>",deprecate
+https://github.com/near/nearcore/pull/13274,https://github.com/near/nearcore/commit/c6b382ee7789ce53e79709b0f22315a5cb6959fb,https://github.com/near/nearcore/pull/13269,Devin,Devin,"Deprecate RestrictTla and TestnetFewerBlockProducers features (#13274)
+Deprecates RestrictTla and TestnetFewerBlockProducers features by
+prefixing them with _Deprecated and adding the deprecated attribute.
+
+Link to Devin run:
+https://app.devin.ai/sessions/dfb1124a708a48ea91b5819fe300987a
+
+Requested by: shreyan@nearone.org
+
+Co-authored-by: Devin AI <158243242+devin-ai-integration[bot]@users.noreply.github.com>
+Co-authored-by: shreyan@nearone.org <shreyan@nearone.org>",deprecate
+https://github.com/near/nearcore/pull/13270,https://github.com/near/nearcore/commit/35780a8ff868e17707a2494499396a8c7440430a,https://github.com/near/nearcore/pull/13269,Devin,Devin,"Deprecate AccountIdInFunctionCallPermission protocol feature (#13270)
+This PR deprecates the AccountIdInFunctionCallPermission protocol
+feature. The feature is now always enabled and doesn't need to be
+checked conditionally.
+
+Link to Devin run:
+https://app.devin.ai/sessions/c57915dbae2d46408f5aca0628bde553
+Requested by: shreyan@nearone.org",deprecate
+https://github.com/near/nearcore/pull/13267,https://github.com/near/nearcore/commit/6deeb3f59a3b57f5d8fc10cbfdc7e3744a3f14ca,https://github.com/near/nearcore/pull/13269,Devin,Devin,"Deprecate SynchronizeBlockChunkProduction and CorrectStackLimit protocol features (#13267)
+This PR deprecates the protocol features SynchronizeBlockChunkProduction
+and CorrectStackLimit.
+
+- Renamed features to follow deprecation naming convention
+- Updated code to assume these features are always enabled
+- Removed conditional logic dependent on these deprecated features
+
+Link to Devin run:
+https://app.devin.ai/sessions/6e5276de3d044e4bb266ddf8ba86defd
+Requested by: shreyan@nearone.org",deprecate
+https://github.com/near/nearcore/pull/13266,https://github.com/near/nearcore/commit/e5a6138d4c119f4a19a4b6acf6196362caf64686,https://github.com/near/nearcore/pull/13269,Devin,Devin,"Deprecate protocol features LowerRegularOpCost2 and LimitContractFunctionsNumber (#13266)
+Deprecates protocol features LowerRegularOpCost2 and
+LimitContractFunctionsNumber by following the established pattern for
+deprecated features in the codebase.
+
+Link to Devin run:
+https://app.devin.ai/sessions/429687468c3c4a129fb0e3d0dcb37bda
+Requested by: shreyan@nearone.org",deprecate
+https://github.com/near/nearcore/pull/13273,https://github.com/near/nearcore/commit/0ac1b4972da0a32c01248800ac4024456a2e0cb5,https://github.com/near/nearcore/pull/13269,Devin,Devin,"Deprecate protocol feature BlockHeaderV3 (#13273)
+This PR deprecates the BlockHeaderV3 protocol feature as it's no longer
+needed in the current version of the protocol. The BlockHeaderV3 feature
+is marked as deprecated, and code that checks if it's enabled now
+assumes it's always enabled.
+
+Changes:
+- Mark BlockHeaderV3 as deprecated in the ProtocolFeature enum
+- Add #[allow(deprecated)] attributes to handle deprecated struct and
+field usage
+- Replace conditional checks with 'true' since the feature is always
+enabled
+- Add module-level #![allow(deprecated)] to block_header.rs
+
+Link to Devin run:
+https://app.devin.ai/sessions/cf12e4fd01384d47b316e0fe0ab79fcd
+Requested by: shreyan@nearone.org",deprecate
+https://github.com/near/nearcore/pull/13265,https://github.com/near/nearcore/commit/68f548b943efe5aca468e941c1c3f460b68445f3,https://github.com/near/nearcore/pull/13269,Devin,Devin,"Deprecate protocol features: Wasmer2, LowerDataReceiptAndEcrecoverBaseCost, LowerRegularOpCost (#13265)
+Deprecates three protocol features as they are now part of the stable
+protocol.
+
+Link to Devin run:
+https://app.devin.ai/sessions/1967def40d6b40c9b02ae41194539a67
+User: shreyan@nearone.org",deprecate
+https://github.com/sugyan/claude-code-webui/pull/80,https://github.com/sugyan/claude-code-webui/commit/037cc75189cba847cbe6aba10fd29df7a8b4505d,https://github.com/sugyan/claude-code-webui/pull/121,Claude_Code,Claude_Code,"fix: replace FedericoCarboni/setup-ffmpeg with apt-get install
+Replace the unreliable FedericoCarboni/setup-ffmpeg@v3 action with direct
+apt-get installation due to frequent ""TypeError: fetch failed"" errors.
+
+Background:
+- FedericoCarboni/setup-ffmpeg@v3 has been failing with fetch errors (Issue #29)
+- Originally changed from apt-get to this action in PR #80 for faster execution
+- However, demo-comparison workflow runs infrequently (only after releases)
+- Stability is more important than 2-3 minute execution time savings
+
+Changes:
+- Replace setup-ffmpeg action with ""sudo apt-get install -y ffmpeg""
+- Remove external dependency to improve workflow reliability
+- Accept slightly longer execution time for better stability
+
+This ensures the demo comparison workflow runs reliably without external
+action dependencies that may fail intermittently.
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>",fix
+https://github.com/tphakala/birdnet-go/pull/886,https://github.com/tphakala/birdnet-go/commit/14b440dce036d55313fc7376619e5d7966cb172d,https://github.com/tphakala/birdnet-go/pull/892,Claude_Code,Claude_Code,"fix: address code review comments from PR #886
+- Replace hardcoded audio encoding with dynamic BitDepth mapping
+- Use t.TempDir() for test directory management
+- Improve string conversion readability in tests
+
+Addresses review comments from coderabbitai on PR #886
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>",fix
+https://github.com/OpenAgentsInc/openagents/pull/1219,https://github.com/OpenAgentsInc/openagents/commit/74c4e2ef8e9eb945f05ec990e32dc77c8e1ba296,https://github.com/OpenAgentsInc/openagents/pull/1220,Claude_Code,Claude_Code,"security: Fix critical security vulnerabilities from PR #1219 review
+This commit addresses all critical security issues identified in the CodeRabbit
+and Claude reviews of PR #1219, implementing comprehensive security hardening
+across the authentication system.",fix
+https://github.com/dotnet/aspire/pull/9721,https://github.com/dotnet/aspire/commit/351f49652da39503c9f001868e0f2d02755707e7,https://github.com/dotnet/aspire/pull/9820,Copilot,Copilot,"Add bisect log showing WithHttpCommand test failure started at commit 5941549
+The git bisect identified that WithHttpCommand_ResultsInExpectedResultForHttpMethod started failing at commit 5941549 (Quarantine flaky test CanOverrideLaunchProfileViaArgsAdHocBuilder #9721). Interestingly, this commit only quarantined a different test, suggesting the failure may be due to environmental factors or test execution order changes rather than direct code changes to the WithHttpCommand functionality.
+
+Co-authored-by: davidfowl <95136+davidfowl@users.noreply.github.com>",fix
+https://github.com/toshimaru/nyan/pull/190,https://github.com/toshimaru/nyan/commit/fb2cecdd60c671d40cb08ed11a365fb3455a93b0,https://github.com/toshimaru/nyan/pull/189,Copilot,Copilot,"Merge GoReleaser v2 compatibility changes from PR #190
+Co-authored-by: toshimaru <803398+toshimaru@users.noreply.github.com>",fix
+https://github.com/dotnet/aspire/pull/10624,https://github.com/dotnet/aspire/commit/94892655adde0b9a6c90616d3961a9babceaaed1,https://github.com/dotnet/aspire/pull/10626,Copilot,Copilot,"Apply PR #10624 changes to fix GitHubModels health check dependency on IHttpClientFactory
+Co-authored-by: sebastienros <1165805+sebastienros@users.noreply.github.com>",fix
+https://github.com/MixinNetwork/flutter-plugins/pull/425,https://github.com/MixinNetwork/flutter-plugins/commit/89872f64d704e5e9d76f1276e8d64aac02ca42d2,https://github.com/MixinNetwork/flutter-plugins/pull/427,Copilot,Copilot,"Update changelog to reference actual fix from PR #425
+Co-authored-by: boyan01 <17426470+boyan01@users.noreply.github.com>",fix
+https://github.com/baynezy/Html2Markdown/pull/559,https://github.com/baynezy/Html2Markdown/commit/2e9929513101dc25c396d70e42e0afd9403c4d06,https://github.com/baynezy/Html2Markdown/pull/557,Copilot,Copilot,"Fix dotCover package and command syntax in static analysis workflow (#559)
+Update dotCover tool and command in static analysis workflow
+
+Fixes #558",fix
+https://github.com/CoreWCF/CoreWCF/pull/1612,https://github.com/CoreWCF/CoreWCF/commit/910fb801cc21f16abc72c8244d5e7844a2ba15ce,https://github.com/CoreWCF/CoreWCF/pull/1606,Copilot,Copilot,Fix Windows HTTPS unit tests by setting up IIS Express certificates (#1612),fix
+https://github.com/joshuafuller/ATAK-Maps/pull/47,https://github.com/joshuafuller/ATAK-Maps/commit/f989a03420672e71f9fe04bc5d9e86f983291d3a,https://github.com/joshuafuller/ATAK-Maps/pull/48,OpenAI_Codex,OpenAI_Codex,"Add FEMA NFHL overlays (#47)
+Closes #26",fix
+https://github.com/different-ai/zero-finance/pull/110,https://github.com/different-ai/zero-finance/commit/c2ad02e019faad34f593e8ee1ff8218c52aea2ac,https://github.com/different-ai/zero-finance/pull/109,OpenAI_Codex,OpenAI_Codex,"fix: redirect hero button to dashboard (#110)",fix
+https://github.com/KomodoPlatform/komodo-wallet/pull/2824,https://github.com/KomodoPlatform/komodo-wallet/commit/58792998c9d5322c6162d76ed6da7aff0eb33222,https://github.com/KomodoPlatform/komodo-wallet/pull/2810,OpenAI_Codex,OpenAI_Codex,fix: import analytics scroll event (#2824),fix
+https://github.com/ESPresense/ESPresense/pull/1715,https://github.com/ESPresense/ESPresense/commit/fcfb4f9fe4668aeb68c98cb22b0abf61785167ff,https://github.com/ESPresense/ESPresense/pull/1716,OpenAI_Codex,OpenAI_Codex,Fix Release Drafter duplicates (#1715),fix
+https://github.com/onlook-dev/onlook/pull/2088,https://github.com/onlook-dev/onlook/commit/d08f220ed46aa46657bbe2c14cadc590e0ca196b,https://github.com/onlook-dev/onlook/pull/2074,OpenAI_Codex,OpenAI_Codex,"fix: pointer stroke up handling and unique dir search (#2088)",fix
+https://github.com/crewAIInc/crewAI/pull/2072,https://github.com/crewAIInc/crewAI/commit/22d886be11c051dd2e566ee4627f0d737cc63083,https://github.com/crewAIInc/crewAI/pull/2073,Devin,Devin,"fix: enable any llm to run test functionality
+- Update CrewEvaluator to accept any LLM type
+- Modify Crew.test() to support both custom LLMs and maintain backward compatibility
+- Add comprehensive test coverage for both new functionality and backward compatibility
+
+Fixes #2072
+
+Co-Authored-By: Joe Moura <joao@crewai.com>",fix
+https://github.com/neondatabase/website/pull/3682,https://github.com/neondatabase/website/commit/cab311bdad0061ca5c75b4b05cfc5fef0d59c1d7,https://github.com/neondatabase/website/pull/3693,Devin,Devin,"fix: add redirect from /migration-assistance to /docs/import/migrate-intro
+- Addresses broken link issue following PR #3682 removal of migration assistance references
+- Redirects /migration-assistance to /docs/import/migrate-intro as requested
+- Follows existing redirect pattern with permanent: true
+
+Co-Authored-By: Daniel <daniel@neon.tech>",fix
+https://github.com/antiwork/gumroad/pull/662,https://github.com/antiwork/gumroad/commit/45f61e8956893909aed6b037dcdd94392bc81903,https://github.com/antiwork/gumroad/pull/665,Devin,Devin,"Remove expires_in parameter from S3 presigned URL in GenerateSalesReportJob
+- S3 has a maximum presigned URL expiry of 1 week (604800 seconds)
+- The previous 1.year.to_i value (31556952 seconds) exceeded this limit
+- Removing expires_in parameter allows S3 to use its default expiry behavior
+- Fixes the S3 limit error from PR #662
+
+Co-Authored-By: Ershad Kunnakkadan <hello@ershadk.com>",fix
+https://github.com/freenet/freenet-core/pull/1592,https://github.com/freenet/freenet-core/commit/a8132204e10c796ddcc9ac43bf1602c1306a7e10,https://github.com/freenet/freenet-core/pull/1600,Devin,Devin,"Fix formatting issues in PR #1592 test files
+Co-Authored-By: Ian Clarke <github@ian.33mail.com>",fix
+https://github.com/antiwork/flexile/pull/664,https://github.com/antiwork/flexile/commit/2e5ce801067fc6db7a0bd0e5719f544d0035076c,https://github.com/antiwork/flexile/pull/663,Devin,Devin,"Remove user_leads table and all associated code via migration (#664)
+This PR completely removes the `user_leads` functionality from the
+codebase, including the database table and all associated Rails code.
+The `user_leads` table appeared to be a simple email collection system
+with no foreign key relationships, making it safe to remove.
+
+**Key changes:**
+- Created Rails migration to drop the `user_leads` table
+- Removed UserLead model, admin/API controllers, and admin dashboard
+- Removed all test files and factories for user_leads
+- Updated routes configuration to remove user_leads endpoints from both
+admin and API namespaces
+- Removed frontend schema definition for userLeads table
+- Fixed CORS system test that referenced the removed API endpoint
+- Cleaned up reference in old migration file
+
+**⚠️ HIGH PRIORITY - Please verify these items before merging:**
+
+- [ ] **Verify user_leads table is safe to remove** - Check production
+database to ensure no critical data will be lost
+- [ ] **Test migration in staging environment first** - Run the
+migration on a copy of production data to ensure it executes
+successfully
+- [ ] **Verify application functionality** - Test the admin dashboard
+and API to ensure no broken functionality after removal
+- [ ] **Review CORS test change** - The test was changed from `POST
+api_v1_user_leads_path` to `GET root_path` - verify this maintains
+equivalent test coverage
+- [ ] **Double-check for remaining references** - Search codebase for
+any dynamic references to user_leads that might have been missed
+
+**Recommended test plan:**
+1. Run migration on staging with production data copy
+2. Test admin dashboard navigation and functionality
+3. Test API endpoints to ensure no 500 errors
+4. Run full test suite to catch any missed dependencies",fix
+https://github.com/crewAIInc/crewAI/pull/1820,https://github.com/crewAIInc/crewAI/commit/157cdd08f803d1cc4878f4b15d43fc7a3011dc39,https://github.com/crewAIInc/crewAI/pull/2083,Devin,Devin,"fix(manager_llm): handle coworker role name case/whitespace properly (#1820)
+* fix(manager_llm): handle coworker role name case/whitespace properly
+
+- Add .strip() to agent name and role comparisons in base_agent_tools.py
+- Add test case for varied role name cases and whitespace
+- Fix issue #1503 with manager LLM delegation
+
+Co-Authored-By: Joe Moura <joao@crewai.com>
+
+* fix(manager_llm): improve error handling and add debug logging
+
+- Add debug logging for better observability
+- Add sanitize_agent_name helper method
+- Enhance error messages with more context
+- Add parameterized tests for edge cases:
+  - Embedded quotes
+  - Trailing newlines
+  - Multiple whitespace
+  - Case variations
+  - None values
+- Improve error handling with specific exceptions",fix
+https://github.com/crewAIInc/crewAI/pull/2078,https://github.com/crewAIInc/crewAI/commit/93ce2ae55dd9404e097207dd343b65397134ec71,https://github.com/crewAIInc/crewAI/pull/2079,Devin,Devin,"feat: enable custom LLM support for Crew.test()
+This PR enables the Crew.test() method to work with any LLM implementation through the LLM class while maintaining backward compatibility with the openai_model_name parameter.
+
+Changes:
+- Added new llm parameter to Crew.test() that accepts string or LLM instance
+- Maintained backward compatibility with openai_model_name parameter
+- Updated CrewEvaluator to handle any LLM implementation
+- Added comprehensive test coverage for both new functionality and backward compatibility
+
+Fixes #2078",fix
+https://github.com/crewAIInc/crewAI/pull/2079,https://github.com/crewAIInc/crewAI/commit/3e67a2eca1f327ca09b21873bbef7567d39b59d7,https://github.com/crewAIInc/crewAI/pull/2080,Devin,Devin,"feat: enable custom LLM support for Crew.test()
+- Add llm parameter to Crew.test() that accepts string or LLM instance
+- Maintain backward compatibility with openai_model_name parameter
+- Update CrewEvaluator to handle any LLM implementation
+- Add comprehensive test coverage
+
+Fixes #2079",fix
+https://github.com/jina-ai/node-DeepResearch/pull/54,https://github.com/jina-ai/node-DeepResearch/commit/7179fc3c1aa194fa0d8a9873a48056a6584c2d10,https://github.com/jina-ai/node-DeepResearch/pull/56,Devin,Devin,"fix: match PR #54 token counting implementation - remove token categories and use character-based estimation
+Co-Authored-By: sha.zhou@jina.ai <sha.zhou@jina.ai>",fix
+https://github.com/jina-ai/node-DeepResearch/pull/54,https://github.com/jina-ai/node-DeepResearch/commit/8035028a5616479acd941dab60e3466825953603,https://github.com/jina-ai/node-DeepResearch/pull/56,Devin,Devin,"fix: revert token-tracker.ts changes to match PR #54
+Co-Authored-By: sha.zhou@jina.ai <sha.zhou@jina.ai>",fix
+https://github.com/jina-ai/node-DeepResearch/pull/54,https://github.com/jina-ai/node-DeepResearch/commit/6d77060caae7eaa1aed4cbca9cad43837ca124a8,https://github.com/jina-ai/node-DeepResearch/pull/56,Devin,Devin,"fix: restore TOKEN_CATEGORIES in read.ts and jina-search.ts to match PR #54
+Co-Authored-By: sha.zhou@jina.ai <sha.zhou@jina.ai>",fix
+https://github.com/pdfme/pdfme/pull/765,https://github.com/pdfme/pdfme/commit/27ec22a4bf38a29cf00c6b0fc387dc00b71d7713,https://github.com/pdfme/pdfme/pull/766,Devin,Devin,"Bump @typescript-eslint/eslint-plugin from 5.62.0 to 8.25.0 (#735)
+* Bump @typescript-eslint/eslint-plugin from 5.62.0 to 8.25.0
+
+Bumps [@typescript-eslint/eslint-plugin](https://github.com/typescript-eslint/typescript-eslint/tree/HEAD/packages/eslint-plugin) from 5.62.0 to 8.25.0.
+- [Release notes](https://github.com/typescript-eslint/typescript-eslint/releases)
+- [Changelog](https://github.com/typescript-eslint/typescript-eslint/blob/main/packages/eslint-plugin/CHANGELOG.md)
+- [Commits](https://github.com/typescript-eslint/typescript-eslint/commits/v8.25.0/packages/eslint-plugin)
+
+---
+updated-dependencies:
+- dependency-name: ""@typescript-eslint/eslint-plugin""
+  dependency-type: direct:development
+  update-type: version-update:semver-major
+...
+
+Signed-off-by: dependabot[bot] <support@github.com>
+
+* Fix @typescript-eslint/eslint-plugin 8.25.0 Dependency Conflicts (#765)
+
+* Add playground tests to publish-commit and publish-release workflows (#760)
+
+Co-authored-by: Devin AI <158243242+devin-ai-integration[bot]@users.noreply.github.com>
+Co-authored-by: Kyohei Fukuda <kyouhei.fukuda0729@gmail.com>
+
+* test: enhance createSvgStr tests for SVG output and custom attributes
+
+* Update @typescript-eslint/parser to 8.25.0 to match @typescript-eslint/eslint-plugin
+
+Co-Authored-By: Kyohei Fukuda <kyouhei.fukuda0729@gmail.com>",fix
+https://github.com/antiwork/flexile/pull/215,https://github.com/antiwork/flexile/commit/7c2ffd2f39efb8f9a15f6c05cb8bb275817bffff,https://github.com/antiwork/flexile/pull/260,Devin,Devin,This fixes consolidated invoice receipts that were not being sent out due to helper methods not being available in the mailer view. Regression from PR #215,fix
+https://github.com/crewAIInc/crewAI/pull/2076,https://github.com/crewAIInc/crewAI/commit/f3a681c7d96edea6bfa899bb14cc7d184751432c,https://github.com/crewAIInc/crewAI/pull/2077,Devin,Devin,"feat: enable custom LLM support for Crew.test()
+- Add llm parameter to Crew.test() that accepts string or LLM instance
+- Maintain backward compatibility with openai_model_name parameter
+- Update CrewEvaluator to handle any LLM implementation
+- Add comprehensive test coverage
+
+Fixes #2076",fix
+https://github.com/crewAIInc/crewAI/pull/1826,https://github.com/crewAIInc/crewAI/commit/4e575d2e56211167c2e38a1c2980f26350b9bff9,https://github.com/crewAIInc/crewAI/pull/2083,Devin,Devin,"fix: add tiktoken as explicit dependency and document Rust requirement (#1826)
+* feat: add tiktoken as explicit dependency and document Rust requirement
+
+- Add tiktoken>=0.8.0 as explicit dependency to ensure pre-built wheels are used
+- Document Rust compiler requirement as fallback in README.md
+- Addresses issue #1824 tiktoken build failure
+
+Co-Authored-By: Joe Moura <joao@crewai.com>",fix
+https://github.com/crewAIInc/crewAI/pull/1808,https://github.com/crewAIInc/crewAI/commit/ccd9eacc1c3ca3d77f5eae599455b5d482a9de42,https://github.com/crewAIInc/crewAI/pull/2083,Devin,Devin,"fix: handle optional storage with null checks (#1808)
+Co-authored-by: Devin AI <158243242+devin-ai-integration[bot]@users.noreply.github.com>
+Co-authored-by: João Moura <joaomdmoura@gmail.com>
+",fix
+https://github.com/crewAIInc/crewAI/pull/2080,https://github.com/crewAIInc/crewAI/commit/9bd39464cc88dad3e4f9d2f76b0b31fae5e676a6,https://github.com/crewAIInc/crewAI/pull/2081,Devin,Devin,"feat: enable custom LLM support for Crew.test()
+- Add llm parameter to Crew.test() that accepts string or LLM instance
+- Maintain backward compatibility with openai_model_name parameter
+- Update CrewEvaluator to handle any LLM implementation
+- Improve docstrings and type hints
+
+Fixes #2080
+
+Co-Authored-By: Joe Moura <joao@crewai.com>",fix
+https://github.com/pdfme/pdfme/pull/808,https://github.com/pdfme/pdfme/commit/4496c720f7b72608a5ecfc029a9bf452145b11b1,https://github.com/pdfme/pdfme/pull/810,Devin,Devin,"Fix linting errors in packages/schemas (#808)
+* Fix linting errors in packages/schemas
+
+- Replace unsafe any types with proper type annotations
+- Fix invalid operands in string concatenation operations
+- Add proper type assertions for third-party libraries
+- Remove unused imports and variables
+- Fix async function without await expression
+- Add null checks for optional properties
+
+Co-Authored-By: Kyohei Fukuda <kyouhei.fukuda0729@gmail.com>",fix
+https://github.com/crewAIInc/crewAI/pull/1818,https://github.com/crewAIInc/crewAI/commit/dbf8da2d9c21f973e6ec63e18c66a8f0980a7816,https://github.com/crewAIInc/crewAI/pull/2083,Devin,Devin,"fix: Include agent knowledge in planning process (#1818)
+* test: Add test demonstrating knowledge not included in planning process",fix
+https://github.com/crewAIInc/crewAI/pull/1814,https://github.com/crewAIInc/crewAI/commit/bb40f3934de0122142d03d19d85a07a42f852a72,https://github.com/crewAIInc/crewAI/pull/2083,Devin,Devin,"Fix interpolation for output_file in Task (#1803) (#1814)
+* fix: interpolate output_file attribute from YAML
+
+Co-Authored-By: Joe Moura <joao@crewai.com>",fix
+https://github.com/mendableai/firecrawl/pull/1883,https://github.com/mendableai/firecrawl/commit/98a6ef6c05b078c5ab58dab0312e3405d081e94f,https://github.com/mendableai/firecrawl/pull/1884,Claude_Code,Claude_Code,"Revert ""fix(go): add mutex to prevent concurrent access issues in html-to-markdown (#1883)""
+This reverts commit 52e7d0d",revert
+https://github.com/open-ani/animeko/pull/2127,https://github.com/open-ani/animeko/commit/7bc68929d885ebd3196c3d70748cb254828a7bfb,https://github.com/open-ani/animeko/pull/2135,OpenAI_Codex,OpenAI_Codex,"Revert ""Replace deprecated ContextualFlowRow usage (#2127)""
+This reverts commit 087fbe2.",revert
+https://github.com/KomodoPlatform/komodo-wallet/pull/2961,https://github.com/KomodoPlatform/komodo-wallet/commit/2d4e024b7e0a2322437f76c2da43ad7188210b72,https://github.com/KomodoPlatform/komodo-wallet/pull/2949,OpenAI_Codex,OpenAI_Codex,"Revert ""feat: store hide zero balance per wallet (#2961)""",revert
+https://github.com/reflex-dev/reflex-web/pull/1342,https://github.com/reflex-dev/reflex-web/commit/6a2a271dee7a99f38de5cf6ddad1c8e992ec9ad0,https://github.com/reflex-dev/reflex-web/pull/1343,Devin,Devin,"Revert PR #1342: Remove documentation for aria/data props and custom_attrs
+Co-Authored-By: Alek Petuskey <alek@pynecone.io>",revert
+https://github.com/reflex-dev/reflex-web/pull/1306,https://github.com/reflex-dev/reflex-web/commit/0ebf7f62b433df6ba4336aa17b06f18e712832c6,https://github.com/reflex-dev/reflex-web/pull/1308,Devin,Devin,"Revert ""Fix: Replace --no-interactive with --interactive=false in deploy workflows (#1306)""",revert
+https://github.com/reflex-dev/reflex-web/pull/1307,https://github.com/reflex-dev/reflex-web/commit/7b7986b6e8de2799a89ce110a5b11c62112d9a54,https://github.com/reflex-dev/reflex-web/pull/1308,Devin,Devin,"Revert ""Fix: Remove interactive flag from deploy workflows (#1307)""
+This reverts commit a92a8a4.",revert
+https://github.com/antiwork/gumroad/pull/521,https://github.com/antiwork/gumroad/commit/4cd63d7a973b421826b28e8827c34dfae9daf84b,https://github.com/antiwork/gumroad/pull/546,Devin,Devin,"Revert chargeback article fee responsibility text simplification
+This reverts the changes from PR #521 (commit 24da9ad) which simplified
+the fee responsibility text. Restoring the original detailed explanation
+that specifies creators are responsible for payment processing fees while
+Gumroad returns platform fees during chargebacks.
+
+Co-Authored-By: kaushikvatsal@gmail.com <kaushikvatsal@gmail.com>",revert
+https://github.com/onflow/flow-go/pull/7631,https://github.com/onflow/flow-go/commit/87b748fbbd1733ac60fecc682fd657c06d148552,https://github.com/onflow/flow-go/pull/7635,Devin,Devin,"Address PR comments: revert overlaps with #7631, remove MockProtocolStateVersion, remove test case",revert
+https://github.com/github/gh-gei/pull/1376,https://github.com/github/gh-gei/commit/410c1c97461fb6080c76b95de9016a8d9358d385,https://github.com/github/gh-gei/pull/1377,Copilot,Copilot,Modify CI workflow to run only publish step in PR #1376,update
+https://github.com/microsoft/lisa/pull/3862,https://github.com/microsoft/lisa/commit/7f0c7a05d72ec1cde9ab31e17c1afb9fc8265ad4,https://github.com/microsoft/lisa/pull/3863,Copilot,Copilot,"Follow PR #3862 pattern for unified performance message support
+Co-authored-by: LiliDeng <10083705+LiliDeng@users.noreply.github.com>",update
+https://github.com/dotnet/maui/pull/30300,https://github.com/dotnet/maui/commit/b20b193bc53899431209326cbe525515823f8cfa,https://github.com/dotnet/maui/pull/30304,Copilot,Copilot,"Extract enhanced copilot instructions from PR #30300
+Co-authored-by: PureWeen <5375137+PureWeen@users.noreply.github.com>",update
+https://github.com/go-vikunja/vikunja/pull/1019,https://github.com/go-vikunja/vikunja/commit/73962f9fffce5d351908dd5b5ef9a8a8e1824346,https://github.com/go-vikunja/vikunja/pull/868,OpenAI_Codex,OpenAI_Codex,"chore(deps): upgrade to Tailwind 4 (#1019)
+fix: attempt tailwind build",update
+https://github.com/crewAIInc/crewAI/pull/1809,https://github.com/crewAIInc/crewAI/commit/0809edeb43b8e379df67c6bcc0981226150577be,https://github.com/crewAIInc/crewAI/pull/2083,Devin,Devin,"docs: update README to highlight Flows (#1809)
+* docs: highlight Flows feature in README
+
+Co-Authored-By: Joe Moura <joao@crewai.com>
+
+* docs: enhance README with LangGraph comparison and flows-crews synergy
+
+Co-Authored-By: Joe Moura <joao@crewai.com>
+
+* docs: replace initial Flow example with advanced Flow+Crew example; enhance LangGraph comparison
+
+Co-Authored-By: Joe Moura <joao@crewai.com>
+
+* docs: incorporate key terms and enhance feature descriptions
+
+Co-Authored-By: Joe Moura <joao@crewai.com>
+
+* docs: refine technical language, enhance feature descriptions, fix string interpolation
+
+Co-Authored-By: Joe Moura <joao@crewai.com>
+
+* docs: update README with performance metrics, feature enhancements, and course links
+
+Co-Authored-By: Joe Moura <joao@crewai.com>
+
+* docs: update LangGraph comparison with paragraph and P.S. section
+
+Co-Authored-By: Joe Moura <joao@crewai.com>
+
+---------
+
+Co-authored-by: Devin AI <158243242+devin-ai-integration[bot]@users.noreply.github.com>
+Co-authored-by: Joe Moura <joao@crewai.com>",update
+https://github.com/GlareDB/glaredb/pull/3656,https://github.com/GlareDB/glaredb/commit/599ac57dcd1d66e6ac17ee1712e424aede698404,https://github.com/GlareDB/glaredb/pull/3655,Devin,Devin,Merge improved test case from PR #3656,update
+https://github.com/team-mirai/policy/pull/1232,https://github.com/team-mirai/policy/commit/ae4fa18aa37541b19b16936b31888f3495900a2a,https://github.com/team-mirai/policy/pull/1454,Devin,Devin,Update table of contents to include medical policy documents from PRs #1232 and #1234,update
+https://github.com/jina-ai/node-DeepResearch/pull/54,https://github.com/jina-ai/node-DeepResearch/commit/095a59ac316f95aba9d84d21299726251bc63e74,https://github.com/jina-ai/node-DeepResearch/pull/56,Devin,Devin,"test: update test cases to match PR #54
+Co-Authored-By: sha.zhou@jina.ai <sha.zhou@jina.ai>",update
+https://github.com/pdfme/pdfme/pull/823,https://github.com/pdfme/pdfme/commit/b60b59c8186ae6c7656b04bbd73f15573dbaf543,https://github.com/pdfme/pdfme/pull/824,Devin,Devin,"docs: update converter.md to reflect img2pdf size and margin options from PR #823",update
+https://github.com/team-mirai/policy/pull/1234,https://github.com/team-mirai/policy/commit/ae4fa18aa37541b19b16936b31888f3495900a2a,https://github.com/team-mirai/policy/pull/1454,Devin,Devin,"Update table of contents to include medical policy documents from PRs #1232 and #1234
+Co-Authored-By: gmailcom annyotaka <annyotaka@gmail.com>",update
+https://github.com/team-mirai/policy/pull/2255,https://github.com/team-mirai/policy/commit/616cf11131eff7d418e3ba55b542f7facd302628,https://github.com/team-mirai/policy/pull/2387,Devin,Devin,"Apply trigger security changes to X auto-posting bot
+- Change trigger from pull_request to pull_request_target
+- Add security condition to prevent malicious users from triggering posts
+- Only allow posts from same repository PRs or actually merged PRs
+- Matches security improvements from PR #2255
+
+Co-Authored-By: jujunjun110@gmail.com <jujunjun110@gmail.com>",update
+https://github.com/pdfme/pdfme/pull/760,https://github.com/pdfme/pdfme/commit/27ec22a4bf38a29cf00c6b0fc387dc00b71d7713,https://github.com/pdfme/pdfme/pull/766,Devin,Devin,"Add playground tests to publish-commit and publish-release workflows (#760)",update
+https://github.com/selfxyz/self/pull/632,https://github.com/selfxyz/self/commit/cb2ef9137e64d07e98e9200490ac5052270d7fae,https://github.com/selfxyz/self/pull/756,OpenAI_Codex,Cursor,,
+https://github.com/selfxyz/self/pull/639,https://github.com/selfxyz/self/commit/cb2ef9137e64d07e98e9200490ac5052270d7fae,https://github.com/selfxyz/self/pull/756,OpenAI_Codex,Cursor,,
+https://github.com/selfxyz/self/pull/642,https://github.com/selfxyz/self/commit/cb2ef9137e64d07e98e9200490ac5052270d7fae,https://github.com/selfxyz/self/pull/756,OpenAI_Codex,Cursor,,
+https://github.com/selfxyz/self/pull/635,https://github.com/selfxyz/self/commit/cb2ef9137e64d07e98e9200490ac5052270d7fae,https://github.com/selfxyz/self/pull/756,OpenAI_Codex,Cursor,,
+https://github.com/crewAIInc/crewAI/pull/1809,https://github.com/crewAIInc/crewAI/commit/d6acd9c249198b947d31b410dd52962d72306c6d,https://github.com/crewAIInc/crewAI/pull/2083,Devin,Devin,,
+https://github.com/crewAIInc/crewAI/pull/1828,https://github.com/crewAIInc/crewAI/commit/d6acd9c249198b947d31b410dd52962d72306c6d,https://github.com/crewAIInc/crewAI/pull/2083,Devin,Devin,,
+https://github.com/crewAIInc/crewAI/pull/1807,https://github.com/crewAIInc/crewAI/commit/d6acd9c249198b947d31b410dd52962d72306c6d,https://github.com/crewAIInc/crewAI/pull/2083,Devin,Devin,,
+https://github.com/crewAIInc/crewAI/pull/1820,https://github.com/crewAIInc/crewAI/commit/d6acd9c249198b947d31b410dd52962d72306c6d,https://github.com/crewAIInc/crewAI/pull/2083,Devin,Devin,,
+https://github.com/crewAIInc/crewAI/pull/1811,https://github.com/crewAIInc/crewAI/commit/d6acd9c249198b947d31b410dd52962d72306c6d,https://github.com/crewAIInc/crewAI/pull/2083,Devin,Devin,,
+https://github.com/crewAIInc/crewAI/pull/1826,https://github.com/crewAIInc/crewAI/commit/d6acd9c249198b947d31b410dd52962d72306c6d,https://github.com/crewAIInc/crewAI/pull/2083,Devin,Devin,,
+https://github.com/crewAIInc/crewAI/pull/1808,https://github.com/crewAIInc/crewAI/commit/d6acd9c249198b947d31b410dd52962d72306c6d,https://github.com/crewAIInc/crewAI/pull/2083,Devin,Devin,,
+https://github.com/wealthsimple/llm-gateway/pull/78,https://github.com/wealthsimple/llm-gateway/commit/87ae729124ce06610d1b014caa6cb7f81d15e191,https://github.com/wealthsimple/llm-gateway/pull/82,Devin,Devin,,
+https://github.com/crewAIInc/crewAI/pull/1818,https://github.com/crewAIInc/crewAI/commit/d6acd9c249198b947d31b410dd52962d72306c6d,https://github.com/crewAIInc/crewAI/pull/2083,Devin,Devin,,
+https://github.com/crewAIInc/crewAI/pull/1814,https://github.com/crewAIInc/crewAI/commit/d6acd9c249198b947d31b410dd52962d72306c6d,https://github.com/crewAIInc/crewAI/pull/2083,Devin,Devin,,

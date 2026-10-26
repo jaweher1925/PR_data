@@ -1,0 +1,12 @@
+folder,url,paper,type,use_for_us
+01_WhoFinishes,https://github.com/wannita901/pr-fix-authorship,Takerngsaksiri 2026 - Who Finishes the Job?,data+code,linker.py + LLM judge: find fix PRs of AI PRs (= evolution-assurance)
+02_XiaMiller_PostMerge,https://github.com/post-merge-reality/post-merge-reality,Xia & Miller 2026 - Post-Merge Fate of Agentic Code,data+code,maintenance classes (Q1) + line tracking with git blame
+03_Sawada,https://github.com/ShouSawa/AI-Code-Maintainability,Sawada 2026 - Agent-generated Code Maintenance,data+code,AI_check.py + fix commits on AI files
+04_Watanabe_ClaudeCode,https://github.com/mmikuu/OnTheUseOfAgenticCoding,Watanabe 2025 - Agentic Coding PRs,data+code,revisions inside Claude Code PRs
+05_Yu_ChatGPT_Copilot,https://github.com/lkpttxg/WhereCodeGenerationByLLM,Yu 2024 - LLM code in GitHub,data+code,bug-fix commits on LLM code (baseline)
+06_Dovhoshliubnyi_Hunks,https://github.com/5uper6rain/ssbse-challenge-2026,Dovhoshliubnyi 2026 - What Do AI Agents Change?,data+code,hunk change-type classifier (Q3)
+07_Wang_LLM_Code_Errors,https://github.com/ma-labo/defects4codellm,Wang 2025 (ICSE) - Code Generation Errors of LLMs,data,error taxonomy (Q2)
+08_DECODE,https://github.com/jennytliang/decode,Liang 2026 - 53.6K Developer Edits of AI Code,code (data on Hugging Face jtliang/decode),edit extraction + edit-type labels
+09_RefactoringMiner,https://github.com/tsantalis/RefactoringMiner,Tsantalis - RefactoringMiner 3.x (Python supported),tool,Q3: refactorings of each fix PR (-gp)
+10_Py-RefactoringMiner,https://github.com/maldil/RefactoringMiner,Dilhara 2022 - Python RefactoringMiner,tool,backup Python refactoring detector
+11_PyRef,https://github.com/PyRef/PyRef,Atwi 2021 - PyRef,tool,backup Python refactoring detector + benchmark

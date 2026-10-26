@@ -1,0 +1,2 @@
+paper,unit (1 row =),rows,repos,first date,latest date,agents,how the agent is involved,fixes of AI code
+Yu et al. 2024,file with self-admitted LLM code,1413,977,2023-02-01,2024-05-14,"ChatGPT, GPT-4, Copilot, GPT-3",Developer pastes LLM code (comment says so); later changes by developers,113

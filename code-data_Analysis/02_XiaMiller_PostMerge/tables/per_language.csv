@@ -1,0 +1,26 @@
+primary_language,repos,agent_PRs,all_PRs
+TypeScript,57,2869,216974
+Python,25,1827,84182
+Rust,13,807,68064
+HTML,5,704,23745
+JavaScript,7,704,18954
+C#,16,548,44260
+C,4,378,12956
+Go,14,376,36065
+Ruby,4,264,19131
+PHP,4,192,30865
+Jupyter Notebook,2,181,675
+Swift,2,178,6818
+Java,5,154,18053
+C++,7,152,40995
+HCL,1,118,2261
+F#,1,103,7766
+Dart,1,94,1849
+MDX,2,83,2706
+CSS,2,77,1893
+Answer Set Programming,1,73,3669
+Shell,3,60,4438
+Kotlin,2,52,3060
+TSQL,1,29,3432
+Fortran,1,26,3212
+Mermaid,1,14,1979

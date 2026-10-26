@@ -1,0 +1,6 @@
+agent,Build Failures,Closed Due to Inactivity,Closed Without Explicit Rationale,Deployment Failures,Fix Rejected by Maintainers,Incomplete Review Process,Incorrect or Incomplete Fixes,Low Priority or Obsolete Issue,No Review Conducted,Other Reasons,Resolved by Another Pull Request,Test Case Failures
+Claude_Code,1,1,3,0,0,0,2,4,1,1,5,0
+Copilot,1,2,1,0,13,18,30,18,7,5,47,6
+Cursor,0,0,8,2,1,0,1,0,0,1,5,0
+Devin,1,27,1,3,2,0,4,0,2,0,7,3
+OpenAI_Codex,4,0,0,5,0,0,13,4,4,3,8,50

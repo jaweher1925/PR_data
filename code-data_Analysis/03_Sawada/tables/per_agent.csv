@@ -1,0 +1,7 @@
+agent,files,later_commits,fix_commits,fix_by_human,fix_by_AI,median_days_to_fix,fix_%_of_later_commits
+Human file,508,1922,298,286,12,32.0,15.5
+Copilot,260,467,80,26,54,0.0,17.1
+Devin,174,492,83,70,13,78.0,16.9
+Cursor,39,262,37,32,5,7.0,14.1
+Claude Code,17,60,6,2,4,0.0,10.0
+Human / other,14,140,10,9,1,143.5,7.1

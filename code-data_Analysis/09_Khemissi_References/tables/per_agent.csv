@@ -1,0 +1,6 @@
+agent,human_refs,agent_PRs,fix_refs,with_agent_coauthor,median_days_after_pr,agent_refs,agent_fix_refs
+Codex,803,563,454,59,3.9345833333333333,15,1
+Devin,620,468,316,453,19.348721064814814,59,33
+Cursor,257,185,99,157,4.036331018518519,1,0
+Copilot,162,120,91,125,2.854091435185185,9,2
+Claude Code,80,52,44,41,3.5894502314814813,4,3

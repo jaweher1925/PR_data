@@ -1,0 +1,8 @@
+pandas
+matplotlib
+openpyxl
+jupyter
+huggingface_hub
+pyarrow
+duckdb
+pillow

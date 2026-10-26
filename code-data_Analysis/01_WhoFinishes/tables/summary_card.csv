@@ -1,0 +1,2 @@
+paper,unit (1 row =),rows,repos,first date,latest date,agents,how the agent is involved,fixes of AI code
+Who Finishes (Takerngsaksiri 2026),AI PR -> later PR pair,2510,195,AIDev-pop,June 2025,"Codex, Devin, Copilot, Cursor, Claude Code",Agent opens the PR; fix written by agent or human,334

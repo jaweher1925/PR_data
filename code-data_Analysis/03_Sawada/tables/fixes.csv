@@ -1,0 +1,217 @@
+paper,fix_id,agent,repo,language,level,ai_change,fix_change,fixed_by,days_to_fix,fix_label,fix_reason,has_code_patch
+Sawada 2026,SAW-00000,Claude Code,MervinPraison/PraisonAI,Python,commit,file created by AI,e5ee0c793ece67ad34e6c5d0bd0d2782e74cc2f5,AI agent,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00001,Claude Code,browser-use/browser-use,Python,commit,file created by AI,fba94602febecab17864e406380d8a08df34c4bb,AI agent,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00002,Claude Code,elizaOS/eliza,TypeScript,commit,file created by AI,257fda58c86e076fa0e684b97ede8b2207b39171,AI agent,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00003,Claude Code,liam-hq/liam,Other,commit,file created by AI,8f9f70cd88b528bd6dfc5ef49682cfb2283b1eda,AI agent,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00004,Claude Code,yamadashy/repomix,TypeScript,commit,file created by AI,3384d667c2ebe80a09d09c16b7ed8154ba6e9f2b,Human,16,fix (Conventional Commits),,False
+Sawada 2026,SAW-00005,Claude Code,yamadashy/repomix,TypeScript,commit,file created by AI,c666f7d0e014ac3939a3369e870f1a2e261d8444,Human,2,fix (Conventional Commits),,False
+Sawada 2026,SAW-00006,Copilot,Azure/azure-sdk-for-net,C#,commit,file created by AI,5cb0497623552d8fb47b7aa6a21435a0f85399e4,Human,18,fix (Conventional Commits),,False
+Sawada 2026,SAW-00007,Copilot,Azure/azure-sdk-for-net,C#,commit,file created by AI,905a02f67393a54a6ede353575652a808bce7426,Human,193,fix (Conventional Commits),,False
+Sawada 2026,SAW-00008,Copilot,Azure/azure-sdk-for-net,C#,commit,file created by AI,c552aa5b679b4a47523658e8654d73553c452b0a,AI agent,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00009,Copilot,Azure/azure-sdk-for-python,Python,commit,file created by AI,d76b8ba341d1c351c970566c68e31754ad5b56d4,AI agent,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00010,Copilot,Z3Prover/z3,Python,commit,file created by AI,ad0afbb792107a3a20d367b9e4933cd50c33803d,AI agent,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00011,Copilot,binarywang/WxJava,Java,commit,file created by AI,14f8c8ebc2dd873bb8204f3f6b81602bcdd5e892,AI agent,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00012,Copilot,binarywang/WxJava,Java,commit,file created by AI,3a1d8075fc27adf5eae9d23cd7628387132fce7a,AI agent,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00013,Copilot,chrxh/alien,Other,commit,file created by AI,11f7db105731e1c12128826dc0abc0168aefb1c2,Human,155,fix (Conventional Commits),,False
+Sawada 2026,SAW-00014,Copilot,chrxh/alien,C++,commit,file created by AI,1642f71378091b71d58c8720996e47d497ada289,Human,10,fix (Conventional Commits),,False
+Sawada 2026,SAW-00015,Copilot,chrxh/alien,C++,commit,file created by AI,2fa0750e3b782d3013f29269ff1559765d5ed30f,Human,26,fix (Conventional Commits),,False
+Sawada 2026,SAW-00016,Copilot,chrxh/alien,Other,commit,file created by AI,4bf1d84f57f61fb8b7b3022bb7900d756ec893c4,Human,143,fix (Conventional Commits),,False
+Sawada 2026,SAW-00017,Copilot,chrxh/alien,C++,commit,file created by AI,58d24bc06c5f5a005c952502a0e2c05a9404d424,Human,107,fix (Conventional Commits),,False
+Sawada 2026,SAW-00018,Copilot,chrxh/alien,C++,commit,file created by AI,81dd134558209038b2448980f04246ad5d10a653,Human,58,fix (Conventional Commits),,False
+Sawada 2026,SAW-00019,Copilot,chrxh/alien,C++,commit,file created by AI,8fc5d5bf67041a5118371170e6ebd147e6e6ee5a,Human,3,fix (Conventional Commits),,False
+Sawada 2026,SAW-00020,Copilot,chrxh/alien,Other,commit,file created by AI,acc488f9a4ee77646a2d6c549f83b7f503cf2eb4,AI agent,156,fix (Conventional Commits),,False
+Sawada 2026,SAW-00021,Copilot,chrxh/alien,C++,commit,file created by AI,aea1edfb3ad5e6cf9a822805839c2030ac38e990,Human,58,fix (Conventional Commits),,False
+Sawada 2026,SAW-00022,Copilot,chrxh/alien,C++,commit,file created by AI,b7e6cf2da0375ef0712002b8271386cb81e11d16,Human,1,fix (Conventional Commits),,False
+Sawada 2026,SAW-00023,Copilot,chrxh/alien,C++,commit,file created by AI,cdadd2438364415ce71171e0f7354a699a5d8254,Human,30,fix (Conventional Commits),,False
+Sawada 2026,SAW-00024,Copilot,chrxh/alien,Other,commit,file created by AI,cfe1493d4566de3b53128014636164c572bf6217,AI agent,174,fix (Conventional Commits),,False
+Sawada 2026,SAW-00025,Copilot,chrxh/alien,Other,commit,file created by AI,d5116688f1b5e25bca6ab613ae2232e96dd8eb86,Human,100,fix (Conventional Commits),,False
+Sawada 2026,SAW-00026,Copilot,chrxh/alien,Other,commit,file created by AI,d709e071b72b9bfeeac8e33065e5211a9da8b5b6,AI agent,145,fix (Conventional Commits),,False
+Sawada 2026,SAW-00027,Copilot,chrxh/alien,C++,commit,file created by AI,d993dc6301eca93bf6f1ebcf8fa3f6060d306294,Human,30,fix (Conventional Commits),,False
+Sawada 2026,SAW-00028,Copilot,docling-project/docling,Other,commit,file created by AI,8d50a59d4887caac1c214add8037ed0b5250f68c,AI agent,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00029,Copilot,dotnet/aspire,C#,commit,file created by AI,2d8dfb32df194378b9ac0e865a3b31ca056cd3fc,AI agent,147,fix (Conventional Commits),,False
+Sawada 2026,SAW-00030,Copilot,dotnet/aspire,C#,commit,file created by AI,3e5bd86a005f5aae35bf83451cc78c7df8bae1a9,Human,134,fix (Conventional Commits),,False
+Sawada 2026,SAW-00031,Copilot,dotnet/aspire,C#,commit,file created by AI,733bd3815159f6afe82725a864f4c1c3189fb2f9,Human,123,fix (Conventional Commits),,False
+Sawada 2026,SAW-00032,Copilot,dotnet/aspire,C#,commit,file created by AI,941237ed2c7455057f223e9b23c4be1150dbf203,Human,45,fix (Conventional Commits),,False
+Sawada 2026,SAW-00033,Copilot,dotnet/aspnetcore,C#,commit,file created by AI,c0b0121de1834e62a89022aa921000810b629ae1,AI agent,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00034,Copilot,dotnet/aspnetcore,C#,commit,file created by AI,ef0da55f8881c41d9828c857a592551d58cbf785,AI agent,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00035,Copilot,dotnet/aspnetcore,Other,commit,file created by AI,fdad0cc7fe58c9de89a7fcef6c6a0a81be7e44d7,Human,151,fix (Conventional Commits),,False
+Sawada 2026,SAW-00036,Copilot,dotnet/fsharp,Other,commit,file created by AI,303a091dd32dec3d2c7c0128f8c31526b6113044,AI agent,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00037,Copilot,dotnet/maui,C#,commit,file created by AI,c086862dca90107d2db826d34de12a8e8145e155,AI agent,78,fix (Conventional Commits),,False
+Sawada 2026,SAW-00038,Copilot,dotnet/maui,C#,commit,file created by AI,c63c79dab4f32a1efae93b4ed6561513383d17c4,AI agent,104,fix (Conventional Commits),,False
+Sawada 2026,SAW-00039,Copilot,dotnet/maui,C#,commit,file created by AI,d6a01714971f997aa73fdbd764d6fa9217170587,AI agent,162,fix (Conventional Commits),,False
+Sawada 2026,SAW-00040,Copilot,dotnet/maui,Other,commit,file created by AI,f00775a08d996e2c8222e66e68cb61bd4f988d04,AI agent,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00041,Copilot,elsa-workflows/elsa-core,C#,commit,file created by AI,144edc3a85bfa5af45c7ec82e94bc75140ee62ab,AI agent,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00042,Copilot,elsa-workflows/elsa-core,C#,commit,file created by AI,239be9bf1c6646f81c7999d041f7690bbe421e04,AI agent,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00043,Copilot,elsa-workflows/elsa-core,C#,commit,file created by AI,b9697a9e28e3943f2a39cc0a34a410a3e0f435c3,AI agent,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00044,Copilot,gradio-app/gradio,Other,commit,file created by AI,7d5a7629794146b33217e0cf34a289d35d1e36da,AI agent,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00045,Copilot,gradio-app/gradio,Other,commit,file created by AI,c39d3739bf2494ad13556174757cdd56060f033e,AI agent,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00046,Copilot,hyperlight-dev/hyperlight,Other,commit,file created by AI,667ff9360f69e02dea2c83b22c3c3d04c4a4c391,Human,233,fix (Conventional Commits),,False
+Sawada 2026,SAW-00047,Copilot,langchain-ai/langchain,Python,commit,file created by AI,01fdeede5011ab861c868f911c0e3c92a41d1b30,Human,48,fix (Conventional Commits),,False
+Sawada 2026,SAW-00048,Copilot,langchain-ai/langchain,Python,commit,file created by AI,18c64aed6d5ec21df662722d191a446e6074baac,AI agent,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00049,Copilot,microsoft/TypeScript,JavaScript,commit,file created by AI,1ed8674bba538a280c1846d628069fb9646731ab,AI agent,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00050,Copilot,microsoft/TypeScript,JavaScript,commit,file created by AI,6e519c59c13e4e99da0bf779a1f2bbee232cf7a1,AI agent,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00051,Copilot,microsoft/autogen,Python,commit,file created by AI,7c536a8c95b9600f7c30e08473148839ecaf57c7,AI agent,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00052,Copilot,microsoft/fluentui,Other,commit,file created by AI,be736930143d28b05665f11c576cca9671cfb0fd,AI agent,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00053,Copilot,microsoft/fluentui-blazor,Other,commit,file created by AI,3df5a0610c114b39d700ca4ced24b05c784ff660,AI agent,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00054,Copilot,microsoft/perfview,C#,commit,file created by AI,8dd8b7b7ddc11e31d2ea966e291fbf74f3b74ab0,AI agent,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00055,Copilot,microsoft/perfview,C#,commit,file created by AI,e7ea5b42c39de18cfa2fc86b6dbcf56473715d5f,AI agent,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00056,Copilot,microsoft/typescript-go,Other,commit,file created by AI,5d60697c96dff9a05201a477d8ea069ff075e69d,AI agent,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00057,Copilot,microsoft/typescript-go,Go,commit,file created by AI,833a67cf96734762e2e0623155463b6d1799be9a,Human,16,fix (Conventional Commits),,False
+Sawada 2026,SAW-00058,Copilot,microsoft/typescript-go,JavaScript,commit,file created by AI,8fbfa3e6436cbdca7499ed1acc4e89974ae5fae8,AI agent,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00059,Copilot,microsoft/typescript-go,Go,commit,file created by AI,bc8d29cb2f6248c9f6fbbc9a7625634c070b8f67,AI agent,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00060,Copilot,microsoft/typespec,C#,commit,file created by AI,f242320e1176facc72a5a99b6e905a0c097e7894,AI agent,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00061,Copilot,microsoft/vscode,TypeScript,commit,file created by AI,24c0ff16c250f2b39eea8cebd661be2375f61ba5,AI agent,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00062,Copilot,microsoft/vscode,TypeScript,commit,file created by AI,4f2559f97fe6a2bf00796d613f33ff258bc4a681,AI agent,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00063,Copilot,microsoft/vscode,TypeScript,commit,file created by AI,53133e69d8144661c2ece8c5ae80801d2b2c98d9,AI agent,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00064,Copilot,microsoft/vscode,TypeScript,commit,file created by AI,6aeb5973b6c6c3c6f207ebf35536f7377f1e66df,Human,120,fix (Conventional Commits),,False
+Sawada 2026,SAW-00065,Copilot,microsoft/vscode,TypeScript,commit,file created by AI,810f7a00a18aef7c0af592d53955b4e20d28a810,Human,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00066,Copilot,microsoft/vscode,TypeScript,commit,file created by AI,900c09271d195ecb0b30a3eb09f06858e147fc91,Human,97,fix (Conventional Commits),,False
+Sawada 2026,SAW-00067,Copilot,microsoft/vscode,TypeScript,commit,file created by AI,bd541adb4c414630cb1821b468cb63b0a1537f9e,AI agent,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00068,Copilot,microsoft/vscode,TypeScript,commit,file created by AI,f673cdde278002a416d342e03cfd51602e99d98b,AI agent,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00069,Copilot,mlflow/mlflow,JavaScript,commit,file created by AI,4d5b2147bb0993f0524bcce3b1aa0f2d85d7db40,AI agent,141,fix (Conventional Commits),,False
+Sawada 2026,SAW-00070,Copilot,mlflow/mlflow,Other,commit,file created by AI,b1efe0ea05e50c2b515abd584358c86d930d6ac9,AI agent,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00071,Copilot,mlflow/mlflow,JavaScript,commit,file created by AI,e3fc54a099e50219bc70292fb818af36e6b96787,AI agent,133,fix (Conventional Commits),,False
+Sawada 2026,SAW-00072,Copilot,onnx/onnx,Other,commit,file created by AI,a0e90be2942cfd557e84f626451d016e4901b52a,AI agent,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00073,Copilot,primer/react,Other,commit,file created by AI,82e923747f7385466358a67e46284bb6c556d99f,Human,21,fix (Conventional Commits),,False
+Sawada 2026,SAW-00074,Copilot,risingwavelabs/risingwave,Other,commit,file created by AI,bd70249d049e60e0fc9a4a93408400ee9c277cda,Human,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00075,Copilot,rqlite/rqlite,Go,commit,file created by AI,a192f94513cb3f5b07b279dfe3ba57f42eacfae7,AI agent,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00076,Copilot,shader-slang/slang,Other,commit,file created by AI,4d514f792fc590e28579a184be8890613d0fdf9e,AI agent,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00077,Copilot,shader-slang/slang,Other,commit,file created by AI,528ca0d0e55df88a9a97ba071ae803a62a34ae5a,AI agent,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00078,Copilot,shader-slang/slang,Other,commit,file created by AI,652a8ee6883f08ce7cb55ef372277a535ce4d88f,AI agent,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00079,Copilot,shader-slang/slang,Other,commit,file created by AI,73f9aeb838bfaeaeae2c46d94000a4f98da47cea,AI agent,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00080,Copilot,shader-slang/slang,Other,commit,file created by AI,85edfb178cd243134f4bb3d35ad71f154d76c81c,AI agent,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00081,Copilot,shader-slang/slang,Other,commit,file created by AI,aa3cc1e79315592e9b22fccd77fc27fef0c09762,AI agent,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00082,Copilot,shader-slang/slang,Other,commit,file created by AI,d0f342c9263a0e47947ac3be9fa4d9f665831e63,AI agent,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00083,Copilot,shader-slang/slang,Other,commit,file created by AI,e8797496bf7caeb08b5334d13d0d5aa039106210,AI agent,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00084,Copilot,taiga-family/taiga-ui,TypeScript,commit,file created by AI,ac8653330dc14007149ef88d1321d31efc69d77d,AI agent,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00085,Copilot,usememos/memos,Go,commit,file created by AI,e3a2dadb4bcac1cc6396f64d091abeba607970d5,AI agent,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00086,Cursor,FastLED/FastLED,Other,commit,file created by AI,76c61c4164fa1ffe4a92f877345dde6f92a30ec1,Human,206,fix (Conventional Commits),,False
+Sawada 2026,SAW-00087,Cursor,OpenPipe/ART,Python,commit,file created by AI,1e755a170ce6f51d1b4b521c9dab7b1c6ff6ab79,Human,3,fix (Conventional Commits),,False
+Sawada 2026,SAW-00088,Cursor,OpenPipe/ART,Python,commit,file created by AI,a3eca5500e00e77bbbcead8a910a0056db938bfe,Human,4,fix (Conventional Commits),,False
+Sawada 2026,SAW-00089,Cursor,OpenPipe/ART,Python,commit,file created by AI,b7123a45e92516ec03670c083ae3b8a64a19debd,Human,4,fix (Conventional Commits),,False
+Sawada 2026,SAW-00090,Cursor,OpenPipe/ART,Python,commit,file created by AI,c414e64102312dc8d454d700ccac61a69fe13cc5,Human,2,fix (Conventional Commits),,False
+Sawada 2026,SAW-00091,Cursor,activepieces/activepieces,Other,commit,file created by AI,0ba737173bb0275fd8db95f59eb908ceb29782ed,AI agent,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00092,Cursor,browser-use/browser-use,Other,commit,file created by AI,d3abbcb2c741645ba07bf3bbb2402ce0a45a2b2f,Human,102,fix (Conventional Commits),,False
+Sawada 2026,SAW-00093,Cursor,elie222/inbox-zero,TypeScript,commit,file created by AI,13e3b03b15b3cbc6b67c073e8926f3f2806a149a,Human,54,fix (Conventional Commits),,False
+Sawada 2026,SAW-00094,Cursor,elie222/inbox-zero,TypeScript,commit,file created by AI,6735c41a33a27ecf56bfb7dcd07de927e049c47c,Human,195,fix (Conventional Commits),,False
+Sawada 2026,SAW-00095,Cursor,elie222/inbox-zero,TypeScript,commit,file created by AI,6d6aa4fe766767a001e0f141e7b602a540d557d7,Human,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00096,Cursor,elie222/inbox-zero,TypeScript,commit,file created by AI,a05ebe142d867307a9092b577e1796de04ca69d6,Human,169,fix (Conventional Commits),,False
+Sawada 2026,SAW-00097,Cursor,elizaOS/eliza,TypeScript,commit,file created by AI,63a1ef4fcfcd8e3afae881f105569aa10eac9358,AI agent,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00098,Cursor,elizaOS/eliza,TypeScript,commit,file created by AI,6985838f6b49b02cccd23090e2ec342f0ad891d2,AI agent,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00099,Cursor,invoke-ai/InvokeAI,TypeScript,commit,file created by AI,2152ca092cc9effbf9cf23487ad74bae70ad1984,Human,9,fix (Conventional Commits),,False
+Sawada 2026,SAW-00100,Cursor,invoke-ai/InvokeAI,Python,commit,file created by AI,44a7dfd48634b06152ef687b707d51fc56201b90,Human,38,fix (Conventional Commits),,False
+Sawada 2026,SAW-00101,Cursor,invoke-ai/InvokeAI,Python,commit,file created by AI,51e1c56636f3f0e48314b3314b982ddd7489fd8e,Human,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00102,Cursor,invoke-ai/InvokeAI,Python,commit,file created by AI,52dbdb711891a4cc4d2a33c83d9c851a4157b292,Human,6,fix (Conventional Commits),,False
+Sawada 2026,SAW-00103,Cursor,invoke-ai/InvokeAI,TypeScript,commit,file created by AI,605b912ba43d55b5912ef65df1cdc849748e2e9c,Human,3,fix (Conventional Commits),,False
+Sawada 2026,SAW-00104,Cursor,invoke-ai/InvokeAI,Python,commit,file created by AI,983cb5ebd2b29a17df44674365d8cf229bb01a92,Human,7,fix (Conventional Commits),,False
+Sawada 2026,SAW-00105,Cursor,invoke-ai/InvokeAI,Python,commit,file created by AI,c4142e75b26f5a6a257dd475c3ddf854314ffd10,Human,6,fix (Conventional Commits),,False
+Sawada 2026,SAW-00106,Cursor,invoke-ai/InvokeAI,Python,commit,file created by AI,c6eff71b744a6d505ad1905850af22d405294d26,Human,45,fix (Conventional Commits),,False
+Sawada 2026,SAW-00107,Cursor,invoke-ai/InvokeAI,TypeScript,commit,file created by AI,f13ced7ed4cad7a6df84a91d2b0549b6c05d63b7,Human,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00108,Cursor,invoke-ai/InvokeAI,Python,commit,file created by AI,fefe563127cb7b3650457b3f711de205e45a1b7a,Human,6,fix (Conventional Commits),,False
+Sawada 2026,SAW-00109,Cursor,jxxghp/MoviePilot,Python,commit,file created by AI,48d353aa90e9388a2c5afb69e3e11ae01ff2ec16,Human,21,fix (Conventional Commits),,False
+Sawada 2026,SAW-00110,Cursor,jxxghp/MoviePilot,Python,commit,file created by AI,570d4ad1a3beeb9ae51be3f5f84ddf668794ef03,AI agent,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00111,Cursor,jxxghp/MoviePilot,Python,commit,file created by AI,6873de7243773ed9be6fc7b96df7c030ec61d4b1,Human,22,fix (Conventional Commits),,False
+Sawada 2026,SAW-00112,Cursor,jxxghp/MoviePilot,Python,commit,file created by AI,d8f10e9ac40ee812125a547162f27bb120487710,Human,22,fix (Conventional Commits),,False
+Sawada 2026,SAW-00113,Cursor,mfts/papermark,TypeScript,commit,file created by AI,126d57937bfa029430ec3895640a8b313aceb4b3,Human,3,fix (Conventional Commits),,False
+Sawada 2026,SAW-00114,Cursor,mfts/papermark,TypeScript,commit,file created by AI,2fdf8720408775d1ad9b8e2db4211b710dfca12d,Human,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00115,Cursor,mfts/papermark,TypeScript,commit,file created by AI,5bc76742f8b2283d3f278aa1570c4bfe03c1925f,Human,29,fix (Conventional Commits),,False
+Sawada 2026,SAW-00116,Cursor,mfts/papermark,TypeScript,commit,file created by AI,68042e7dd4301a1978ea8b61f26d83796811db53,Human,103,fix (Conventional Commits),,False
+Sawada 2026,SAW-00117,Cursor,mfts/papermark,TypeScript,commit,file created by AI,81b8d156c588cac317d3fe573df7824dca872bad,AI agent,13,fix (Conventional Commits),,False
+Sawada 2026,SAW-00118,Cursor,mfts/papermark,TypeScript,commit,file created by AI,b6d4ff80203beb10223500530a7673e1aaedbbc3,Human,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00119,Cursor,mfts/papermark,TypeScript,commit,file created by AI,db332c210b8c73bc2d51233ba026368ac1ce42fd,Human,101,fix (Conventional Commits),,False
+Sawada 2026,SAW-00120,Cursor,mfts/papermark,TypeScript,commit,file created by AI,de733d53bc719eb8773d23c8b5b5d4ef3a60827e,Human,13,fix (Conventional Commits),,False
+Sawada 2026,SAW-00121,Cursor,mfts/papermark,TypeScript,commit,file created by AI,ec5bb5705e4c4ab46246c28aa681aa8a675b5996,Human,106,fix (Conventional Commits),,False
+Sawada 2026,SAW-00122,Cursor,mfts/papermark,TypeScript,commit,file created by AI,fd88a0ba79dad5d42e75127ea9a6d1f5d5619297,Human,152,fix (Conventional Commits),,False
+Sawada 2026,SAW-00123,Devin,AgentOps-AI/agentops,Python,commit,file created by AI,e47b8949f3ee081ab710e4edee55f2e575ea2b4c,Human,54,fix (Conventional Commits),,False
+Sawada 2026,SAW-00124,Devin,ComposioHQ/composio,TypeScript,commit,file created by AI,f07f5d1c1ff8dec118ce917934cc8f77b2c3d9a7,Human,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00125,Devin,antiwork/gumroad,Ruby,commit,file created by AI,da2c5db6ea4b5cd2f4156d47fa9edfb286d364d0,Human,185,fix (Conventional Commits),,False
+Sawada 2026,SAW-00126,Devin,appsmithorg/appsmith,TypeScript,commit,file created by AI,b3e5e431b216818f38d80e906d51944ab2434ff3,AI agent,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00127,Devin,calcom/cal.com,TypeScript,commit,file created by AI,0a9e732ea41531cbe3680fb47a6432652bb4c400,Human,38,fix (Conventional Commits),,False
+Sawada 2026,SAW-00128,Devin,calcom/cal.com,TypeScript,commit,file created by AI,43a6663230d5cd7581c35edb3dca3b0c6590db03,Human,4,fix (Conventional Commits),,False
+Sawada 2026,SAW-00129,Devin,calcom/cal.com,TypeScript,commit,file created by AI,89e7fca1839f4328937d895516b6cd14ce847a21,Human,90,fix (Conventional Commits),,False
+Sawada 2026,SAW-00130,Devin,calcom/cal.com,TypeScript,commit,file created by AI,8d54d80dee1b8a4507d9feef4abb71a16bd214d4,Human,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00131,Devin,calcom/cal.com,TypeScript,commit,file created by AI,ec58e59865a67f2fac28abfeebdfe842a4e7f5fb,Human,96,fix (Conventional Commits),,False
+Sawada 2026,SAW-00132,Devin,crewAIInc/crewAI,Python,commit,file created by AI,970a63c13c7ac94b5e016e529cf80693f9b53b05,AI agent,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00133,Devin,crewAIInc/crewAI,Python,commit,file created by AI,9c1096dbdca1ba8663a83c08775fc72f4fe8a521,Human,123,fix (Conventional Commits),,False
+Sawada 2026,SAW-00134,Devin,crewAIInc/crewAI,Python,commit,file created by AI,9f1d7d1aa91bba036a9d69677243f3362541945e,Human,201,fix (Conventional Commits),,False
+Sawada 2026,SAW-00135,Devin,crewAIInc/crewAI,Python,commit,file created by AI,ab2274caf079014a3e6771fcdb37a0b14de29868,Human,4,fix (Conventional Commits),,False
+Sawada 2026,SAW-00136,Devin,jina-ai/node-DeepResearch,TypeScript,commit,file created by AI,086bde514e580695632f97be3211e06e4e9e557b,Human,10,fix (Conventional Commits),,False
+Sawada 2026,SAW-00137,Devin,jina-ai/node-DeepResearch,TypeScript,commit,file created by AI,41ee1812db1d6cd8a3df1a45b26073958737fe31,Human,11,fix (Conventional Commits),,False
+Sawada 2026,SAW-00138,Devin,jina-ai/node-DeepResearch,TypeScript,commit,file created by AI,4523f102838fc0bd4b0df423239071cd0bc97a69,Human,45,fix (Conventional Commits),,False
+Sawada 2026,SAW-00139,Devin,jina-ai/node-DeepResearch,TypeScript,commit,file created by AI,b352b239a70148d7b75193a1b5cafe205d888edb,Human,9,fix (Conventional Commits),,False
+Sawada 2026,SAW-00140,Devin,jina-ai/node-DeepResearch,TypeScript,commit,file created by AI,bdf03ef978b49e4c6e070ed02b703c3edc901bb9,Human,9,fix (Conventional Commits),,False
+Sawada 2026,SAW-00141,Devin,jina-ai/node-DeepResearch,TypeScript,commit,file created by AI,f08976d9c0fa97b2cedde58fc7832d1142033ed7,Human,11,fix (Conventional Commits),,False
+Sawada 2026,SAW-00142,Devin,langbot-app/LangBot,Python,commit,file created by AI,051fffd41e16813bcf91aa8dfb784e9fac8145ab,Human,60,fix (Conventional Commits),,False
+Sawada 2026,SAW-00143,Devin,langbot-app/LangBot,TypeScript,commit,file created by AI,146c38e64c07c115e8b1b06df3e98e4bbafcd0e4,Human,90,fix (Conventional Commits),,False
+Sawada 2026,SAW-00144,Devin,langbot-app/LangBot,TypeScript,commit,file created by AI,1adaa930348b16c89085c7a553420a7d541f4f69,Human,174,fix (Conventional Commits),,False
+Sawada 2026,SAW-00145,Devin,langbot-app/LangBot,Python,commit,file created by AI,46452de7b5d8990f2668f3753ded8763fb479f43,Human,63,fix (Conventional Commits),,False
+Sawada 2026,SAW-00146,Devin,langbot-app/LangBot,TypeScript,commit,file created by AI,68eb0290e07168cb8924673f95152105144a0262,AI agent,176,fix (Conventional Commits),,False
+Sawada 2026,SAW-00147,Devin,langbot-app/LangBot,TypeScript,commit,file created by AI,76831579adf6c770f7b82b78830668f0e9f30ed2,Human,172,fix (Conventional Commits),,False
+Sawada 2026,SAW-00148,Devin,langbot-app/LangBot,TypeScript,commit,file created by AI,8a370a260e066647d86f51561de8555be9a7457d,Human,95,fix (Conventional Commits),,False
+Sawada 2026,SAW-00149,Devin,langbot-app/LangBot,TypeScript,commit,file created by AI,adc65f66eb3fce905016368fe1d5c0898a6cc7b9,Human,220,fix (Conventional Commits),,False
+Sawada 2026,SAW-00150,Devin,langbot-app/LangBot,Python,commit,file created by AI,b45cc59322930e4f3022d6da46c12d63828a9828,Human,52,fix (Conventional Commits),,False
+Sawada 2026,SAW-00151,Devin,langbot-app/LangBot,Python,commit,file created by AI,c6deed4e6e79c7827e805345b01747cdf57ab846,Human,53,fix (Conventional Commits),,False
+Sawada 2026,SAW-00152,Devin,langbot-app/LangBot,Python,commit,file created by AI,c7c2eb4518f452bb9ec2feff1bc4cb7a276012e6,Human,98,fix (Conventional Commits),,False
+Sawada 2026,SAW-00153,Devin,langbot-app/LangBot,TypeScript,commit,file created by AI,de76fed25a71fb969fcbb6edb71b6d2054478724,Human,59,fix (Conventional Commits),,False
+Sawada 2026,SAW-00154,Devin,langbot-app/LangBot,TypeScript,commit,file created by AI,f2647316a5015073dea144132d08354994458c63,Human,170,fix (Conventional Commits),,False
+Sawada 2026,SAW-00155,Devin,lightdash/lightdash,TypeScript,commit,file created by AI,32c021fbc374ece6ef8ff9de893a9087a60c9f2a,Human,94,fix (Conventional Commits),,False
+Sawada 2026,SAW-00156,Devin,lightdash/lightdash,TypeScript,commit,file created by AI,4f1055f13aca6bbb20fa4f5c569c9ae7ff3b7e15,AI agent,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00157,Devin,lightdash/lightdash,TypeScript,commit,file created by AI,b981225a1bea868ddbcf78d29bf7a2ea2b732bcc,Human,105,fix (Conventional Commits),,False
+Sawada 2026,SAW-00158,Devin,marimo-team/marimo,Python,commit,file created by AI,2beaf09d3da092cadf57500d5ecb63904cad3949,Human,198,fix (Conventional Commits),,False
+Sawada 2026,SAW-00159,Devin,marimo-team/marimo,Python,commit,file created by AI,35f44056f0b5770044011c75e46ec0edde402559,Human,78,fix (Conventional Commits),,False
+Sawada 2026,SAW-00160,Devin,marimo-team/marimo,Python,commit,file created by AI,41a95adcf1fb0a13a1d726bce3ff26895934811f,AI agent,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00161,Devin,marimo-team/marimo,TypeScript,commit,file created by AI,4a27dec9703089dc31ef6a3cf8f4858c936a08c7,Human,251,fix (Conventional Commits),,False
+Sawada 2026,SAW-00162,Devin,marimo-team/marimo,Python,commit,file created by AI,975198953d767e6a28cf012cf4973b68b4dbe39a,Human,80,fix (Conventional Commits),,False
+Sawada 2026,SAW-00163,Devin,marimo-team/marimo,Python,commit,file created by AI,c51d12a2093e7c4324b05907978c54550b4a5d9d,Human,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00164,Devin,mendableai/firecrawl,TypeScript,commit,file created by AI,0078a8fde27da06f3b30670727b1374dfad0c95d,Human,71,fix (Conventional Commits),,False
+Sawada 2026,SAW-00165,Devin,mendableai/firecrawl,TypeScript,commit,file created by AI,0594c2b3a664d64b50bd65bf9b86a5d3fbce5953,Human,51,fix (Conventional Commits),,False
+Sawada 2026,SAW-00166,Devin,mendableai/firecrawl,TypeScript,commit,file created by AI,1e640534f007fbf12833e95c55fc4994d1ed6d99,Human,81,fix (Conventional Commits),,False
+Sawada 2026,SAW-00167,Devin,mendableai/firecrawl,TypeScript,commit,file created by AI,248dc2cb77dc6ee1aecf19937f2652d71331e861,Human,164,fix (Conventional Commits),,False
+Sawada 2026,SAW-00168,Devin,mendableai/firecrawl,TypeScript,commit,file created by AI,3d8e21e68bebf0530c7421f37f033306a59f85e4,Human,74,fix (Conventional Commits),,False
+Sawada 2026,SAW-00169,Devin,mendableai/firecrawl,TypeScript,commit,file created by AI,45b498ddd1837057607fa7b6d0d34f36788b6131,Human,102,fix (Conventional Commits),,False
+Sawada 2026,SAW-00170,Devin,mendableai/firecrawl,TypeScript,commit,file created by AI,4d45f3b890ab2cf49a1a068e4d1a1d9caec802bd,Human,34,fix (Conventional Commits),,False
+Sawada 2026,SAW-00171,Devin,mendableai/firecrawl,TypeScript,commit,file created by AI,56b0ba7ba470d43e5e10cb91f8c6fdae5ba7af66,Human,76,fix (Conventional Commits),,False
+Sawada 2026,SAW-00172,Devin,mendableai/firecrawl,TypeScript,commit,file created by AI,608604b8ba5fdac41900617ee730c084339ce728,Human,169,fix (Conventional Commits),,False
+Sawada 2026,SAW-00173,Devin,mendableai/firecrawl,TypeScript,commit,file created by AI,6d07b91fb20582fddf21e8f891dc5fedbbd8c7e5,Human,194,fix (Conventional Commits),,False
+Sawada 2026,SAW-00174,Devin,mendableai/firecrawl,TypeScript,commit,file created by AI,71fa1d6bdb409e354b6789d4a0d9d197f32a90e7,Human,163,fix (Conventional Commits),,False
+Sawada 2026,SAW-00175,Devin,mendableai/firecrawl,TypeScript,commit,file created by AI,76c7be67e808f2d6f2ae700c7b41bb838ec6a43b,Human,89,fix (Conventional Commits),,False
+Sawada 2026,SAW-00176,Devin,mendableai/firecrawl,TypeScript,commit,file created by AI,76f777a383a8d789e02afc2422c007ff657488e2,Human,131,fix (Conventional Commits),,False
+Sawada 2026,SAW-00177,Devin,mendableai/firecrawl,TypeScript,commit,file created by AI,8a8d6499635691eb86a57b16eca7a80422c98c83,Human,117,fix (Conventional Commits),,False
+Sawada 2026,SAW-00178,Devin,mendableai/firecrawl,TypeScript,commit,file created by AI,8bc1c0703a5329f939309f89984bcb0aad17c122,Human,137,fix (Conventional Commits),,False
+Sawada 2026,SAW-00179,Devin,mendableai/firecrawl,TypeScript,commit,file created by AI,8c709b8ec1c395aeef5e9827ab148296d27e1d5b,Human,85,fix (Conventional Commits),,False
+Sawada 2026,SAW-00180,Devin,mendableai/firecrawl,TypeScript,commit,file created by AI,9d0883629fdedc3babcb0b7bc23c6f18fa8f099f,Human,136,fix (Conventional Commits),,False
+Sawada 2026,SAW-00181,Devin,mendableai/firecrawl,TypeScript,commit,file created by AI,a09d7fcbc02c4ef53376032490f04464dc19a258,Human,144,fix (Conventional Commits),,False
+Sawada 2026,SAW-00182,Devin,mendableai/firecrawl,TypeScript,commit,file created by AI,a1b7de7b8ac10ca58f5b670b85a093e42a044ea8,Human,28,fix (Conventional Commits),,False
+Sawada 2026,SAW-00183,Devin,mendableai/firecrawl,TypeScript,commit,file created by AI,a5a915d639244773484051fe2b53683dafc14ec4,AI agent,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00184,Devin,mendableai/firecrawl,TypeScript,commit,file created by AI,b2d50fcb96b1880adbc361dde66a996c19109234,Human,34,fix (Conventional Commits),,False
+Sawada 2026,SAW-00185,Devin,mendableai/firecrawl,TypeScript,commit,file created by AI,b4a193adc62cdcda85a9714dfbea7fc1c85cf9b3,Human,124,fix (Conventional Commits),,False
+Sawada 2026,SAW-00186,Devin,mendableai/firecrawl,TypeScript,commit,file created by AI,beee46987e8d86e2c2947f6726710fd4a7d26adf,Human,75,fix (Conventional Commits),,False
+Sawada 2026,SAW-00187,Devin,mendableai/firecrawl,TypeScript,commit,file created by AI,d0d0f94082f0df5a4ea07e75019475e4ff5837d5,Human,180,fix (Conventional Commits),,False
+Sawada 2026,SAW-00188,Devin,mendableai/firecrawl,TypeScript,commit,file created by AI,e4c992114e478ccf2f23fdeee2e1981623ba0093,Human,67,fix (Conventional Commits),,False
+Sawada 2026,SAW-00189,Devin,mendableai/firecrawl,TypeScript,commit,file created by AI,f672e542725ee9e4e5f438117fa819afae6c67d6,Human,19,fix (Conventional Commits),,False
+Sawada 2026,SAW-00190,Devin,novuhq/novu,TypeScript,commit,file created by AI,02695b4be45c610bbad7cd054c80040396a947c5,Human,133,fix (Conventional Commits),,False
+Sawada 2026,SAW-00191,Devin,novuhq/novu,TypeScript,commit,file created by AI,18e808e07165248de59a9fa6a5e601316fa00932,Human,111,fix (Conventional Commits),,False
+Sawada 2026,SAW-00192,Devin,novuhq/novu,TypeScript,commit,file created by AI,4be6f25dc490d16db722b34c08f9d9c6b5a60f4b,AI agent,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00193,Devin,novuhq/novu,TypeScript,commit,file created by AI,84adf3ab3b7db7e1bb010fea6a810a19e8e1c1c7,Human,162,fix (Conventional Commits),,False
+Sawada 2026,SAW-00194,Devin,novuhq/novu,JavaScript,commit,file created by AI,abba0cf21969a5ebf15599e0346ce1ed66969b3a,Human,85,fix (Conventional Commits),,False
+Sawada 2026,SAW-00195,Devin,novuhq/novu,TypeScript,commit,file created by AI,d29763c98d1868e42b2bd735cc60899b810604e2,Human,136,fix (Conventional Commits),,False
+Sawada 2026,SAW-00196,Devin,onyx-dot-app/onyx,Python,commit,file created by AI,016caf453bf9011d1a90e69e51ac2e98ed0d89e7,Human,343,fix (Conventional Commits),,False
+Sawada 2026,SAW-00197,Devin,onyx-dot-app/onyx,Python,commit,file created by AI,b82123563bca5ef653f9de6731fb4700021aa985,AI agent,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00198,Devin,promptfoo/promptfoo,TypeScript,commit,file created by AI,eb47d2d8a87645b4200646447969c0ba6a113e6b,AI agent,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00199,Devin,reown-com/appkit,TypeScript,commit,file created by AI,100ee2bf54f9036e72e5961300e0b3edb8089239,Human,139,fix (Conventional Commits),,False
+Sawada 2026,SAW-00200,Devin,reown-com/appkit,TypeScript,commit,file created by AI,75dfdbda65d1a6d491a866015669da39e013a810,Human,96,fix (Conventional Commits),,False
+Sawada 2026,SAW-00201,Devin,reown-com/appkit,Other,commit,file created by AI,8539b68de2acb9e9a75f719cefa128c88185567b,AI agent,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00202,Devin,reown-com/appkit,TypeScript,commit,file created by AI,8a425847216ef8660312c88f3f009e6f2ceb53ea,AI agent,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00203,Devin,reown-com/appkit,TypeScript,commit,file created by AI,a26ea9498f21d5419e9c7fa0cc567bc5d04a5173,AI agent,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00204,Devin,reown-com/appkit,TypeScript,commit,file created by AI,b1555b2e838f8b2a614ed048c28edc7298911917,Human,34,fix (Conventional Commits),,False
+Sawada 2026,SAW-00205,Devin,vercel/turborepo,Other,commit,file created by AI,0f9fc1b7174e9c2c864d8143dba6c4af0e74166f,AI agent,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00206,Human / other,airbytehq/airbyte,Python,commit,file created by AI,8fd7367e2b01197eca566fd4271a5328d3061963,Human,112,fix (Conventional Commits),,False
+Sawada 2026,SAW-00207,Human / other,liam-hq/liam,TypeScript,commit,file created by AI,5c13579bb07ea629c9d0a24438f53cd5fc671a77,Human,0,fix (Conventional Commits),,False
+Sawada 2026,SAW-00208,Human / other,onlook-dev/onlook,Other,commit,file created by AI,287bfc2a0f179b0f655fdc3f57238d510dd03c0a,AI agent,325,fix (Conventional Commits),,False
+Sawada 2026,SAW-00209,Human / other,onlook-dev/onlook,Other,commit,file created by AI,41637d3985664107edc4783b70b12be8eddb8a64,Human,129,fix (Conventional Commits),,False
+Sawada 2026,SAW-00210,Human / other,onlook-dev/onlook,Other,commit,file created by AI,7f540a22fc3c88013a7e095edeb9f7dd77f48eb0,Human,101,fix (Conventional Commits),,False
+Sawada 2026,SAW-00211,Human / other,onlook-dev/onlook,Other,commit,file created by AI,8792b2bf3d0c2efe4063a03b782b38c5dfbefb5b,Human,158,fix (Conventional Commits),,False
+Sawada 2026,SAW-00212,Human / other,onlook-dev/onlook,Other,commit,file created by AI,976770662d7b26ae658980383913e33e0d2bdc01,Human,167,fix (Conventional Commits),,False
+Sawada 2026,SAW-00213,Human / other,onlook-dev/onlook,Other,commit,file created by AI,a97aa377db854c6a0bff0612b4656061b65d6b1f,Human,201,fix (Conventional Commits),,False
+Sawada 2026,SAW-00214,Human / other,onlook-dev/onlook,Other,commit,file created by AI,ea27d2e4c70253503c6adaec8d88d8f331284622,Human,216,fix (Conventional Commits),,False
+Sawada 2026,SAW-00215,Human / other,primer/react,Other,commit,file created by AI,1e5f1c923a07bca723192a6bd03e7cc9904c942b,Human,13,fix (Conventional Commits),,False

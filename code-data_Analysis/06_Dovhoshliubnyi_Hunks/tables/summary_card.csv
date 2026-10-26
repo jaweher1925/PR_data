@@ -1,0 +1,2 @@
+paper,unit (1 row =),rows,repos,first date,latest date,agents,how the agent is involved,fixes of AI code
+Dovhoshliubnyi et al. 2026,performance PR / hunk,428,135,2025-01-03,2025-07-30,"Claude Code, Codex, Copilot, Cursor, Devin",Agent opens the PR (changes made BY the AI),n/a (not fixes)

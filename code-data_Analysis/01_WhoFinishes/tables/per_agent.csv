@@ -1,0 +1,6 @@
+agent,candidate_pairs,repos,Direct fix,Related touch,Unrelated/mislabeled,fixed_by_human,median_days_to_fix,fixed_by_agent,direct_fix_%
+Codex,1085,93,167,317,601,48,1.0,119,15.4
+Devin,893,38,88,188,617,17,1.0,71,9.9
+Copilot,423,53,56,126,241,2,0.0,54,13.2
+Cursor,102,24,22,21,59,0,0.5,22,21.6
+Claude Code,7,4,1,1,5,0,2.0,1,14.3

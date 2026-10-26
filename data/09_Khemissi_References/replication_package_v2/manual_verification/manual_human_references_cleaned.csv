@@ -1,0 +1,4029 @@
+Sample Number,Target PR URL,Target Agent,Source Commit URL,Source Commit Message,type
+1,https://github.com/apache/pulsar/pull/24542,Claude_Code,https://github.com/apache/pulsar/commit/455a0529eab7abfa3721fc483544826caf2621ef,"[fix][broker]Fix thread safety issues in BucketDelayedDeliveryTracker with StampedLock optimistic reads (#24542)
+
+(cherry picked from commit 86eb3b81ac327c4e34b69b7e77b6f5ec3d8c6688)",fix
+2,https://github.com/apache/pulsar/pull/24542,Claude_Code,https://github.com/apache/pulsar/commit/65075bdc856357bd75976c53bc2ed01d434b67a5,"[fix][broker]Fix thread safety issues in BucketDelayedDeliveryTracker with StampedLock optimistic reads (#24542)
+
+(cherry picked from commit 86eb3b81ac327c4e34b69b7e77b6f5ec3d8c6688)
+(cherry picked from commit 455a0529eab7abfa3721fc483544826caf2621ef)",fix
+3,https://github.com/apache/pulsar/pull/24542,Claude_Code,https://github.com/apache/pulsar/commit/9c0274a9c638f023709dcd6133b713fb4ea2ddfa,"[fix][broker]Fix thread safety issues in BucketDelayedDeliveryTracker with StampedLock optimistic reads (#24542)
+
+(cherry picked from commit 86eb3b81ac327c4e34b69b7e77b6f5ec3d8c6688)
+(cherry picked from commit 455a0529eab7abfa3721fc483544826caf2621ef)",fix
+4,https://github.com/apache/pulsar/pull/24542,Claude_Code,https://github.com/apache/pulsar/commit/b08b26dbb5e0c072161b764e0f5a19f5381360ef,"[fix][broker]Fix thread safety issues in BucketDelayedDeliveryTracker with StampedLock optimistic reads (#24542)
+
+(cherry picked from commit 86eb3b81ac327c4e34b69b7e77b6f5ec3d8c6688)",fix
+5,https://github.com/apache/pulsar/pull/24542,Claude_Code,https://github.com/apache/pulsar/commit/dfb3ca5314fcf0406147bd4271e596cfbf97698c,"[fix][broker]Fix thread safety issues in BucketDelayedDeliveryTracker with StampedLock optimistic reads (#24542)
+
+(cherry picked from commit 86eb3b81ac327c4e34b69b7e77b6f5ec3d8c6688)",fix
+6,https://github.com/coder/coder/pull/17035,Claude_Code,https://github.com/coder/coder/commit/31942733002dd0d73b1b7d090ad925847369d75e,"fix: address linting issues for PR #17035
+
+- cli/help.go: Replace s = s + ""\n"" with s += ""\n"" (gocritic)
+- cli/help.go: Replace func() string { return buildinfo.Version() } with buildinfo.Version (unlambda)
+- cli/help.go: Replace func(s string) string { return wrapTTY(s) } with wrapTTY (unlambda)
+- cli/login.go: Replace func(s string) error { return userpassword.Validate(s) } with userpassword.Validate (unlambda)
+- cli/resetpassword.go: Replace func(s string) error { return userpassword.Validate(s) } with userpassword.Validate (unlambda)
+- cli/root.go: Replace prefix = prefix + strings.Repeat("" "", len(indent)-len(prefix)) with prefix += strings.Repeat("" "", len(indent)-len(prefix)) (assignOp)
+- cli/root.go: Fix exitAfterDefer: os.Exit will exit, and defer statements will not run (gocritic)
+- cli/util.go: Replace raw = raw + ""m"" with raw += ""m"" (gocritic)
+- pty/ptytest/ptytest.go: Replace func(src, pattern string) bool { return strings.Contains(src, pattern) } with strings.Contains (unlambda)
+- database/migrations/migrate_test.go: Replace s.s[table] = s.s[table] + n with s.s[table] += n (assignOp)
+- enterprise/dbcrypt/cipher_internal_test.go: Replace munged[0] = munged[0] ^ 0xff with munged[0] ^= 0xff (assignOp)
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+Co-Authored-By: Claude <noreply@anthropic.com>",fix
+7,https://github.com/dai-motoki/haconiwa/pull/5,Claude_Code,https://github.com/dai-motoki/haconiwa/commit/1c9c638e2d8eb9bc15c7fb0afbce2e417ff17532,"Merge pull request #5 from dai-motoki/architecture/system-review
+
+feat: Add scan command with AI model search and parallel config generation",merge
+8,https://github.com/dotCMS/core/pull/32656,Claude_Code,https://github.com/dotCMS/core/commit/a819a4512061af8f21a50c89c2810044136489c6,"chore(swagger): Add Swagger annotations Batch Testing Base (#32529) (#32561)
+
+## Summary
+This PR establishes the progressive testing infrastructure for
+Swagger/OpenAPI annotations implementation across 115 REST endpoints in
+dotCMS.
+
+***Note for reviewers.*** Most of the files in this PR add new view
+classes that are not yet used in this PR but are added in preparation
+and use of the individual Resource classes that we change in upcoming
+batches. We do not need to deeply review these new classes at this time
+as they will have no impact on functionality at this time.
+
+In these batches we can also look at the openapi.yml that now gets
+generated and included in the commit for any resource changes. In this
+PR it confirms we are only changing and adding tag descriptions
+providing the categories for the upcoming batch changes. The main part
+of this PR is the additional test changes which are set to identify
+using an annotation the upcoming changed resource files and will test
+them when updated. In this PR these will essentially skip and do
+nothing.
+
+## 🎯 Progressive Rollout Strategy
+This PR creates the foundation for a **9-batch progressive rollout** of
+Swagger annotations. The annotations will be added incrementally to make
+the large change manageable and allow for thorough testing at each
+stage.
+
+This first PR does not actually modify any or the resources. It provides
+the testing framework that will pick up the updated resources when they
+are added. It also adds a few underlying fixes and additional View
+classes that will be used by the updated Resource classes when they are
+added but on their own will have no impact.
+
+## 🔧 Infrastructure Components
+
+### 1. @SwaggerCompliant Annotation System
+- **File**:
+`dotCMS/src/main/java/com/dotcms/rest/annotation/SwaggerCompliant.java`
+- **Purpose**: Marks REST resource classes that have been updated with
+proper Swagger annotations
+- **Features**: 
+  - Batch numbering system (1-8)
+  - Version tracking
+  - Descriptive documentation
+
+### 2. Progressive Testing Framework
+- **Updated**: `RestEndpointAnnotationComplianceTest.java`
+- **Updated**: `RestEndpointAnnotationValidationTest.java`
+- **Feature**: Automatic class discovery based on `@SwaggerCompliant`
+annotations
+- **Benefit**: Tests automatically include newly annotated classes when
+PRs are merged
+
+### 3. Cumulative Testing Support
+```bash
+# Test only classes from batches 1-3 (cumulative)
+./mvnw test -pl :dotcms-core -Dtest=RestEndpointAnnotationComplianceTest -Dtest.batch.max=3
+
+# Test all annotated classes (when annotation is present)
+./mvnw test -pl :dotcms-core -Dtest=RestEndpointAnnotationComplianceTest
+```
+
+## 📊 Batch Organization (115 REST Resources)
+
+### Batch 1: Core Authentication & User Management (15 classes)
+**PR**: [#32656](https://github.com/dotCMS/core/pull/32656) - **Ready
+for review**
+- Essential authentication and user management APIs
+- Foundation for all other batches
+
+### Batch 2: Content Management Core (14 classes)
+**PR**: [#32657](https://github.com/dotCMS/core/pull/32657) - **Draft**
+- Content CRUD operations, versioning, relationships
+- Content types and field management
+
+### Batch 3: Site Architecture & Templates (14 classes)
+**PR**: [#32658](https://github.com/dotCMS/core/pull/32658) - **Draft**
+- Site management, templates, containers
+- File and asset management
+
+### Batch 4: System Administration (15 classes)
+**PR**: [#32659](https://github.com/dotCMS/core/pull/32659) - **Draft**
+- System configuration and monitoring
+- Infrastructure management
+
+### Batch 5: Publishing & Distribution (13 classes)
+**PR**: [#32660](https://github.com/dotCMS/core/pull/32660) - **Draft**
+- Publishing workflows and bundle management
+- Environment and maintenance operations
+
+### Batch 6: Rules Engine & Business Logic (14 classes)
+**PR**: [#32661](https://github.com/dotCMS/core/pull/32661) - **Draft**
+- Rules engine components
+- Business logic and application management
+
+### Batch 7: Modern APIs & Specialized Services (17 classes)
+**PR**: [#32662](https://github.com/dotCMS/core/pull/32662) - **Draft**
+- AI services and modern APIs
+- Specialized content and analytics
+
+### Batch 8: Legacy & Utility Resources (13 classes)
+**PR**: [#32663](https://github.com/dotCMS/core/pull/32663) - **Draft**
+- Legacy APIs and utility functions
+- Remaining miscellaneous resources
+
+### Batch 9: Cleanup and Finalization
+**PR**: [#32664](https://github.com/dotCMS/core/pull/32664) - **Draft**
+- Remove temporary testing infrastructure
+- Final cleanup and production readiness
+
+## 🔄 Automatic Testing Integration
+
+**Key Feature**: When annotations are added to REST resources, they
+**automatically trigger testing** of those resources when the PRs are
+merged.
+
+- ✅ **Before annotation**: Resource is not tested by compliance tests
+- ✅ **After annotation**: Resource is automatically discovered and
+tested
+- ✅ **Cumulative**: Tests run against all previously annotated resources
+plus new ones
+
+This ensures that:
+1. No manual test configuration is needed
+2. Tests grow organically as annotations are added
+3. Full compliance is verified incrementally
+4. No regression in previously annotated resources
+
+## 📋 Rollout Process
+
+### Phase 1: Foundation (This PR)
+1. **Merge this PR first** - Establishes the infrastructure
+2. Sets up progressive testing framework
+3. Creates annotation system for batch management
+
+### Phase 2: Progressive Rollout (Batches 1-8)
+1. **Batch 1** (#32656) - Ready for review after this PR is merged
+2. **Batch 2** (#32657) - Remove draft state ONLY after Batch 1 is
+merged
+3. **Batch 3** (#32658) - Remove draft state ONLY after Batch 2 is
+merged
+4. **Batch 4** (#32659) - Remove draft state ONLY after Batch 3 is
+merged
+5. **Batch 5** (#32660) - Remove draft state ONLY after Batch 4 is
+merged
+6. **Batch 6** (#32661) - Remove draft state ONLY after Batch 5 is
+merged
+7. **Batch 7** (#32662) - Remove draft state ONLY after Batch 6 is
+merged
+8. **Batch 8** (#32663) - Remove draft state ONLY after Batch 7 is
+merged
+
+### Phase 3: Finalization (Batch 9)
+1. **Batch 9** (#32664) - Remove draft state ONLY after Batch 8 is
+merged
+2. Clean up temporary infrastructure
+3. Complete the implementation
+
+## 🧪 Testing Strategy
+
+### During Rollout
+Each batch PR includes comprehensive testing:
+```bash
+# Test cumulative batches (e.g., for Batch 3)
+./mvnw test -pl :dotcms-core -Dtest=RestEndpointAnnotationComplianceTest -Dtest.batch.max=3
+```
+
+### After Completion
+All tests run against all endpoints automatically:
+```bash
+# No batch filtering needed - all annotated resources tested
+./mvnw test -pl :dotcms-core -Dtest=RestEndpointAnnotationComplianceTest
+```
+
+## 📝 Documentation
+
+### Batch Documentation
+- **File**: `SWAGGER_COMPLIANT_BATCHES.md`
+- **Contains**: Detailed breakdown of all 115 resources across 8 batches
+- **Usage**: Reference for understanding batch organization and testing
+
+### Verification Tests
+- **File**: `SwaggerCompliantAnnotationTest.java`
+- **File**: `SwaggerCompliantBatchTest.java`
+- **Purpose**: Validate annotation structure and batch organization
+
+## 🎯 Benefits
+
+1. **Manageable Change Size**: 115 resources split into 8 logical
+batches
+2. **Incremental Testing**: Tests automatically include new resources as
+they're annotated
+3. **Risk Reduction**: Progressive rollout allows for early detection of
+issues
+4. **Clear Dependencies**: Each batch builds on previous ones
+5. **Automated Discovery**: No manual test configuration required
+
+## ⚠️ Important Notes
+
+- **Merge Order**: This PR must be merged before any batch PRs
+- **Draft Management**: Batch PRs should remain in draft until
+predecessor is merged
+- **Testing**: Annotations automatically trigger testing when resources
+are merged
+- **Dependencies**: Each batch depends on all previous batches being
+merged
+
+## 🔗 Related PRs
+
+| Batch | PR | Status | Dependencies |
+|-------|----|---------|--------------| 
+| Foundation | [#32561](https://github.com/dotCMS/core/pull/32561) |
+**This PR** | None |
+| Batch 1 | [#32656](https://github.com/dotCMS/core/pull/32656) | Ready
+| This PR |
+| Batch 2 | [#32657](https://github.com/dotCMS/core/pull/32657) | Draft
+| Batch 1 |
+| Batch 3 | [#32658](https://github.com/dotCMS/core/pull/32658) | Draft
+| Batch 2 |
+| Batch 4 | [#32659](https://github.com/dotCMS/core/pull/32659) | Draft
+| Batch 3 |
+| Batch 5 | [#32660](https://github.com/dotCMS/core/pull/32660) | Draft
+| Batch 4 |
+| Batch 6 | [#32661](https://github.com/dotCMS/core/pull/32661) | Draft
+| Batch 5 |
+| Batch 7 | [#32662](https://github.com/dotCMS/core/pull/32662) | Draft
+| Batch 6 |
+| Batch 8 | [#32663](https://github.com/dotCMS/core/pull/32663) | Draft
+| Batch 7 |
+| Batch 9 | [#32664](https://github.com/dotCMS/core/pull/32664) | Draft
+| Batch 8 |
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+
+---------
+
+Co-authored-by: Claude <noreply@anthropic.com>",add
+9,https://github.com/dotCMS/core/pull/32656,Claude_Code,https://github.com/dotCMS/core/commit/af14b4a2c048df416c4952aa9b55eb50159019d3,"chore(backend): Add Jandex as a replacement for reflection scanning (#32868) (#32869)
+
+### Proposed Changes
+
+* **Added JandexClassMetadataScanner utility class**
+(`com.dotcms.util.JandexClassMetadataScanner`) providing
+high-performance class metadata scanning capabilities
+* **Configured Maven build** with Jandex dependency and plugin for
+automatic index generation
+* **Added comprehensive test coverage** for all scanner functionality
+including annotation scanning, class hierarchy analysis, and metadata
+access
+* **Created detailed documentation**
+(`docs/backend/JANDEX_METADATA_SCANNING.md`) with usage guidelines,
+performance benchmarks, and migration strategies
+
+This change is required for https://github.com/dotCMS/core/pull/32656
+but is provided as a generic component to help migration and improvement
+of existing and future reflection requirements. We were already
+generating the index file for use with CDI and ByteBuddy, this makes it
+available to our own code.
+
+   ### Key Features
+
+   **🚀 Performance Improvements:**
+   - **85-95% faster** annotation scanning compared to reflection
+   - **O(1) lookup performance** vs O(n) reflection scanning
+   - **Automatic fallback** to reflection when Jandex index unavailable
+
+   **�� Core Functionality:**
+   - Annotation scanning (find classes with specific annotations)
+   - Class hierarchy analysis (subclasses, interface implementations)
+   - Method and field metadata access
+   - Annotation value extraction (string, integer, etc.)
+   - Package filtering for targeted scanning
+
+   **🛡️ Robust Implementation:**
+   - Graceful degradation when Jandex unavailable
+   - Comprehensive error handling and logging
+   - Thread-safe singleton pattern
+   - Extensive unit test coverage
+
+   ### Technical Details
+
+   **Maven Configuration:**
+   - Added `io.smallrye:jandex` dependency (compile scope)
+   - Configured `jandex-maven-plugin` for automatic index generation
+   - Index generated at `META-INF/jandex.idx` during build
+
+   **API Examples:**
+   ```java
+   // Find REST endpoints with @Path annotation
+List<String> endpoints =
+JandexClassMetadataScanner.findClassesWithAnnotation(
+       \""javax.ws.rs.Path\"", \""com.dotcms.rest\""
+   );
+
+   // Check for @SwaggerCompliant annotation
+   boolean compliant = JandexClassMetadataScanner.hasClassAnnotation(
+       \""com.dotcms.rest.UserResource\"", 
+       \""com.dotcms.rest.annotation.SwaggerCompliant\""
+   );
+
+   // Extract annotation values
+Integer batchSize =
+JandexClassMetadataScanner.getClassAnnotationIntValue(
+       \""com.dotcms.rest.UserResource\"",
+       \""com.dotcms.rest.annotation.SwaggerCompliant\"", 
+       \""batch\""
+   );
+   ```
+
+   ### Migration Strategy
+
+   This implementation supports **progressive rollout**:
+   1. **Phase 1**: Infrastructure in place (✅ Complete)
+2. **Phase 2**: Migrate existing reflection-based scanning (🚧 Planned)
+   3. **Phase 3**: Performance optimization and monitoring
+
+   **Areas for future migration:**
+   - CDI bean discovery
+   - Plugin/extension scanning  
+   - JPA entity scanning
+   - REST endpoint discovery
+   - Interface implementation discovery
+
+   ### Checklist
+
+* ✅ **Tests**: Comprehensive unit tests covering all scanner
+functionality
+* ✅ **Documentation**: Detailed usage guide with examples and best
+practices
+* ✅ **Security Implications**: No security impact - read-only metadata
+access
+   * ✅ **Performance**: Significant performance improvements documented
+* ✅ **Backward Compatibility**: Automatic fallback to reflection ensures
+compatibility
+
+   ### Additional Info
+
+   **Closes #32868**
+
+This implementation provides the foundation for migrating slow
+reflection-based class scanning throughout the dotCMS codebase to
+high-performance Jandex-based scanning, with immediate benefits for REST
+endpoint compliance testing and future expansion to other areas
+requiring class metadata analysis.
+
+   **Performance Impact:**
+   - **REST endpoint scanning**: 85% faster
+   - **Plugin discovery**: 85% faster  
+   - **CDI bean scanning**: 75% faster
+   - **Interface implementation discovery**: 95% faster""",add
+10,https://github.com/dotCMS/core/pull/32657,Claude_Code,https://github.com/dotCMS/core/commit/a819a4512061af8f21a50c89c2810044136489c6,"chore(swagger): Add Swagger annotations Batch Testing Base (#32529) (#32561)
+
+## Summary
+This PR establishes the progressive testing infrastructure for
+Swagger/OpenAPI annotations implementation across 115 REST endpoints in
+dotCMS.
+
+***Note for reviewers.*** Most of the files in this PR add new view
+classes that are not yet used in this PR but are added in preparation
+and use of the individual Resource classes that we change in upcoming
+batches. We do not need to deeply review these new classes at this time
+as they will have no impact on functionality at this time.
+
+In these batches we can also look at the openapi.yml that now gets
+generated and included in the commit for any resource changes. In this
+PR it confirms we are only changing and adding tag descriptions
+providing the categories for the upcoming batch changes. The main part
+of this PR is the additional test changes which are set to identify
+using an annotation the upcoming changed resource files and will test
+them when updated. In this PR these will essentially skip and do
+nothing.
+
+## 🎯 Progressive Rollout Strategy
+This PR creates the foundation for a **9-batch progressive rollout** of
+Swagger annotations. The annotations will be added incrementally to make
+the large change manageable and allow for thorough testing at each
+stage.
+
+This first PR does not actually modify any or the resources. It provides
+the testing framework that will pick up the updated resources when they
+are added. It also adds a few underlying fixes and additional View
+classes that will be used by the updated Resource classes when they are
+added but on their own will have no impact.
+
+## 🔧 Infrastructure Components
+
+### 1. @SwaggerCompliant Annotation System
+- **File**:
+`dotCMS/src/main/java/com/dotcms/rest/annotation/SwaggerCompliant.java`
+- **Purpose**: Marks REST resource classes that have been updated with
+proper Swagger annotations
+- **Features**: 
+  - Batch numbering system (1-8)
+  - Version tracking
+  - Descriptive documentation
+
+### 2. Progressive Testing Framework
+- **Updated**: `RestEndpointAnnotationComplianceTest.java`
+- **Updated**: `RestEndpointAnnotationValidationTest.java`
+- **Feature**: Automatic class discovery based on `@SwaggerCompliant`
+annotations
+- **Benefit**: Tests automatically include newly annotated classes when
+PRs are merged
+
+### 3. Cumulative Testing Support
+```bash
+# Test only classes from batches 1-3 (cumulative)
+./mvnw test -pl :dotcms-core -Dtest=RestEndpointAnnotationComplianceTest -Dtest.batch.max=3
+
+# Test all annotated classes (when annotation is present)
+./mvnw test -pl :dotcms-core -Dtest=RestEndpointAnnotationComplianceTest
+```
+
+## 📊 Batch Organization (115 REST Resources)
+
+### Batch 1: Core Authentication & User Management (15 classes)
+**PR**: [#32656](https://github.com/dotCMS/core/pull/32656) - **Ready
+for review**
+- Essential authentication and user management APIs
+- Foundation for all other batches
+
+### Batch 2: Content Management Core (14 classes)
+**PR**: [#32657](https://github.com/dotCMS/core/pull/32657) - **Draft**
+- Content CRUD operations, versioning, relationships
+- Content types and field management
+
+### Batch 3: Site Architecture & Templates (14 classes)
+**PR**: [#32658](https://github.com/dotCMS/core/pull/32658) - **Draft**
+- Site management, templates, containers
+- File and asset management
+
+### Batch 4: System Administration (15 classes)
+**PR**: [#32659](https://github.com/dotCMS/core/pull/32659) - **Draft**
+- System configuration and monitoring
+- Infrastructure management
+
+### Batch 5: Publishing & Distribution (13 classes)
+**PR**: [#32660](https://github.com/dotCMS/core/pull/32660) - **Draft**
+- Publishing workflows and bundle management
+- Environment and maintenance operations
+
+### Batch 6: Rules Engine & Business Logic (14 classes)
+**PR**: [#32661](https://github.com/dotCMS/core/pull/32661) - **Draft**
+- Rules engine components
+- Business logic and application management
+
+### Batch 7: Modern APIs & Specialized Services (17 classes)
+**PR**: [#32662](https://github.com/dotCMS/core/pull/32662) - **Draft**
+- AI services and modern APIs
+- Specialized content and analytics
+
+### Batch 8: Legacy & Utility Resources (13 classes)
+**PR**: [#32663](https://github.com/dotCMS/core/pull/32663) - **Draft**
+- Legacy APIs and utility functions
+- Remaining miscellaneous resources
+
+### Batch 9: Cleanup and Finalization
+**PR**: [#32664](https://github.com/dotCMS/core/pull/32664) - **Draft**
+- Remove temporary testing infrastructure
+- Final cleanup and production readiness
+
+## 🔄 Automatic Testing Integration
+
+**Key Feature**: When annotations are added to REST resources, they
+**automatically trigger testing** of those resources when the PRs are
+merged.
+
+- ✅ **Before annotation**: Resource is not tested by compliance tests
+- ✅ **After annotation**: Resource is automatically discovered and
+tested
+- ✅ **Cumulative**: Tests run against all previously annotated resources
+plus new ones
+
+This ensures that:
+1. No manual test configuration is needed
+2. Tests grow organically as annotations are added
+3. Full compliance is verified incrementally
+4. No regression in previously annotated resources
+
+## 📋 Rollout Process
+
+### Phase 1: Foundation (This PR)
+1. **Merge this PR first** - Establishes the infrastructure
+2. Sets up progressive testing framework
+3. Creates annotation system for batch management
+
+### Phase 2: Progressive Rollout (Batches 1-8)
+1. **Batch 1** (#32656) - Ready for review after this PR is merged
+2. **Batch 2** (#32657) - Remove draft state ONLY after Batch 1 is
+merged
+3. **Batch 3** (#32658) - Remove draft state ONLY after Batch 2 is
+merged
+4. **Batch 4** (#32659) - Remove draft state ONLY after Batch 3 is
+merged
+5. **Batch 5** (#32660) - Remove draft state ONLY after Batch 4 is
+merged
+6. **Batch 6** (#32661) - Remove draft state ONLY after Batch 5 is
+merged
+7. **Batch 7** (#32662) - Remove draft state ONLY after Batch 6 is
+merged
+8. **Batch 8** (#32663) - Remove draft state ONLY after Batch 7 is
+merged
+
+### Phase 3: Finalization (Batch 9)
+1. **Batch 9** (#32664) - Remove draft state ONLY after Batch 8 is
+merged
+2. Clean up temporary infrastructure
+3. Complete the implementation
+
+## 🧪 Testing Strategy
+
+### During Rollout
+Each batch PR includes comprehensive testing:
+```bash
+# Test cumulative batches (e.g., for Batch 3)
+./mvnw test -pl :dotcms-core -Dtest=RestEndpointAnnotationComplianceTest -Dtest.batch.max=3
+```
+
+### After Completion
+All tests run against all endpoints automatically:
+```bash
+# No batch filtering needed - all annotated resources tested
+./mvnw test -pl :dotcms-core -Dtest=RestEndpointAnnotationComplianceTest
+```
+
+## 📝 Documentation
+
+### Batch Documentation
+- **File**: `SWAGGER_COMPLIANT_BATCHES.md`
+- **Contains**: Detailed breakdown of all 115 resources across 8 batches
+- **Usage**: Reference for understanding batch organization and testing
+
+### Verification Tests
+- **File**: `SwaggerCompliantAnnotationTest.java`
+- **File**: `SwaggerCompliantBatchTest.java`
+- **Purpose**: Validate annotation structure and batch organization
+
+## 🎯 Benefits
+
+1. **Manageable Change Size**: 115 resources split into 8 logical
+batches
+2. **Incremental Testing**: Tests automatically include new resources as
+they're annotated
+3. **Risk Reduction**: Progressive rollout allows for early detection of
+issues
+4. **Clear Dependencies**: Each batch builds on previous ones
+5. **Automated Discovery**: No manual test configuration required
+
+## ⚠️ Important Notes
+
+- **Merge Order**: This PR must be merged before any batch PRs
+- **Draft Management**: Batch PRs should remain in draft until
+predecessor is merged
+- **Testing**: Annotations automatically trigger testing when resources
+are merged
+- **Dependencies**: Each batch depends on all previous batches being
+merged
+
+## 🔗 Related PRs
+
+| Batch | PR | Status | Dependencies |
+|-------|----|---------|--------------| 
+| Foundation | [#32561](https://github.com/dotCMS/core/pull/32561) |
+**This PR** | None |
+| Batch 1 | [#32656](https://github.com/dotCMS/core/pull/32656) | Ready
+| This PR |
+| Batch 2 | [#32657](https://github.com/dotCMS/core/pull/32657) | Draft
+| Batch 1 |
+| Batch 3 | [#32658](https://github.com/dotCMS/core/pull/32658) | Draft
+| Batch 2 |
+| Batch 4 | [#32659](https://github.com/dotCMS/core/pull/32659) | Draft
+| Batch 3 |
+| Batch 5 | [#32660](https://github.com/dotCMS/core/pull/32660) | Draft
+| Batch 4 |
+| Batch 6 | [#32661](https://github.com/dotCMS/core/pull/32661) | Draft
+| Batch 5 |
+| Batch 7 | [#32662](https://github.com/dotCMS/core/pull/32662) | Draft
+| Batch 6 |
+| Batch 8 | [#32663](https://github.com/dotCMS/core/pull/32663) | Draft
+| Batch 7 |
+| Batch 9 | [#32664](https://github.com/dotCMS/core/pull/32664) | Draft
+| Batch 8 |
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+
+---------
+
+Co-authored-by: Claude <noreply@anthropic.com>",add
+11,https://github.com/dotCMS/core/pull/32658,Claude_Code,https://github.com/dotCMS/core/commit/a819a4512061af8f21a50c89c2810044136489c6,"chore(swagger): Add Swagger annotations Batch Testing Base (#32529) (#32561)
+
+## Summary
+This PR establishes the progressive testing infrastructure for
+Swagger/OpenAPI annotations implementation across 115 REST endpoints in
+dotCMS.
+
+***Note for reviewers.*** Most of the files in this PR add new view
+classes that are not yet used in this PR but are added in preparation
+and use of the individual Resource classes that we change in upcoming
+batches. We do not need to deeply review these new classes at this time
+as they will have no impact on functionality at this time.
+
+In these batches we can also look at the openapi.yml that now gets
+generated and included in the commit for any resource changes. In this
+PR it confirms we are only changing and adding tag descriptions
+providing the categories for the upcoming batch changes. The main part
+of this PR is the additional test changes which are set to identify
+using an annotation the upcoming changed resource files and will test
+them when updated. In this PR these will essentially skip and do
+nothing.
+
+## 🎯 Progressive Rollout Strategy
+This PR creates the foundation for a **9-batch progressive rollout** of
+Swagger annotations. The annotations will be added incrementally to make
+the large change manageable and allow for thorough testing at each
+stage.
+
+This first PR does not actually modify any or the resources. It provides
+the testing framework that will pick up the updated resources when they
+are added. It also adds a few underlying fixes and additional View
+classes that will be used by the updated Resource classes when they are
+added but on their own will have no impact.
+
+## 🔧 Infrastructure Components
+
+### 1. @SwaggerCompliant Annotation System
+- **File**:
+`dotCMS/src/main/java/com/dotcms/rest/annotation/SwaggerCompliant.java`
+- **Purpose**: Marks REST resource classes that have been updated with
+proper Swagger annotations
+- **Features**: 
+  - Batch numbering system (1-8)
+  - Version tracking
+  - Descriptive documentation
+
+### 2. Progressive Testing Framework
+- **Updated**: `RestEndpointAnnotationComplianceTest.java`
+- **Updated**: `RestEndpointAnnotationValidationTest.java`
+- **Feature**: Automatic class discovery based on `@SwaggerCompliant`
+annotations
+- **Benefit**: Tests automatically include newly annotated classes when
+PRs are merged
+
+### 3. Cumulative Testing Support
+```bash
+# Test only classes from batches 1-3 (cumulative)
+./mvnw test -pl :dotcms-core -Dtest=RestEndpointAnnotationComplianceTest -Dtest.batch.max=3
+
+# Test all annotated classes (when annotation is present)
+./mvnw test -pl :dotcms-core -Dtest=RestEndpointAnnotationComplianceTest
+```
+
+## 📊 Batch Organization (115 REST Resources)
+
+### Batch 1: Core Authentication & User Management (15 classes)
+**PR**: [#32656](https://github.com/dotCMS/core/pull/32656) - **Ready
+for review**
+- Essential authentication and user management APIs
+- Foundation for all other batches
+
+### Batch 2: Content Management Core (14 classes)
+**PR**: [#32657](https://github.com/dotCMS/core/pull/32657) - **Draft**
+- Content CRUD operations, versioning, relationships
+- Content types and field management
+
+### Batch 3: Site Architecture & Templates (14 classes)
+**PR**: [#32658](https://github.com/dotCMS/core/pull/32658) - **Draft**
+- Site management, templates, containers
+- File and asset management
+
+### Batch 4: System Administration (15 classes)
+**PR**: [#32659](https://github.com/dotCMS/core/pull/32659) - **Draft**
+- System configuration and monitoring
+- Infrastructure management
+
+### Batch 5: Publishing & Distribution (13 classes)
+**PR**: [#32660](https://github.com/dotCMS/core/pull/32660) - **Draft**
+- Publishing workflows and bundle management
+- Environment and maintenance operations
+
+### Batch 6: Rules Engine & Business Logic (14 classes)
+**PR**: [#32661](https://github.com/dotCMS/core/pull/32661) - **Draft**
+- Rules engine components
+- Business logic and application management
+
+### Batch 7: Modern APIs & Specialized Services (17 classes)
+**PR**: [#32662](https://github.com/dotCMS/core/pull/32662) - **Draft**
+- AI services and modern APIs
+- Specialized content and analytics
+
+### Batch 8: Legacy & Utility Resources (13 classes)
+**PR**: [#32663](https://github.com/dotCMS/core/pull/32663) - **Draft**
+- Legacy APIs and utility functions
+- Remaining miscellaneous resources
+
+### Batch 9: Cleanup and Finalization
+**PR**: [#32664](https://github.com/dotCMS/core/pull/32664) - **Draft**
+- Remove temporary testing infrastructure
+- Final cleanup and production readiness
+
+## 🔄 Automatic Testing Integration
+
+**Key Feature**: When annotations are added to REST resources, they
+**automatically trigger testing** of those resources when the PRs are
+merged.
+
+- ✅ **Before annotation**: Resource is not tested by compliance tests
+- ✅ **After annotation**: Resource is automatically discovered and
+tested
+- ✅ **Cumulative**: Tests run against all previously annotated resources
+plus new ones
+
+This ensures that:
+1. No manual test configuration is needed
+2. Tests grow organically as annotations are added
+3. Full compliance is verified incrementally
+4. No regression in previously annotated resources
+
+## 📋 Rollout Process
+
+### Phase 1: Foundation (This PR)
+1. **Merge this PR first** - Establishes the infrastructure
+2. Sets up progressive testing framework
+3. Creates annotation system for batch management
+
+### Phase 2: Progressive Rollout (Batches 1-8)
+1. **Batch 1** (#32656) - Ready for review after this PR is merged
+2. **Batch 2** (#32657) - Remove draft state ONLY after Batch 1 is
+merged
+3. **Batch 3** (#32658) - Remove draft state ONLY after Batch 2 is
+merged
+4. **Batch 4** (#32659) - Remove draft state ONLY after Batch 3 is
+merged
+5. **Batch 5** (#32660) - Remove draft state ONLY after Batch 4 is
+merged
+6. **Batch 6** (#32661) - Remove draft state ONLY after Batch 5 is
+merged
+7. **Batch 7** (#32662) - Remove draft state ONLY after Batch 6 is
+merged
+8. **Batch 8** (#32663) - Remove draft state ONLY after Batch 7 is
+merged
+
+### Phase 3: Finalization (Batch 9)
+1. **Batch 9** (#32664) - Remove draft state ONLY after Batch 8 is
+merged
+2. Clean up temporary infrastructure
+3. Complete the implementation
+
+## 🧪 Testing Strategy
+
+### During Rollout
+Each batch PR includes comprehensive testing:
+```bash
+# Test cumulative batches (e.g., for Batch 3)
+./mvnw test -pl :dotcms-core -Dtest=RestEndpointAnnotationComplianceTest -Dtest.batch.max=3
+```
+
+### After Completion
+All tests run against all endpoints automatically:
+```bash
+# No batch filtering needed - all annotated resources tested
+./mvnw test -pl :dotcms-core -Dtest=RestEndpointAnnotationComplianceTest
+```
+
+## 📝 Documentation
+
+### Batch Documentation
+- **File**: `SWAGGER_COMPLIANT_BATCHES.md`
+- **Contains**: Detailed breakdown of all 115 resources across 8 batches
+- **Usage**: Reference for understanding batch organization and testing
+
+### Verification Tests
+- **File**: `SwaggerCompliantAnnotationTest.java`
+- **File**: `SwaggerCompliantBatchTest.java`
+- **Purpose**: Validate annotation structure and batch organization
+
+## 🎯 Benefits
+
+1. **Manageable Change Size**: 115 resources split into 8 logical
+batches
+2. **Incremental Testing**: Tests automatically include new resources as
+they're annotated
+3. **Risk Reduction**: Progressive rollout allows for early detection of
+issues
+4. **Clear Dependencies**: Each batch builds on previous ones
+5. **Automated Discovery**: No manual test configuration required
+
+## ⚠️ Important Notes
+
+- **Merge Order**: This PR must be merged before any batch PRs
+- **Draft Management**: Batch PRs should remain in draft until
+predecessor is merged
+- **Testing**: Annotations automatically trigger testing when resources
+are merged
+- **Dependencies**: Each batch depends on all previous batches being
+merged
+
+## 🔗 Related PRs
+
+| Batch | PR | Status | Dependencies |
+|-------|----|---------|--------------| 
+| Foundation | [#32561](https://github.com/dotCMS/core/pull/32561) |
+**This PR** | None |
+| Batch 1 | [#32656](https://github.com/dotCMS/core/pull/32656) | Ready
+| This PR |
+| Batch 2 | [#32657](https://github.com/dotCMS/core/pull/32657) | Draft
+| Batch 1 |
+| Batch 3 | [#32658](https://github.com/dotCMS/core/pull/32658) | Draft
+| Batch 2 |
+| Batch 4 | [#32659](https://github.com/dotCMS/core/pull/32659) | Draft
+| Batch 3 |
+| Batch 5 | [#32660](https://github.com/dotCMS/core/pull/32660) | Draft
+| Batch 4 |
+| Batch 6 | [#32661](https://github.com/dotCMS/core/pull/32661) | Draft
+| Batch 5 |
+| Batch 7 | [#32662](https://github.com/dotCMS/core/pull/32662) | Draft
+| Batch 6 |
+| Batch 8 | [#32663](https://github.com/dotCMS/core/pull/32663) | Draft
+| Batch 7 |
+| Batch 9 | [#32664](https://github.com/dotCMS/core/pull/32664) | Draft
+| Batch 8 |
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+
+---------
+
+Co-authored-by: Claude <noreply@anthropic.com>",add
+12,https://github.com/dotCMS/core/pull/32659,Claude_Code,https://github.com/dotCMS/core/commit/a819a4512061af8f21a50c89c2810044136489c6,"chore(swagger): Add Swagger annotations Batch Testing Base (#32529) (#32561)
+
+## Summary
+This PR establishes the progressive testing infrastructure for
+Swagger/OpenAPI annotations implementation across 115 REST endpoints in
+dotCMS.
+
+***Note for reviewers.*** Most of the files in this PR add new view
+classes that are not yet used in this PR but are added in preparation
+and use of the individual Resource classes that we change in upcoming
+batches. We do not need to deeply review these new classes at this time
+as they will have no impact on functionality at this time.
+
+In these batches we can also look at the openapi.yml that now gets
+generated and included in the commit for any resource changes. In this
+PR it confirms we are only changing and adding tag descriptions
+providing the categories for the upcoming batch changes. The main part
+of this PR is the additional test changes which are set to identify
+using an annotation the upcoming changed resource files and will test
+them when updated. In this PR these will essentially skip and do
+nothing.
+
+## 🎯 Progressive Rollout Strategy
+This PR creates the foundation for a **9-batch progressive rollout** of
+Swagger annotations. The annotations will be added incrementally to make
+the large change manageable and allow for thorough testing at each
+stage.
+
+This first PR does not actually modify any or the resources. It provides
+the testing framework that will pick up the updated resources when they
+are added. It also adds a few underlying fixes and additional View
+classes that will be used by the updated Resource classes when they are
+added but on their own will have no impact.
+
+## 🔧 Infrastructure Components
+
+### 1. @SwaggerCompliant Annotation System
+- **File**:
+`dotCMS/src/main/java/com/dotcms/rest/annotation/SwaggerCompliant.java`
+- **Purpose**: Marks REST resource classes that have been updated with
+proper Swagger annotations
+- **Features**: 
+  - Batch numbering system (1-8)
+  - Version tracking
+  - Descriptive documentation
+
+### 2. Progressive Testing Framework
+- **Updated**: `RestEndpointAnnotationComplianceTest.java`
+- **Updated**: `RestEndpointAnnotationValidationTest.java`
+- **Feature**: Automatic class discovery based on `@SwaggerCompliant`
+annotations
+- **Benefit**: Tests automatically include newly annotated classes when
+PRs are merged
+
+### 3. Cumulative Testing Support
+```bash
+# Test only classes from batches 1-3 (cumulative)
+./mvnw test -pl :dotcms-core -Dtest=RestEndpointAnnotationComplianceTest -Dtest.batch.max=3
+
+# Test all annotated classes (when annotation is present)
+./mvnw test -pl :dotcms-core -Dtest=RestEndpointAnnotationComplianceTest
+```
+
+## 📊 Batch Organization (115 REST Resources)
+
+### Batch 1: Core Authentication & User Management (15 classes)
+**PR**: [#32656](https://github.com/dotCMS/core/pull/32656) - **Ready
+for review**
+- Essential authentication and user management APIs
+- Foundation for all other batches
+
+### Batch 2: Content Management Core (14 classes)
+**PR**: [#32657](https://github.com/dotCMS/core/pull/32657) - **Draft**
+- Content CRUD operations, versioning, relationships
+- Content types and field management
+
+### Batch 3: Site Architecture & Templates (14 classes)
+**PR**: [#32658](https://github.com/dotCMS/core/pull/32658) - **Draft**
+- Site management, templates, containers
+- File and asset management
+
+### Batch 4: System Administration (15 classes)
+**PR**: [#32659](https://github.com/dotCMS/core/pull/32659) - **Draft**
+- System configuration and monitoring
+- Infrastructure management
+
+### Batch 5: Publishing & Distribution (13 classes)
+**PR**: [#32660](https://github.com/dotCMS/core/pull/32660) - **Draft**
+- Publishing workflows and bundle management
+- Environment and maintenance operations
+
+### Batch 6: Rules Engine & Business Logic (14 classes)
+**PR**: [#32661](https://github.com/dotCMS/core/pull/32661) - **Draft**
+- Rules engine components
+- Business logic and application management
+
+### Batch 7: Modern APIs & Specialized Services (17 classes)
+**PR**: [#32662](https://github.com/dotCMS/core/pull/32662) - **Draft**
+- AI services and modern APIs
+- Specialized content and analytics
+
+### Batch 8: Legacy & Utility Resources (13 classes)
+**PR**: [#32663](https://github.com/dotCMS/core/pull/32663) - **Draft**
+- Legacy APIs and utility functions
+- Remaining miscellaneous resources
+
+### Batch 9: Cleanup and Finalization
+**PR**: [#32664](https://github.com/dotCMS/core/pull/32664) - **Draft**
+- Remove temporary testing infrastructure
+- Final cleanup and production readiness
+
+## 🔄 Automatic Testing Integration
+
+**Key Feature**: When annotations are added to REST resources, they
+**automatically trigger testing** of those resources when the PRs are
+merged.
+
+- ✅ **Before annotation**: Resource is not tested by compliance tests
+- ✅ **After annotation**: Resource is automatically discovered and
+tested
+- ✅ **Cumulative**: Tests run against all previously annotated resources
+plus new ones
+
+This ensures that:
+1. No manual test configuration is needed
+2. Tests grow organically as annotations are added
+3. Full compliance is verified incrementally
+4. No regression in previously annotated resources
+
+## 📋 Rollout Process
+
+### Phase 1: Foundation (This PR)
+1. **Merge this PR first** - Establishes the infrastructure
+2. Sets up progressive testing framework
+3. Creates annotation system for batch management
+
+### Phase 2: Progressive Rollout (Batches 1-8)
+1. **Batch 1** (#32656) - Ready for review after this PR is merged
+2. **Batch 2** (#32657) - Remove draft state ONLY after Batch 1 is
+merged
+3. **Batch 3** (#32658) - Remove draft state ONLY after Batch 2 is
+merged
+4. **Batch 4** (#32659) - Remove draft state ONLY after Batch 3 is
+merged
+5. **Batch 5** (#32660) - Remove draft state ONLY after Batch 4 is
+merged
+6. **Batch 6** (#32661) - Remove draft state ONLY after Batch 5 is
+merged
+7. **Batch 7** (#32662) - Remove draft state ONLY after Batch 6 is
+merged
+8. **Batch 8** (#32663) - Remove draft state ONLY after Batch 7 is
+merged
+
+### Phase 3: Finalization (Batch 9)
+1. **Batch 9** (#32664) - Remove draft state ONLY after Batch 8 is
+merged
+2. Clean up temporary infrastructure
+3. Complete the implementation
+
+## 🧪 Testing Strategy
+
+### During Rollout
+Each batch PR includes comprehensive testing:
+```bash
+# Test cumulative batches (e.g., for Batch 3)
+./mvnw test -pl :dotcms-core -Dtest=RestEndpointAnnotationComplianceTest -Dtest.batch.max=3
+```
+
+### After Completion
+All tests run against all endpoints automatically:
+```bash
+# No batch filtering needed - all annotated resources tested
+./mvnw test -pl :dotcms-core -Dtest=RestEndpointAnnotationComplianceTest
+```
+
+## 📝 Documentation
+
+### Batch Documentation
+- **File**: `SWAGGER_COMPLIANT_BATCHES.md`
+- **Contains**: Detailed breakdown of all 115 resources across 8 batches
+- **Usage**: Reference for understanding batch organization and testing
+
+### Verification Tests
+- **File**: `SwaggerCompliantAnnotationTest.java`
+- **File**: `SwaggerCompliantBatchTest.java`
+- **Purpose**: Validate annotation structure and batch organization
+
+## 🎯 Benefits
+
+1. **Manageable Change Size**: 115 resources split into 8 logical
+batches
+2. **Incremental Testing**: Tests automatically include new resources as
+they're annotated
+3. **Risk Reduction**: Progressive rollout allows for early detection of
+issues
+4. **Clear Dependencies**: Each batch builds on previous ones
+5. **Automated Discovery**: No manual test configuration required
+
+## ⚠️ Important Notes
+
+- **Merge Order**: This PR must be merged before any batch PRs
+- **Draft Management**: Batch PRs should remain in draft until
+predecessor is merged
+- **Testing**: Annotations automatically trigger testing when resources
+are merged
+- **Dependencies**: Each batch depends on all previous batches being
+merged
+
+## 🔗 Related PRs
+
+| Batch | PR | Status | Dependencies |
+|-------|----|---------|--------------| 
+| Foundation | [#32561](https://github.com/dotCMS/core/pull/32561) |
+**This PR** | None |
+| Batch 1 | [#32656](https://github.com/dotCMS/core/pull/32656) | Ready
+| This PR |
+| Batch 2 | [#32657](https://github.com/dotCMS/core/pull/32657) | Draft
+| Batch 1 |
+| Batch 3 | [#32658](https://github.com/dotCMS/core/pull/32658) | Draft
+| Batch 2 |
+| Batch 4 | [#32659](https://github.com/dotCMS/core/pull/32659) | Draft
+| Batch 3 |
+| Batch 5 | [#32660](https://github.com/dotCMS/core/pull/32660) | Draft
+| Batch 4 |
+| Batch 6 | [#32661](https://github.com/dotCMS/core/pull/32661) | Draft
+| Batch 5 |
+| Batch 7 | [#32662](https://github.com/dotCMS/core/pull/32662) | Draft
+| Batch 6 |
+| Batch 8 | [#32663](https://github.com/dotCMS/core/pull/32663) | Draft
+| Batch 7 |
+| Batch 9 | [#32664](https://github.com/dotCMS/core/pull/32664) | Draft
+| Batch 8 |
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+
+---------
+
+Co-authored-by: Claude <noreply@anthropic.com>",add
+13,https://github.com/dotCMS/core/pull/32660,Claude_Code,https://github.com/dotCMS/core/commit/a819a4512061af8f21a50c89c2810044136489c6,"chore(swagger): Add Swagger annotations Batch Testing Base (#32529) (#32561)
+
+## Summary
+This PR establishes the progressive testing infrastructure for
+Swagger/OpenAPI annotations implementation across 115 REST endpoints in
+dotCMS.
+
+***Note for reviewers.*** Most of the files in this PR add new view
+classes that are not yet used in this PR but are added in preparation
+and use of the individual Resource classes that we change in upcoming
+batches. We do not need to deeply review these new classes at this time
+as they will have no impact on functionality at this time.
+
+In these batches we can also look at the openapi.yml that now gets
+generated and included in the commit for any resource changes. In this
+PR it confirms we are only changing and adding tag descriptions
+providing the categories for the upcoming batch changes. The main part
+of this PR is the additional test changes which are set to identify
+using an annotation the upcoming changed resource files and will test
+them when updated. In this PR these will essentially skip and do
+nothing.
+
+## 🎯 Progressive Rollout Strategy
+This PR creates the foundation for a **9-batch progressive rollout** of
+Swagger annotations. The annotations will be added incrementally to make
+the large change manageable and allow for thorough testing at each
+stage.
+
+This first PR does not actually modify any or the resources. It provides
+the testing framework that will pick up the updated resources when they
+are added. It also adds a few underlying fixes and additional View
+classes that will be used by the updated Resource classes when they are
+added but on their own will have no impact.
+
+## 🔧 Infrastructure Components
+
+### 1. @SwaggerCompliant Annotation System
+- **File**:
+`dotCMS/src/main/java/com/dotcms/rest/annotation/SwaggerCompliant.java`
+- **Purpose**: Marks REST resource classes that have been updated with
+proper Swagger annotations
+- **Features**: 
+  - Batch numbering system (1-8)
+  - Version tracking
+  - Descriptive documentation
+
+### 2. Progressive Testing Framework
+- **Updated**: `RestEndpointAnnotationComplianceTest.java`
+- **Updated**: `RestEndpointAnnotationValidationTest.java`
+- **Feature**: Automatic class discovery based on `@SwaggerCompliant`
+annotations
+- **Benefit**: Tests automatically include newly annotated classes when
+PRs are merged
+
+### 3. Cumulative Testing Support
+```bash
+# Test only classes from batches 1-3 (cumulative)
+./mvnw test -pl :dotcms-core -Dtest=RestEndpointAnnotationComplianceTest -Dtest.batch.max=3
+
+# Test all annotated classes (when annotation is present)
+./mvnw test -pl :dotcms-core -Dtest=RestEndpointAnnotationComplianceTest
+```
+
+## 📊 Batch Organization (115 REST Resources)
+
+### Batch 1: Core Authentication & User Management (15 classes)
+**PR**: [#32656](https://github.com/dotCMS/core/pull/32656) - **Ready
+for review**
+- Essential authentication and user management APIs
+- Foundation for all other batches
+
+### Batch 2: Content Management Core (14 classes)
+**PR**: [#32657](https://github.com/dotCMS/core/pull/32657) - **Draft**
+- Content CRUD operations, versioning, relationships
+- Content types and field management
+
+### Batch 3: Site Architecture & Templates (14 classes)
+**PR**: [#32658](https://github.com/dotCMS/core/pull/32658) - **Draft**
+- Site management, templates, containers
+- File and asset management
+
+### Batch 4: System Administration (15 classes)
+**PR**: [#32659](https://github.com/dotCMS/core/pull/32659) - **Draft**
+- System configuration and monitoring
+- Infrastructure management
+
+### Batch 5: Publishing & Distribution (13 classes)
+**PR**: [#32660](https://github.com/dotCMS/core/pull/32660) - **Draft**
+- Publishing workflows and bundle management
+- Environment and maintenance operations
+
+### Batch 6: Rules Engine & Business Logic (14 classes)
+**PR**: [#32661](https://github.com/dotCMS/core/pull/32661) - **Draft**
+- Rules engine components
+- Business logic and application management
+
+### Batch 7: Modern APIs & Specialized Services (17 classes)
+**PR**: [#32662](https://github.com/dotCMS/core/pull/32662) - **Draft**
+- AI services and modern APIs
+- Specialized content and analytics
+
+### Batch 8: Legacy & Utility Resources (13 classes)
+**PR**: [#32663](https://github.com/dotCMS/core/pull/32663) - **Draft**
+- Legacy APIs and utility functions
+- Remaining miscellaneous resources
+
+### Batch 9: Cleanup and Finalization
+**PR**: [#32664](https://github.com/dotCMS/core/pull/32664) - **Draft**
+- Remove temporary testing infrastructure
+- Final cleanup and production readiness
+
+## 🔄 Automatic Testing Integration
+
+**Key Feature**: When annotations are added to REST resources, they
+**automatically trigger testing** of those resources when the PRs are
+merged.
+
+- ✅ **Before annotation**: Resource is not tested by compliance tests
+- ✅ **After annotation**: Resource is automatically discovered and
+tested
+- ✅ **Cumulative**: Tests run against all previously annotated resources
+plus new ones
+
+This ensures that:
+1. No manual test configuration is needed
+2. Tests grow organically as annotations are added
+3. Full compliance is verified incrementally
+4. No regression in previously annotated resources
+
+## 📋 Rollout Process
+
+### Phase 1: Foundation (This PR)
+1. **Merge this PR first** - Establishes the infrastructure
+2. Sets up progressive testing framework
+3. Creates annotation system for batch management
+
+### Phase 2: Progressive Rollout (Batches 1-8)
+1. **Batch 1** (#32656) - Ready for review after this PR is merged
+2. **Batch 2** (#32657) - Remove draft state ONLY after Batch 1 is
+merged
+3. **Batch 3** (#32658) - Remove draft state ONLY after Batch 2 is
+merged
+4. **Batch 4** (#32659) - Remove draft state ONLY after Batch 3 is
+merged
+5. **Batch 5** (#32660) - Remove draft state ONLY after Batch 4 is
+merged
+6. **Batch 6** (#32661) - Remove draft state ONLY after Batch 5 is
+merged
+7. **Batch 7** (#32662) - Remove draft state ONLY after Batch 6 is
+merged
+8. **Batch 8** (#32663) - Remove draft state ONLY after Batch 7 is
+merged
+
+### Phase 3: Finalization (Batch 9)
+1. **Batch 9** (#32664) - Remove draft state ONLY after Batch 8 is
+merged
+2. Clean up temporary infrastructure
+3. Complete the implementation
+
+## 🧪 Testing Strategy
+
+### During Rollout
+Each batch PR includes comprehensive testing:
+```bash
+# Test cumulative batches (e.g., for Batch 3)
+./mvnw test -pl :dotcms-core -Dtest=RestEndpointAnnotationComplianceTest -Dtest.batch.max=3
+```
+
+### After Completion
+All tests run against all endpoints automatically:
+```bash
+# No batch filtering needed - all annotated resources tested
+./mvnw test -pl :dotcms-core -Dtest=RestEndpointAnnotationComplianceTest
+```
+
+## 📝 Documentation
+
+### Batch Documentation
+- **File**: `SWAGGER_COMPLIANT_BATCHES.md`
+- **Contains**: Detailed breakdown of all 115 resources across 8 batches
+- **Usage**: Reference for understanding batch organization and testing
+
+### Verification Tests
+- **File**: `SwaggerCompliantAnnotationTest.java`
+- **File**: `SwaggerCompliantBatchTest.java`
+- **Purpose**: Validate annotation structure and batch organization
+
+## 🎯 Benefits
+
+1. **Manageable Change Size**: 115 resources split into 8 logical
+batches
+2. **Incremental Testing**: Tests automatically include new resources as
+they're annotated
+3. **Risk Reduction**: Progressive rollout allows for early detection of
+issues
+4. **Clear Dependencies**: Each batch builds on previous ones
+5. **Automated Discovery**: No manual test configuration required
+
+## ⚠️ Important Notes
+
+- **Merge Order**: This PR must be merged before any batch PRs
+- **Draft Management**: Batch PRs should remain in draft until
+predecessor is merged
+- **Testing**: Annotations automatically trigger testing when resources
+are merged
+- **Dependencies**: Each batch depends on all previous batches being
+merged
+
+## 🔗 Related PRs
+
+| Batch | PR | Status | Dependencies |
+|-------|----|---------|--------------| 
+| Foundation | [#32561](https://github.com/dotCMS/core/pull/32561) |
+**This PR** | None |
+| Batch 1 | [#32656](https://github.com/dotCMS/core/pull/32656) | Ready
+| This PR |
+| Batch 2 | [#32657](https://github.com/dotCMS/core/pull/32657) | Draft
+| Batch 1 |
+| Batch 3 | [#32658](https://github.com/dotCMS/core/pull/32658) | Draft
+| Batch 2 |
+| Batch 4 | [#32659](https://github.com/dotCMS/core/pull/32659) | Draft
+| Batch 3 |
+| Batch 5 | [#32660](https://github.com/dotCMS/core/pull/32660) | Draft
+| Batch 4 |
+| Batch 6 | [#32661](https://github.com/dotCMS/core/pull/32661) | Draft
+| Batch 5 |
+| Batch 7 | [#32662](https://github.com/dotCMS/core/pull/32662) | Draft
+| Batch 6 |
+| Batch 8 | [#32663](https://github.com/dotCMS/core/pull/32663) | Draft
+| Batch 7 |
+| Batch 9 | [#32664](https://github.com/dotCMS/core/pull/32664) | Draft
+| Batch 8 |
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+
+---------
+
+Co-authored-by: Claude <noreply@anthropic.com>",add
+14,https://github.com/dotCMS/core/pull/32661,Claude_Code,https://github.com/dotCMS/core/commit/a819a4512061af8f21a50c89c2810044136489c6,"chore(swagger): Add Swagger annotations Batch Testing Base (#32529) (#32561)
+
+## Summary
+This PR establishes the progressive testing infrastructure for
+Swagger/OpenAPI annotations implementation across 115 REST endpoints in
+dotCMS.
+
+***Note for reviewers.*** Most of the files in this PR add new view
+classes that are not yet used in this PR but are added in preparation
+and use of the individual Resource classes that we change in upcoming
+batches. We do not need to deeply review these new classes at this time
+as they will have no impact on functionality at this time.
+
+In these batches we can also look at the openapi.yml that now gets
+generated and included in the commit for any resource changes. In this
+PR it confirms we are only changing and adding tag descriptions
+providing the categories for the upcoming batch changes. The main part
+of this PR is the additional test changes which are set to identify
+using an annotation the upcoming changed resource files and will test
+them when updated. In this PR these will essentially skip and do
+nothing.
+
+## 🎯 Progressive Rollout Strategy
+This PR creates the foundation for a **9-batch progressive rollout** of
+Swagger annotations. The annotations will be added incrementally to make
+the large change manageable and allow for thorough testing at each
+stage.
+
+This first PR does not actually modify any or the resources. It provides
+the testing framework that will pick up the updated resources when they
+are added. It also adds a few underlying fixes and additional View
+classes that will be used by the updated Resource classes when they are
+added but on their own will have no impact.
+
+## 🔧 Infrastructure Components
+
+### 1. @SwaggerCompliant Annotation System
+- **File**:
+`dotCMS/src/main/java/com/dotcms/rest/annotation/SwaggerCompliant.java`
+- **Purpose**: Marks REST resource classes that have been updated with
+proper Swagger annotations
+- **Features**: 
+  - Batch numbering system (1-8)
+  - Version tracking
+  - Descriptive documentation
+
+### 2. Progressive Testing Framework
+- **Updated**: `RestEndpointAnnotationComplianceTest.java`
+- **Updated**: `RestEndpointAnnotationValidationTest.java`
+- **Feature**: Automatic class discovery based on `@SwaggerCompliant`
+annotations
+- **Benefit**: Tests automatically include newly annotated classes when
+PRs are merged
+
+### 3. Cumulative Testing Support
+```bash
+# Test only classes from batches 1-3 (cumulative)
+./mvnw test -pl :dotcms-core -Dtest=RestEndpointAnnotationComplianceTest -Dtest.batch.max=3
+
+# Test all annotated classes (when annotation is present)
+./mvnw test -pl :dotcms-core -Dtest=RestEndpointAnnotationComplianceTest
+```
+
+## 📊 Batch Organization (115 REST Resources)
+
+### Batch 1: Core Authentication & User Management (15 classes)
+**PR**: [#32656](https://github.com/dotCMS/core/pull/32656) - **Ready
+for review**
+- Essential authentication and user management APIs
+- Foundation for all other batches
+
+### Batch 2: Content Management Core (14 classes)
+**PR**: [#32657](https://github.com/dotCMS/core/pull/32657) - **Draft**
+- Content CRUD operations, versioning, relationships
+- Content types and field management
+
+### Batch 3: Site Architecture & Templates (14 classes)
+**PR**: [#32658](https://github.com/dotCMS/core/pull/32658) - **Draft**
+- Site management, templates, containers
+- File and asset management
+
+### Batch 4: System Administration (15 classes)
+**PR**: [#32659](https://github.com/dotCMS/core/pull/32659) - **Draft**
+- System configuration and monitoring
+- Infrastructure management
+
+### Batch 5: Publishing & Distribution (13 classes)
+**PR**: [#32660](https://github.com/dotCMS/core/pull/32660) - **Draft**
+- Publishing workflows and bundle management
+- Environment and maintenance operations
+
+### Batch 6: Rules Engine & Business Logic (14 classes)
+**PR**: [#32661](https://github.com/dotCMS/core/pull/32661) - **Draft**
+- Rules engine components
+- Business logic and application management
+
+### Batch 7: Modern APIs & Specialized Services (17 classes)
+**PR**: [#32662](https://github.com/dotCMS/core/pull/32662) - **Draft**
+- AI services and modern APIs
+- Specialized content and analytics
+
+### Batch 8: Legacy & Utility Resources (13 classes)
+**PR**: [#32663](https://github.com/dotCMS/core/pull/32663) - **Draft**
+- Legacy APIs and utility functions
+- Remaining miscellaneous resources
+
+### Batch 9: Cleanup and Finalization
+**PR**: [#32664](https://github.com/dotCMS/core/pull/32664) - **Draft**
+- Remove temporary testing infrastructure
+- Final cleanup and production readiness
+
+## 🔄 Automatic Testing Integration
+
+**Key Feature**: When annotations are added to REST resources, they
+**automatically trigger testing** of those resources when the PRs are
+merged.
+
+- ✅ **Before annotation**: Resource is not tested by compliance tests
+- ✅ **After annotation**: Resource is automatically discovered and
+tested
+- ✅ **Cumulative**: Tests run against all previously annotated resources
+plus new ones
+
+This ensures that:
+1. No manual test configuration is needed
+2. Tests grow organically as annotations are added
+3. Full compliance is verified incrementally
+4. No regression in previously annotated resources
+
+## 📋 Rollout Process
+
+### Phase 1: Foundation (This PR)
+1. **Merge this PR first** - Establishes the infrastructure
+2. Sets up progressive testing framework
+3. Creates annotation system for batch management
+
+### Phase 2: Progressive Rollout (Batches 1-8)
+1. **Batch 1** (#32656) - Ready for review after this PR is merged
+2. **Batch 2** (#32657) - Remove draft state ONLY after Batch 1 is
+merged
+3. **Batch 3** (#32658) - Remove draft state ONLY after Batch 2 is
+merged
+4. **Batch 4** (#32659) - Remove draft state ONLY after Batch 3 is
+merged
+5. **Batch 5** (#32660) - Remove draft state ONLY after Batch 4 is
+merged
+6. **Batch 6** (#32661) - Remove draft state ONLY after Batch 5 is
+merged
+7. **Batch 7** (#32662) - Remove draft state ONLY after Batch 6 is
+merged
+8. **Batch 8** (#32663) - Remove draft state ONLY after Batch 7 is
+merged
+
+### Phase 3: Finalization (Batch 9)
+1. **Batch 9** (#32664) - Remove draft state ONLY after Batch 8 is
+merged
+2. Clean up temporary infrastructure
+3. Complete the implementation
+
+## 🧪 Testing Strategy
+
+### During Rollout
+Each batch PR includes comprehensive testing:
+```bash
+# Test cumulative batches (e.g., for Batch 3)
+./mvnw test -pl :dotcms-core -Dtest=RestEndpointAnnotationComplianceTest -Dtest.batch.max=3
+```
+
+### After Completion
+All tests run against all endpoints automatically:
+```bash
+# No batch filtering needed - all annotated resources tested
+./mvnw test -pl :dotcms-core -Dtest=RestEndpointAnnotationComplianceTest
+```
+
+## 📝 Documentation
+
+### Batch Documentation
+- **File**: `SWAGGER_COMPLIANT_BATCHES.md`
+- **Contains**: Detailed breakdown of all 115 resources across 8 batches
+- **Usage**: Reference for understanding batch organization and testing
+
+### Verification Tests
+- **File**: `SwaggerCompliantAnnotationTest.java`
+- **File**: `SwaggerCompliantBatchTest.java`
+- **Purpose**: Validate annotation structure and batch organization
+
+## 🎯 Benefits
+
+1. **Manageable Change Size**: 115 resources split into 8 logical
+batches
+2. **Incremental Testing**: Tests automatically include new resources as
+they're annotated
+3. **Risk Reduction**: Progressive rollout allows for early detection of
+issues
+4. **Clear Dependencies**: Each batch builds on previous ones
+5. **Automated Discovery**: No manual test configuration required
+
+## ⚠️ Important Notes
+
+- **Merge Order**: This PR must be merged before any batch PRs
+- **Draft Management**: Batch PRs should remain in draft until
+predecessor is merged
+- **Testing**: Annotations automatically trigger testing when resources
+are merged
+- **Dependencies**: Each batch depends on all previous batches being
+merged
+
+## 🔗 Related PRs
+
+| Batch | PR | Status | Dependencies |
+|-------|----|---------|--------------| 
+| Foundation | [#32561](https://github.com/dotCMS/core/pull/32561) |
+**This PR** | None |
+| Batch 1 | [#32656](https://github.com/dotCMS/core/pull/32656) | Ready
+| This PR |
+| Batch 2 | [#32657](https://github.com/dotCMS/core/pull/32657) | Draft
+| Batch 1 |
+| Batch 3 | [#32658](https://github.com/dotCMS/core/pull/32658) | Draft
+| Batch 2 |
+| Batch 4 | [#32659](https://github.com/dotCMS/core/pull/32659) | Draft
+| Batch 3 |
+| Batch 5 | [#32660](https://github.com/dotCMS/core/pull/32660) | Draft
+| Batch 4 |
+| Batch 6 | [#32661](https://github.com/dotCMS/core/pull/32661) | Draft
+| Batch 5 |
+| Batch 7 | [#32662](https://github.com/dotCMS/core/pull/32662) | Draft
+| Batch 6 |
+| Batch 8 | [#32663](https://github.com/dotCMS/core/pull/32663) | Draft
+| Batch 7 |
+| Batch 9 | [#32664](https://github.com/dotCMS/core/pull/32664) | Draft
+| Batch 8 |
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+
+---------
+
+Co-authored-by: Claude <noreply@anthropic.com>",add
+15,https://github.com/dotCMS/core/pull/32662,Claude_Code,https://github.com/dotCMS/core/commit/a819a4512061af8f21a50c89c2810044136489c6,"chore(swagger): Add Swagger annotations Batch Testing Base (#32529) (#32561)
+
+## Summary
+This PR establishes the progressive testing infrastructure for
+Swagger/OpenAPI annotations implementation across 115 REST endpoints in
+dotCMS.
+
+***Note for reviewers.*** Most of the files in this PR add new view
+classes that are not yet used in this PR but are added in preparation
+and use of the individual Resource classes that we change in upcoming
+batches. We do not need to deeply review these new classes at this time
+as they will have no impact on functionality at this time.
+
+In these batches we can also look at the openapi.yml that now gets
+generated and included in the commit for any resource changes. In this
+PR it confirms we are only changing and adding tag descriptions
+providing the categories for the upcoming batch changes. The main part
+of this PR is the additional test changes which are set to identify
+using an annotation the upcoming changed resource files and will test
+them when updated. In this PR these will essentially skip and do
+nothing.
+
+## 🎯 Progressive Rollout Strategy
+This PR creates the foundation for a **9-batch progressive rollout** of
+Swagger annotations. The annotations will be added incrementally to make
+the large change manageable and allow for thorough testing at each
+stage.
+
+This first PR does not actually modify any or the resources. It provides
+the testing framework that will pick up the updated resources when they
+are added. It also adds a few underlying fixes and additional View
+classes that will be used by the updated Resource classes when they are
+added but on their own will have no impact.
+
+## 🔧 Infrastructure Components
+
+### 1. @SwaggerCompliant Annotation System
+- **File**:
+`dotCMS/src/main/java/com/dotcms/rest/annotation/SwaggerCompliant.java`
+- **Purpose**: Marks REST resource classes that have been updated with
+proper Swagger annotations
+- **Features**: 
+  - Batch numbering system (1-8)
+  - Version tracking
+  - Descriptive documentation
+
+### 2. Progressive Testing Framework
+- **Updated**: `RestEndpointAnnotationComplianceTest.java`
+- **Updated**: `RestEndpointAnnotationValidationTest.java`
+- **Feature**: Automatic class discovery based on `@SwaggerCompliant`
+annotations
+- **Benefit**: Tests automatically include newly annotated classes when
+PRs are merged
+
+### 3. Cumulative Testing Support
+```bash
+# Test only classes from batches 1-3 (cumulative)
+./mvnw test -pl :dotcms-core -Dtest=RestEndpointAnnotationComplianceTest -Dtest.batch.max=3
+
+# Test all annotated classes (when annotation is present)
+./mvnw test -pl :dotcms-core -Dtest=RestEndpointAnnotationComplianceTest
+```
+
+## 📊 Batch Organization (115 REST Resources)
+
+### Batch 1: Core Authentication & User Management (15 classes)
+**PR**: [#32656](https://github.com/dotCMS/core/pull/32656) - **Ready
+for review**
+- Essential authentication and user management APIs
+- Foundation for all other batches
+
+### Batch 2: Content Management Core (14 classes)
+**PR**: [#32657](https://github.com/dotCMS/core/pull/32657) - **Draft**
+- Content CRUD operations, versioning, relationships
+- Content types and field management
+
+### Batch 3: Site Architecture & Templates (14 classes)
+**PR**: [#32658](https://github.com/dotCMS/core/pull/32658) - **Draft**
+- Site management, templates, containers
+- File and asset management
+
+### Batch 4: System Administration (15 classes)
+**PR**: [#32659](https://github.com/dotCMS/core/pull/32659) - **Draft**
+- System configuration and monitoring
+- Infrastructure management
+
+### Batch 5: Publishing & Distribution (13 classes)
+**PR**: [#32660](https://github.com/dotCMS/core/pull/32660) - **Draft**
+- Publishing workflows and bundle management
+- Environment and maintenance operations
+
+### Batch 6: Rules Engine & Business Logic (14 classes)
+**PR**: [#32661](https://github.com/dotCMS/core/pull/32661) - **Draft**
+- Rules engine components
+- Business logic and application management
+
+### Batch 7: Modern APIs & Specialized Services (17 classes)
+**PR**: [#32662](https://github.com/dotCMS/core/pull/32662) - **Draft**
+- AI services and modern APIs
+- Specialized content and analytics
+
+### Batch 8: Legacy & Utility Resources (13 classes)
+**PR**: [#32663](https://github.com/dotCMS/core/pull/32663) - **Draft**
+- Legacy APIs and utility functions
+- Remaining miscellaneous resources
+
+### Batch 9: Cleanup and Finalization
+**PR**: [#32664](https://github.com/dotCMS/core/pull/32664) - **Draft**
+- Remove temporary testing infrastructure
+- Final cleanup and production readiness
+
+## 🔄 Automatic Testing Integration
+
+**Key Feature**: When annotations are added to REST resources, they
+**automatically trigger testing** of those resources when the PRs are
+merged.
+
+- ✅ **Before annotation**: Resource is not tested by compliance tests
+- ✅ **After annotation**: Resource is automatically discovered and
+tested
+- ✅ **Cumulative**: Tests run against all previously annotated resources
+plus new ones
+
+This ensures that:
+1. No manual test configuration is needed
+2. Tests grow organically as annotations are added
+3. Full compliance is verified incrementally
+4. No regression in previously annotated resources
+
+## 📋 Rollout Process
+
+### Phase 1: Foundation (This PR)
+1. **Merge this PR first** - Establishes the infrastructure
+2. Sets up progressive testing framework
+3. Creates annotation system for batch management
+
+### Phase 2: Progressive Rollout (Batches 1-8)
+1. **Batch 1** (#32656) - Ready for review after this PR is merged
+2. **Batch 2** (#32657) - Remove draft state ONLY after Batch 1 is
+merged
+3. **Batch 3** (#32658) - Remove draft state ONLY after Batch 2 is
+merged
+4. **Batch 4** (#32659) - Remove draft state ONLY after Batch 3 is
+merged
+5. **Batch 5** (#32660) - Remove draft state ONLY after Batch 4 is
+merged
+6. **Batch 6** (#32661) - Remove draft state ONLY after Batch 5 is
+merged
+7. **Batch 7** (#32662) - Remove draft state ONLY after Batch 6 is
+merged
+8. **Batch 8** (#32663) - Remove draft state ONLY after Batch 7 is
+merged
+
+### Phase 3: Finalization (Batch 9)
+1. **Batch 9** (#32664) - Remove draft state ONLY after Batch 8 is
+merged
+2. Clean up temporary infrastructure
+3. Complete the implementation
+
+## 🧪 Testing Strategy
+
+### During Rollout
+Each batch PR includes comprehensive testing:
+```bash
+# Test cumulative batches (e.g., for Batch 3)
+./mvnw test -pl :dotcms-core -Dtest=RestEndpointAnnotationComplianceTest -Dtest.batch.max=3
+```
+
+### After Completion
+All tests run against all endpoints automatically:
+```bash
+# No batch filtering needed - all annotated resources tested
+./mvnw test -pl :dotcms-core -Dtest=RestEndpointAnnotationComplianceTest
+```
+
+## 📝 Documentation
+
+### Batch Documentation
+- **File**: `SWAGGER_COMPLIANT_BATCHES.md`
+- **Contains**: Detailed breakdown of all 115 resources across 8 batches
+- **Usage**: Reference for understanding batch organization and testing
+
+### Verification Tests
+- **File**: `SwaggerCompliantAnnotationTest.java`
+- **File**: `SwaggerCompliantBatchTest.java`
+- **Purpose**: Validate annotation structure and batch organization
+
+## 🎯 Benefits
+
+1. **Manageable Change Size**: 115 resources split into 8 logical
+batches
+2. **Incremental Testing**: Tests automatically include new resources as
+they're annotated
+3. **Risk Reduction**: Progressive rollout allows for early detection of
+issues
+4. **Clear Dependencies**: Each batch builds on previous ones
+5. **Automated Discovery**: No manual test configuration required
+
+## ⚠️ Important Notes
+
+- **Merge Order**: This PR must be merged before any batch PRs
+- **Draft Management**: Batch PRs should remain in draft until
+predecessor is merged
+- **Testing**: Annotations automatically trigger testing when resources
+are merged
+- **Dependencies**: Each batch depends on all previous batches being
+merged
+
+## 🔗 Related PRs
+
+| Batch | PR | Status | Dependencies |
+|-------|----|---------|--------------| 
+| Foundation | [#32561](https://github.com/dotCMS/core/pull/32561) |
+**This PR** | None |
+| Batch 1 | [#32656](https://github.com/dotCMS/core/pull/32656) | Ready
+| This PR |
+| Batch 2 | [#32657](https://github.com/dotCMS/core/pull/32657) | Draft
+| Batch 1 |
+| Batch 3 | [#32658](https://github.com/dotCMS/core/pull/32658) | Draft
+| Batch 2 |
+| Batch 4 | [#32659](https://github.com/dotCMS/core/pull/32659) | Draft
+| Batch 3 |
+| Batch 5 | [#32660](https://github.com/dotCMS/core/pull/32660) | Draft
+| Batch 4 |
+| Batch 6 | [#32661](https://github.com/dotCMS/core/pull/32661) | Draft
+| Batch 5 |
+| Batch 7 | [#32662](https://github.com/dotCMS/core/pull/32662) | Draft
+| Batch 6 |
+| Batch 8 | [#32663](https://github.com/dotCMS/core/pull/32663) | Draft
+| Batch 7 |
+| Batch 9 | [#32664](https://github.com/dotCMS/core/pull/32664) | Draft
+| Batch 8 |
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+
+---------
+
+Co-authored-by: Claude <noreply@anthropic.com>",add
+16,https://github.com/dotCMS/core/pull/32663,Claude_Code,https://github.com/dotCMS/core/commit/a819a4512061af8f21a50c89c2810044136489c6,"chore(swagger): Add Swagger annotations Batch Testing Base (#32529) (#32561)
+
+## Summary
+This PR establishes the progressive testing infrastructure for
+Swagger/OpenAPI annotations implementation across 115 REST endpoints in
+dotCMS.
+
+***Note for reviewers.*** Most of the files in this PR add new view
+classes that are not yet used in this PR but are added in preparation
+and use of the individual Resource classes that we change in upcoming
+batches. We do not need to deeply review these new classes at this time
+as they will have no impact on functionality at this time.
+
+In these batches we can also look at the openapi.yml that now gets
+generated and included in the commit for any resource changes. In this
+PR it confirms we are only changing and adding tag descriptions
+providing the categories for the upcoming batch changes. The main part
+of this PR is the additional test changes which are set to identify
+using an annotation the upcoming changed resource files and will test
+them when updated. In this PR these will essentially skip and do
+nothing.
+
+## 🎯 Progressive Rollout Strategy
+This PR creates the foundation for a **9-batch progressive rollout** of
+Swagger annotations. The annotations will be added incrementally to make
+the large change manageable and allow for thorough testing at each
+stage.
+
+This first PR does not actually modify any or the resources. It provides
+the testing framework that will pick up the updated resources when they
+are added. It also adds a few underlying fixes and additional View
+classes that will be used by the updated Resource classes when they are
+added but on their own will have no impact.
+
+## 🔧 Infrastructure Components
+
+### 1. @SwaggerCompliant Annotation System
+- **File**:
+`dotCMS/src/main/java/com/dotcms/rest/annotation/SwaggerCompliant.java`
+- **Purpose**: Marks REST resource classes that have been updated with
+proper Swagger annotations
+- **Features**: 
+  - Batch numbering system (1-8)
+  - Version tracking
+  - Descriptive documentation
+
+### 2. Progressive Testing Framework
+- **Updated**: `RestEndpointAnnotationComplianceTest.java`
+- **Updated**: `RestEndpointAnnotationValidationTest.java`
+- **Feature**: Automatic class discovery based on `@SwaggerCompliant`
+annotations
+- **Benefit**: Tests automatically include newly annotated classes when
+PRs are merged
+
+### 3. Cumulative Testing Support
+```bash
+# Test only classes from batches 1-3 (cumulative)
+./mvnw test -pl :dotcms-core -Dtest=RestEndpointAnnotationComplianceTest -Dtest.batch.max=3
+
+# Test all annotated classes (when annotation is present)
+./mvnw test -pl :dotcms-core -Dtest=RestEndpointAnnotationComplianceTest
+```
+
+## 📊 Batch Organization (115 REST Resources)
+
+### Batch 1: Core Authentication & User Management (15 classes)
+**PR**: [#32656](https://github.com/dotCMS/core/pull/32656) - **Ready
+for review**
+- Essential authentication and user management APIs
+- Foundation for all other batches
+
+### Batch 2: Content Management Core (14 classes)
+**PR**: [#32657](https://github.com/dotCMS/core/pull/32657) - **Draft**
+- Content CRUD operations, versioning, relationships
+- Content types and field management
+
+### Batch 3: Site Architecture & Templates (14 classes)
+**PR**: [#32658](https://github.com/dotCMS/core/pull/32658) - **Draft**
+- Site management, templates, containers
+- File and asset management
+
+### Batch 4: System Administration (15 classes)
+**PR**: [#32659](https://github.com/dotCMS/core/pull/32659) - **Draft**
+- System configuration and monitoring
+- Infrastructure management
+
+### Batch 5: Publishing & Distribution (13 classes)
+**PR**: [#32660](https://github.com/dotCMS/core/pull/32660) - **Draft**
+- Publishing workflows and bundle management
+- Environment and maintenance operations
+
+### Batch 6: Rules Engine & Business Logic (14 classes)
+**PR**: [#32661](https://github.com/dotCMS/core/pull/32661) - **Draft**
+- Rules engine components
+- Business logic and application management
+
+### Batch 7: Modern APIs & Specialized Services (17 classes)
+**PR**: [#32662](https://github.com/dotCMS/core/pull/32662) - **Draft**
+- AI services and modern APIs
+- Specialized content and analytics
+
+### Batch 8: Legacy & Utility Resources (13 classes)
+**PR**: [#32663](https://github.com/dotCMS/core/pull/32663) - **Draft**
+- Legacy APIs and utility functions
+- Remaining miscellaneous resources
+
+### Batch 9: Cleanup and Finalization
+**PR**: [#32664](https://github.com/dotCMS/core/pull/32664) - **Draft**
+- Remove temporary testing infrastructure
+- Final cleanup and production readiness
+
+## 🔄 Automatic Testing Integration
+
+**Key Feature**: When annotations are added to REST resources, they
+**automatically trigger testing** of those resources when the PRs are
+merged.
+
+- ✅ **Before annotation**: Resource is not tested by compliance tests
+- ✅ **After annotation**: Resource is automatically discovered and
+tested
+- ✅ **Cumulative**: Tests run against all previously annotated resources
+plus new ones
+
+This ensures that:
+1. No manual test configuration is needed
+2. Tests grow organically as annotations are added
+3. Full compliance is verified incrementally
+4. No regression in previously annotated resources
+
+## 📋 Rollout Process
+
+### Phase 1: Foundation (This PR)
+1. **Merge this PR first** - Establishes the infrastructure
+2. Sets up progressive testing framework
+3. Creates annotation system for batch management
+
+### Phase 2: Progressive Rollout (Batches 1-8)
+1. **Batch 1** (#32656) - Ready for review after this PR is merged
+2. **Batch 2** (#32657) - Remove draft state ONLY after Batch 1 is
+merged
+3. **Batch 3** (#32658) - Remove draft state ONLY after Batch 2 is
+merged
+4. **Batch 4** (#32659) - Remove draft state ONLY after Batch 3 is
+merged
+5. **Batch 5** (#32660) - Remove draft state ONLY after Batch 4 is
+merged
+6. **Batch 6** (#32661) - Remove draft state ONLY after Batch 5 is
+merged
+7. **Batch 7** (#32662) - Remove draft state ONLY after Batch 6 is
+merged
+8. **Batch 8** (#32663) - Remove draft state ONLY after Batch 7 is
+merged
+
+### Phase 3: Finalization (Batch 9)
+1. **Batch 9** (#32664) - Remove draft state ONLY after Batch 8 is
+merged
+2. Clean up temporary infrastructure
+3. Complete the implementation
+
+## 🧪 Testing Strategy
+
+### During Rollout
+Each batch PR includes comprehensive testing:
+```bash
+# Test cumulative batches (e.g., for Batch 3)
+./mvnw test -pl :dotcms-core -Dtest=RestEndpointAnnotationComplianceTest -Dtest.batch.max=3
+```
+
+### After Completion
+All tests run against all endpoints automatically:
+```bash
+# No batch filtering needed - all annotated resources tested
+./mvnw test -pl :dotcms-core -Dtest=RestEndpointAnnotationComplianceTest
+```
+
+## 📝 Documentation
+
+### Batch Documentation
+- **File**: `SWAGGER_COMPLIANT_BATCHES.md`
+- **Contains**: Detailed breakdown of all 115 resources across 8 batches
+- **Usage**: Reference for understanding batch organization and testing
+
+### Verification Tests
+- **File**: `SwaggerCompliantAnnotationTest.java`
+- **File**: `SwaggerCompliantBatchTest.java`
+- **Purpose**: Validate annotation structure and batch organization
+
+## 🎯 Benefits
+
+1. **Manageable Change Size**: 115 resources split into 8 logical
+batches
+2. **Incremental Testing**: Tests automatically include new resources as
+they're annotated
+3. **Risk Reduction**: Progressive rollout allows for early detection of
+issues
+4. **Clear Dependencies**: Each batch builds on previous ones
+5. **Automated Discovery**: No manual test configuration required
+
+## ⚠️ Important Notes
+
+- **Merge Order**: This PR must be merged before any batch PRs
+- **Draft Management**: Batch PRs should remain in draft until
+predecessor is merged
+- **Testing**: Annotations automatically trigger testing when resources
+are merged
+- **Dependencies**: Each batch depends on all previous batches being
+merged
+
+## 🔗 Related PRs
+
+| Batch | PR | Status | Dependencies |
+|-------|----|---------|--------------| 
+| Foundation | [#32561](https://github.com/dotCMS/core/pull/32561) |
+**This PR** | None |
+| Batch 1 | [#32656](https://github.com/dotCMS/core/pull/32656) | Ready
+| This PR |
+| Batch 2 | [#32657](https://github.com/dotCMS/core/pull/32657) | Draft
+| Batch 1 |
+| Batch 3 | [#32658](https://github.com/dotCMS/core/pull/32658) | Draft
+| Batch 2 |
+| Batch 4 | [#32659](https://github.com/dotCMS/core/pull/32659) | Draft
+| Batch 3 |
+| Batch 5 | [#32660](https://github.com/dotCMS/core/pull/32660) | Draft
+| Batch 4 |
+| Batch 6 | [#32661](https://github.com/dotCMS/core/pull/32661) | Draft
+| Batch 5 |
+| Batch 7 | [#32662](https://github.com/dotCMS/core/pull/32662) | Draft
+| Batch 6 |
+| Batch 8 | [#32663](https://github.com/dotCMS/core/pull/32663) | Draft
+| Batch 7 |
+| Batch 9 | [#32664](https://github.com/dotCMS/core/pull/32664) | Draft
+| Batch 8 |
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+
+---------
+
+Co-authored-by: Claude <noreply@anthropic.com>",add
+17,https://github.com/dotCMS/core/pull/32664,Claude_Code,https://github.com/dotCMS/core/commit/a819a4512061af8f21a50c89c2810044136489c6,"chore(swagger): Add Swagger annotations Batch Testing Base (#32529) (#32561)
+
+## Summary
+This PR establishes the progressive testing infrastructure for
+Swagger/OpenAPI annotations implementation across 115 REST endpoints in
+dotCMS.
+
+***Note for reviewers.*** Most of the files in this PR add new view
+classes that are not yet used in this PR but are added in preparation
+and use of the individual Resource classes that we change in upcoming
+batches. We do not need to deeply review these new classes at this time
+as they will have no impact on functionality at this time.
+
+In these batches we can also look at the openapi.yml that now gets
+generated and included in the commit for any resource changes. In this
+PR it confirms we are only changing and adding tag descriptions
+providing the categories for the upcoming batch changes. The main part
+of this PR is the additional test changes which are set to identify
+using an annotation the upcoming changed resource files and will test
+them when updated. In this PR these will essentially skip and do
+nothing.
+
+## 🎯 Progressive Rollout Strategy
+This PR creates the foundation for a **9-batch progressive rollout** of
+Swagger annotations. The annotations will be added incrementally to make
+the large change manageable and allow for thorough testing at each
+stage.
+
+This first PR does not actually modify any or the resources. It provides
+the testing framework that will pick up the updated resources when they
+are added. It also adds a few underlying fixes and additional View
+classes that will be used by the updated Resource classes when they are
+added but on their own will have no impact.
+
+## 🔧 Infrastructure Components
+
+### 1. @SwaggerCompliant Annotation System
+- **File**:
+`dotCMS/src/main/java/com/dotcms/rest/annotation/SwaggerCompliant.java`
+- **Purpose**: Marks REST resource classes that have been updated with
+proper Swagger annotations
+- **Features**: 
+  - Batch numbering system (1-8)
+  - Version tracking
+  - Descriptive documentation
+
+### 2. Progressive Testing Framework
+- **Updated**: `RestEndpointAnnotationComplianceTest.java`
+- **Updated**: `RestEndpointAnnotationValidationTest.java`
+- **Feature**: Automatic class discovery based on `@SwaggerCompliant`
+annotations
+- **Benefit**: Tests automatically include newly annotated classes when
+PRs are merged
+
+### 3. Cumulative Testing Support
+```bash
+# Test only classes from batches 1-3 (cumulative)
+./mvnw test -pl :dotcms-core -Dtest=RestEndpointAnnotationComplianceTest -Dtest.batch.max=3
+
+# Test all annotated classes (when annotation is present)
+./mvnw test -pl :dotcms-core -Dtest=RestEndpointAnnotationComplianceTest
+```
+
+## 📊 Batch Organization (115 REST Resources)
+
+### Batch 1: Core Authentication & User Management (15 classes)
+**PR**: [#32656](https://github.com/dotCMS/core/pull/32656) - **Ready
+for review**
+- Essential authentication and user management APIs
+- Foundation for all other batches
+
+### Batch 2: Content Management Core (14 classes)
+**PR**: [#32657](https://github.com/dotCMS/core/pull/32657) - **Draft**
+- Content CRUD operations, versioning, relationships
+- Content types and field management
+
+### Batch 3: Site Architecture & Templates (14 classes)
+**PR**: [#32658](https://github.com/dotCMS/core/pull/32658) - **Draft**
+- Site management, templates, containers
+- File and asset management
+
+### Batch 4: System Administration (15 classes)
+**PR**: [#32659](https://github.com/dotCMS/core/pull/32659) - **Draft**
+- System configuration and monitoring
+- Infrastructure management
+
+### Batch 5: Publishing & Distribution (13 classes)
+**PR**: [#32660](https://github.com/dotCMS/core/pull/32660) - **Draft**
+- Publishing workflows and bundle management
+- Environment and maintenance operations
+
+### Batch 6: Rules Engine & Business Logic (14 classes)
+**PR**: [#32661](https://github.com/dotCMS/core/pull/32661) - **Draft**
+- Rules engine components
+- Business logic and application management
+
+### Batch 7: Modern APIs & Specialized Services (17 classes)
+**PR**: [#32662](https://github.com/dotCMS/core/pull/32662) - **Draft**
+- AI services and modern APIs
+- Specialized content and analytics
+
+### Batch 8: Legacy & Utility Resources (13 classes)
+**PR**: [#32663](https://github.com/dotCMS/core/pull/32663) - **Draft**
+- Legacy APIs and utility functions
+- Remaining miscellaneous resources
+
+### Batch 9: Cleanup and Finalization
+**PR**: [#32664](https://github.com/dotCMS/core/pull/32664) - **Draft**
+- Remove temporary testing infrastructure
+- Final cleanup and production readiness
+
+## 🔄 Automatic Testing Integration
+
+**Key Feature**: When annotations are added to REST resources, they
+**automatically trigger testing** of those resources when the PRs are
+merged.
+
+- ✅ **Before annotation**: Resource is not tested by compliance tests
+- ✅ **After annotation**: Resource is automatically discovered and
+tested
+- ✅ **Cumulative**: Tests run against all previously annotated resources
+plus new ones
+
+This ensures that:
+1. No manual test configuration is needed
+2. Tests grow organically as annotations are added
+3. Full compliance is verified incrementally
+4. No regression in previously annotated resources
+
+## 📋 Rollout Process
+
+### Phase 1: Foundation (This PR)
+1. **Merge this PR first** - Establishes the infrastructure
+2. Sets up progressive testing framework
+3. Creates annotation system for batch management
+
+### Phase 2: Progressive Rollout (Batches 1-8)
+1. **Batch 1** (#32656) - Ready for review after this PR is merged
+2. **Batch 2** (#32657) - Remove draft state ONLY after Batch 1 is
+merged
+3. **Batch 3** (#32658) - Remove draft state ONLY after Batch 2 is
+merged
+4. **Batch 4** (#32659) - Remove draft state ONLY after Batch 3 is
+merged
+5. **Batch 5** (#32660) - Remove draft state ONLY after Batch 4 is
+merged
+6. **Batch 6** (#32661) - Remove draft state ONLY after Batch 5 is
+merged
+7. **Batch 7** (#32662) - Remove draft state ONLY after Batch 6 is
+merged
+8. **Batch 8** (#32663) - Remove draft state ONLY after Batch 7 is
+merged
+
+### Phase 3: Finalization (Batch 9)
+1. **Batch 9** (#32664) - Remove draft state ONLY after Batch 8 is
+merged
+2. Clean up temporary infrastructure
+3. Complete the implementation
+
+## 🧪 Testing Strategy
+
+### During Rollout
+Each batch PR includes comprehensive testing:
+```bash
+# Test cumulative batches (e.g., for Batch 3)
+./mvnw test -pl :dotcms-core -Dtest=RestEndpointAnnotationComplianceTest -Dtest.batch.max=3
+```
+
+### After Completion
+All tests run against all endpoints automatically:
+```bash
+# No batch filtering needed - all annotated resources tested
+./mvnw test -pl :dotcms-core -Dtest=RestEndpointAnnotationComplianceTest
+```
+
+## 📝 Documentation
+
+### Batch Documentation
+- **File**: `SWAGGER_COMPLIANT_BATCHES.md`
+- **Contains**: Detailed breakdown of all 115 resources across 8 batches
+- **Usage**: Reference for understanding batch organization and testing
+
+### Verification Tests
+- **File**: `SwaggerCompliantAnnotationTest.java`
+- **File**: `SwaggerCompliantBatchTest.java`
+- **Purpose**: Validate annotation structure and batch organization
+
+## 🎯 Benefits
+
+1. **Manageable Change Size**: 115 resources split into 8 logical
+batches
+2. **Incremental Testing**: Tests automatically include new resources as
+they're annotated
+3. **Risk Reduction**: Progressive rollout allows for early detection of
+issues
+4. **Clear Dependencies**: Each batch builds on previous ones
+5. **Automated Discovery**: No manual test configuration required
+
+## ⚠️ Important Notes
+
+- **Merge Order**: This PR must be merged before any batch PRs
+- **Draft Management**: Batch PRs should remain in draft until
+predecessor is merged
+- **Testing**: Annotations automatically trigger testing when resources
+are merged
+- **Dependencies**: Each batch depends on all previous batches being
+merged
+
+## 🔗 Related PRs
+
+| Batch | PR | Status | Dependencies |
+|-------|----|---------|--------------| 
+| Foundation | [#32561](https://github.com/dotCMS/core/pull/32561) |
+**This PR** | None |
+| Batch 1 | [#32656](https://github.com/dotCMS/core/pull/32656) | Ready
+| This PR |
+| Batch 2 | [#32657](https://github.com/dotCMS/core/pull/32657) | Draft
+| Batch 1 |
+| Batch 3 | [#32658](https://github.com/dotCMS/core/pull/32658) | Draft
+| Batch 2 |
+| Batch 4 | [#32659](https://github.com/dotCMS/core/pull/32659) | Draft
+| Batch 3 |
+| Batch 5 | [#32660](https://github.com/dotCMS/core/pull/32660) | Draft
+| Batch 4 |
+| Batch 6 | [#32661](https://github.com/dotCMS/core/pull/32661) | Draft
+| Batch 5 |
+| Batch 7 | [#32662](https://github.com/dotCMS/core/pull/32662) | Draft
+| Batch 6 |
+| Batch 8 | [#32663](https://github.com/dotCMS/core/pull/32663) | Draft
+| Batch 7 |
+| Batch 9 | [#32664](https://github.com/dotCMS/core/pull/32664) | Draft
+| Batch 8 |
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+
+---------
+
+Co-authored-by: Claude <noreply@anthropic.com>",add
+18,https://github.com/friendsofhyperf/components/pull/877,Claude_Code,https://github.com/friendsofhyperf/components/commit/09a9787c22126902f995eaa331c8d903932fdab3,"Add comprehensive OAuth2 server documentation (#877)
+
+* Add comprehensive documentation for OAuth2 server component
+
+- Added detailed English documentation in docs/en/components/oauth2-server.md
+- Added Chinese Simplified documentation in docs/zh-cn/components/oauth2-server.md
+- Added Chinese Traditional (Hong Kong) documentation in docs/zh-hk/components/oauth2-server.md
+- Added Chinese Traditional (Taiwan) documentation in docs/zh-tw/components/oauth2-server.md
+
+Documentation includes:
+- Complete installation and setup guide
+- Configuration examples and environment variables
+- All supported grant types with examples
+- API endpoints and usage examples
+- Available commands for client management
+- Event system documentation
+- Security best practices
+- Testing guidelines
+- Error handling reference
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+
+* Update docs and translate
+
+* Add OAuth2 Server to sidebar navigation
+
+- Added OAuth2 Server entry to English sidebar
+- Added OAuth2 服务器 to Chinese Simplified sidebar
+- Added OAuth2 服務器 to Chinese Traditional (Hong Kong) sidebar
+- Added OAuth2 伺服器 to Chinese Traditional (Taiwan) sidebar
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+
+* Add local settings for Claude permissions
+
+Introduces .claude/settings.local.json to specify allowed Bash commands for Claude, including git and GitHub CLI operations.
+
+---------
+
+Co-authored-by: Deeka Wong <8337659+huangdijia@users.noreply.github.com>
+Co-authored-by: Claude <noreply@anthropic.com>",add
+19,https://github.com/geneontology/go-ontology/pull/29902,Claude_Code,https://github.com/geneontology/go-ontology/commit/0b5e8793174ab191e55cd07edbc0c77cced8e31f,"Local PR for #29902 (#30091)
+* Merge citrate synthase activity terms; fixes #29891
+
+Merged all citrate synthase activity terms (GO:0004108, GO:0050450) into GO:0036440.
+- Made GO:0004108 (citrate (Si)-synthase activity) and GO:0050450 (citrate (Re)-synthase activity) obsolete
+- Redirected both terms to GO:0036440 (citrate synthase activity)
+- Added all synonyms to GO:0036440
+- Added EC xrefs with appropriate relationship qualifiers:
+  * EC:2.3.3.16 (exactMatch)
+  * EC:2.3.3.1 (narrowMatch)
+  * EC:2.3.3.3 (narrowMatch)
+
+This aligns with MetaCyc and RHEA which have one reaction for citrate synthase activity, despite the stereospecificity differences noted in the EC classifications.
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+Co-Authored-By: Claude <noreply@anthropic.com>
+
+* Improve citrate synthase activity term merging per PR review
+
+- Added names of obsoleted terms as EXACT synonyms to GO:0036440
+- Removed EC xrefs from obsolete terms GO:0004108 and GO:0050450
+- Addresses review comments in PR #29902
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+Co-Authored-By: Claude <noreply@anthropic.com>
+
+* Adhering to GO standards for obsolete definitions.
+
+* Remove obsolete GO:0050450 from taxon constraints
+
+Updated taxon constraints by removing GO:0050450 (citrate (Re)-synthase activity) which was made obsolete and merged into GO:0036440 (citrate synthase activity).
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+
+* Remove taxon constraints.
+
+---------
+
+Co-authored-by: dragon-ai-agent <cmungall+dragon-ai-agent@gmail.com>
+Co-authored-by: Claude <noreply@anthropic.com>
+Co-authored-by: Chris Mungall <cjm@berkeleybop.org>
+Co-authored-by: pgaudet <pascale.gaudet@sib.swiss>",fix
+20,https://github.com/google-gemini/gemini-cli/pull/3417,Claude_Code,https://github.com/google-gemini/gemini-cli/commit/2a4a7e0518885f73648bb7d6c0dbe2d7a74abdf2,,
+21,https://github.com/google-gemini/gemini-cli/pull/3417,Claude_Code,https://github.com/google-gemini/gemini-cli/commit/31741591949df551ce6b48635dd24e7e7057a3b6,fix: prevent RangeError in GitIgnoreParser for root paths (#3417),fix
+22,https://github.com/google-gemini/gemini-cli/pull/3417,Claude_Code,https://github.com/google-gemini/gemini-cli/commit/5991421a4aab55f2a953125827b180042d80f20f,,
+23,https://github.com/google-gemini/gemini-cli/pull/3417,Claude_Code,https://github.com/google-gemini/gemini-cli/commit/63676c5f7e207d4e3aed46fa5c49a4346b3f638d,"fix: prevent RangeError in GitIgnoreParser for root paths (#3417)
+
+Co-authored-by: Jacob Richman <jacob314@gmail.com>",fix
+24,https://github.com/google-gemini/gemini-cli/pull/3417,Claude_Code,https://github.com/google-gemini/gemini-cli/commit/b053096c85a277f286ddaf51ea74718743d1659b,"fix: prevent RangeError in GitIgnoreParser for root paths (#3417)
+
+Co-authored-by: Jacob Richman <jacob314@gmail.com>",fix
+25,https://github.com/graphistry/pygraphistry/pull/706,Claude_Code,https://github.com/graphistry/pygraphistry/commit/702599939f392c41a38a3a4aea7af276fabab159,"fix(rebase): update ASTQueryDAG references to ASTLet after rebase
+
+- Update test files to use ASTLet instead of deprecated ASTQueryDAG
+- Add missing Any import to ast.py for ASTCall type hints
+- Fixes import errors after rebasing onto PR #706 changes
+
+This completes the rebase integration with the ASTQueryDAG → ASTLet rename.
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>",fix
+1,https://github.com/514-labs/moose/pull/2336,Copilot,https://github.com/514-labs/moose/commit/5291d5ea77ff4f38538a7c3fd60d5358b1288c47,"chore: Add OG and Twitter images to documentation pages (#2336)
+
+* Initial plan for adding OG and Twitter images to docs
+
+Co-authored-by: callicles <4429209+callicles@users.noreply.github.com>
+
+* Add OG/Twitter images and update theme.config.jsx
+
+Co-authored-by: callicles <4429209+callicles@users.noreply.github.com>
+
+* upload proper images
+
+---------
+
+Co-authored-by: copilot-swe-agent[bot] <198982749+Copilot@users.noreply.github.com>
+Co-authored-by: callicles <4429209+callicles@users.noreply.github.com>
+Co-authored-by: Nicolas Joseph <nicolas@fiveonefour.com>",add
+2,https://github.com/514-labs/moose/pull/2348,Copilot,https://github.com/514-labs/moose/commit/eeab532ad07cc9af8b111cef62ae5d21f51a05b4,"chore: Add explicit permissions to GitHub workflows (#2348)
+
+Co-authored-by: copilot-swe-agent[bot] <198982749+Copilot@users.noreply.github.com>
+Co-authored-by: callicles <4429209+callicles@users.noreply.github.com>",add
+3,https://github.com/514-labs/moose/pull/2432,Copilot,https://github.com/514-labs/moose/commit/9a681ba45d11a994c0f536e76143567621014453,"docs: Fix ClickHouse capitalization in documentation (#2432)
+
+* Initial plan for issue
+
+* Fix ClickHouse capitalization in documentation text
+
+Co-authored-by: oatsandsugar <17609135+oatsandsugar@users.noreply.github.com>
+
+---------
+
+Co-authored-by: copilot-swe-agent[bot] <198982749+Copilot@users.noreply.github.com>
+Co-authored-by: oatsandsugar <17609135+oatsandsugar@users.noreply.github.com>
+Co-authored-by: Johanan Ottensooser <j@ottensooser.com>",fix
+4,https://github.com/514-labs/moose/pull/2434,Copilot,https://github.com/514-labs/moose/commit/a19c8034cae01f780111d89c8a8cba5e02a862ec,"Fix RedPanda capitalization to Redpanda in documentation (#2434)
+
+* Initial plan for issue
+
+* Fix RedPanda capitalization to Redpanda in documentation
+
+Co-authored-by: IsabelleLussier <186096630+IsabelleLussier@users.noreply.github.com>
+
+---------
+
+Co-authored-by: copilot-swe-agent[bot] <198982749+Copilot@users.noreply.github.com>
+Co-authored-by: IsabelleLussier <186096630+IsabelleLussier@users.noreply.github.com>",fix
+5,https://github.com/Azure/azure-sdk-for-net/pull/50531,Copilot,https://github.com/Azure/azure-sdk-for-net/commit/e320eb5532be5b38980ea56bdd43a3fb3e1be809,"Update README telemetry documentation to use DiagnosticsOptions.IsTelemetryEnabled instead of outdated custom policy approach (#50531)
+
+* Initial plan for issue
+
+* Update README telemetry documentation to use DiagnosticsOptions.IsTelemetryEnabled instead of custom policy
+
+Co-authored-by: KrzysztofCwalina <9724236+KrzysztofCwalina@users.noreply.github.com>
+
+* Remove redundant sentence from telemetry documentation
+
+Address @heaths feedback to remove the longer, more complex sentence that was redundant with the concise explanation that follows.
+
+Co-authored-by: heaths <1532486+heaths@users.noreply.github.com>
+
+---------
+
+Co-authored-by: copilot-swe-agent[bot] <198982749+Copilot@users.noreply.github.com>
+Co-authored-by: KrzysztofCwalina <9724236+KrzysztofCwalina@users.noreply.github.com>
+Co-authored-by: heaths <1532486+heaths@users.noreply.github.com>",update
+6,https://github.com/Azure/azure-sdk-tools/pull/10979,Copilot,https://github.com/Azure/azure-sdk-tools/commit/2064cc5cddcb6f6c6371264021a7270988e7f18a,"Add package name to browser tab title for better APIView navigation (#10979)
+
+* Initial plan for issue
+
+* Add Angular Title service to dynamically set browser tab title with package name
+
+Co-authored-by: KrzysztofCwalina <9724236+KrzysztofCwalina@users.noreply.github.com>
+
+* Simplify browser tab title to just package name as requested in feedback
+
+Co-authored-by: KrzysztofCwalina <9724236+KrzysztofCwalina@users.noreply.github.com>
+
+---------
+
+Co-authored-by: copilot-swe-agent[bot] <198982749+Copilot@users.noreply.github.com>
+Co-authored-by: KrzysztofCwalina <9724236+KrzysztofCwalina@users.noreply.github.com>",add
+7,https://github.com/Azure/azure-sdk-tools/pull/10996,Copilot,https://github.com/Azure/azure-sdk-tools/commit/88f84f5ac6a3e8912ab7120f538c3b1ca89c946f,".NET APIView: Mark explicitly implemented interface members as hidden APIs (#10996)
+
+* Initial plan
+
+* Initial assessment - plan to implement explicit interface implementation hiding
+
+Co-authored-by: KrzysztofCwalina <9724236+KrzysztofCwalina@users.noreply.github.com>
+
+* Implement explicit interface implementation hiding as hidden APIs
+
+Co-authored-by: KrzysztofCwalina <9724236+KrzysztofCwalina@users.noreply.github.com>
+
+* Update src/dotnet/APIView/APIView/Languages/CodeFileBuilder.cs
+
+Co-authored-by: Copilot <175728472+Copilot@users.noreply.github.com>
+
+---------
+
+Co-authored-by: copilot-swe-agent[bot] <198982749+Copilot@users.noreply.github.com>
+Co-authored-by: KrzysztofCwalina <9724236+KrzysztofCwalina@users.noreply.github.com>
+Co-authored-by: Krzysztof Cwalina <kcwalina@microsoft.com>
+Co-authored-by: Copilot <175728472+Copilot@users.noreply.github.com>",update
+8,https://github.com/baynezy/Html2Markdown/pull/559,Copilot,https://github.com/baynezy/Html2Markdown/commit/a60240621c89cab9001dd46d3701e7fd1be11eee,"Fix three-level nested list indentation (#557)
+
+Fix three-level nested list indentation by correcting regex pattern and TwoNewLines replacement
+
+Fixes #110
+
+Co-authored-by: baynezy <1049999+baynezy@users.noreply.github.com>
+
+* Fix dotCover package and command syntax in static analysis workflow (#559)
+
+Update dotCover tool and command in static analysis workflow
+
+Fixes #558
+
+Co-authored-by: baynezy <1049999+baynezy@users.noreply.github.com>
+
+---------
+
+Co-authored-by: copilot-swe-agent[bot] <198982749+Copilot@users.noreply.github.com>
+Co-authored-by: baynezy <1049999+baynezy@users.noreply.github.com>
+
+* Initial plan for issue
+
+* Complete rebase against develop and fix test failures by trimming trailing whitespace in list items
+
+Co-authored-by: baynezy <1049999+baynezy@users.noreply.github.com>
+
+---------
+
+Co-authored-by: copilot-swe-agent[bot] <198982749+Copilot@users.noreply.github.com>
+Co-authored-by: baynezy <1049999+baynezy@users.noreply.github.com>",fix
+9,https://github.com/bugsink/bugsink/pull/171,Copilot,https://github.com/bugsink/bugsink/commit/735f5ceaa0f14b92605e41c1c643a26258566095,"Copilot instructions; another attempt
+
+after having seen copilot in action on #171",update
+10,https://github.com/celestiaorg/celestia-app/pull/4980,Copilot,https://github.com/celestiaorg/celestia-app/commit/5d1fdd4406f3905328b7bbb566b7a52fad5afb31,"chore: Modify copilot instructions to emphasize test-first development (#4980)
+
+This PR modifies the local GitHub Copilot instructions to tell it to
+write tests first, enabling better iteration on code through Test-Driven
+Development (TDD).
+
+## Changes Made
+
+### 1. Enhanced General Guidelines
+- Added **""Write tests first""** as the primary guideline (#1)
+- Emphasizes writing tests that define expected behavior before
+implementing functionality
+
+### 2. New Test-First Development Section
+Added a dedicated section with a 5-step TDD workflow:
+1. **Write failing tests first** - Create tests that define expected
+behavior
+2. **Run tests to confirm they fail** - Verify tests fail for the right
+reasons
+3. **Write minimal code to make tests pass** - Implement only what's
+needed
+4. **Refactor with confidence** - Improve code while keeping tests green
+5. **Add edge case tests** - Expand test coverage for error conditions
+
+### 3. Enhanced Testing Guidelines
+- Added emphasis on writing tests before implementation
+- Included guidance to run tests frequently during development for rapid
+feedback
+- Maintained existing best practices for table-driven tests and testify
+usage
+
+### 4. Formatting Improvements
+- Fixed markdown formatting issues with proper spacing around headings
+and lists
+- Ensured compliance with project's markdown linting rules
+
+## Impact
+
+These changes will guide Copilot to:
+- Start with tests when implementing new features or fixing bugs
+- Use tests to drive and validate implementation decisions
+- Iterate more effectively through the red-green-refactor cycle
+- Catch issues earlier in the development process
+
+The modifications are minimal and focused, preserving all existing good
+practices while emphasizing the test-first approach.
+
+Fixes #4979.
+
+<!-- START COPILOT CODING AGENT TIPS -->
+---
+
+💡 You can make Copilot smarter by setting up custom instructions,
+customizing its development environment and configuring Model Context
+Protocol (MCP) servers. Learn more [Copilot coding agent
+tips](https://gh.io/copilot-coding-agent-tips) in the docs.
+
+---------
+
+Co-authored-by: copilot-swe-agent[bot] <198982749+Copilot@users.noreply.github.com>
+Co-authored-by: evan-forbes <42654277+evan-forbes@users.noreply.github.com>",update
+11,https://github.com/celestiaorg/celestia-app/pull/5085,Copilot,https://github.com/celestiaorg/celestia-app/commit/524dc644eafa4a5c532d8b384ccfd1372cf4f89c,"fix: TestMaliciousTestNode flake by using goroutine-safe logger for gRPC server (#5085)
+
+## Problem
+
+The `TestMaliciousTestNode` test was experiencing intermittent flakes
+due to a race condition where a gRPC server goroutine would attempt to
+log an error message after the test had completed, causing a panic:
+
+```
+panic: Log in goroutine after TestMaliciousTestNode has completed: server.go:104: <nil> ERR failed to start gRPC server err=null
+
+goroutine 281 [running]:
+testing.(*common).logDepth(0xc0001036c0, {0xc00506f770, 0x4c}, 0x3)
+	/opt/hostedtoolcache/go/1.24.2/x64/src/testing/testing.go:1064 +0x4b4
+```
+
+## Root Cause
+
+In `test/util/testnode/rpc_client.go`, the `StartGRPCServer` function
+receives a test logger (`log.NewTestLogger(t)`) and passes it to a
+goroutine that starts the gRPC server:
+
+```go
+go func() {
+    if err := srvgrpc.StartGRPCServer(cctx.goContext, logger, appCfg.GRPC, grpcSrv); err != nil {
+        panic(err)
+    }
+}()
+```
+
+When the test completes and the context is cancelled, the gRPC server
+attempts to log an error, but the test logger becomes invalid after the
+test finishes, causing the panic.
+
+## Solution
+
+Modified `StartGRPCServer` to create a goroutine-safe logger that writes
+to stdout instead of using the test logger in the gRPC server goroutine:
+
+```go
+// Create a goroutine-safe logger for the gRPC server to prevent
+// ""Log in goroutine after test has completed"" panics when using test loggers
+grpcLogger := log.NewNopLogger()
+if logger != nil {
+    // Use a simple stdout logger that won't become invalid when tests complete
+    grpcLogger = log.NewLogger(os.Stdout)
+}
+
+go func() {
+    if err := srvgrpc.StartGRPCServer(cctx.goContext, grpcLogger, appCfg.GRPC, grpcSrv); err != nil {
+        panic(err)
+    }
+}()
+```
+
+This fix:
+- Uses `log.NewLogger(os.Stdout)` for the gRPC server goroutine instead
+of the test logger
+- Falls back to `log.NewNopLogger()` if no logger is provided
+- Only affects the gRPC server goroutine, not other parts of the test
+- Is minimal and surgical, changing only what's necessary
+
+## Verification
+
+- `TestMaliciousTestNode` now runs successfully without panics
+- Multiple consecutive test runs all pass consistently
+- Error messages are properly logged to stdout without causing panics
+- No regressions in other tests
+
+Fixes #5084.
+
+<!-- START COPILOT CODING AGENT TIPS -->
+---
+
+💡 You can make Copilot smarter by setting up custom instructions,
+customizing its development environment and configuring Model Context
+Protocol (MCP) servers. Learn more [Copilot coding agent
+tips](https://gh.io/copilot-coding-agent-tips) in the docs.
+
+---------
+
+Co-authored-by: copilot-swe-agent[bot] <198982749+Copilot@users.noreply.github.com>
+Co-authored-by: evan-forbes <42654277+evan-forbes@users.noreply.github.com>",fix
+12,https://github.com/celestiaorg/celestia-core/pull/2073,Copilot,https://github.com/celestiaorg/celestia-core/commit/418f82ecb631642e7dcf33779f7938f64f1ea4cc,"misc(tools)!: remove `tools` package (backport #2046) (#2073)
+
+This is an automatic backport of pull request #2046 done by
+[Mergify](https://mergify.com).
+Cherry-pick of 2bbb5c1095e38ad81eff9bff024e8f3f0e054d78 has failed:
+```
+On branch mergify/bp/v0.38.x/pr-2046
+Your branch is up to date with 'origin/v0.38.x'.
+
+You are currently cherry-picking commit 2bbb5c109.
+  (fix conflicts and run ""git cherry-pick --continue"")
+  (use ""git cherry-pick --skip"" to skip this patch)
+  (use ""git cherry-pick --abort"" to cancel the cherry-pick operation)
+
+Changes to be committed:
+	modified:   scripts/mockery_generate.sh
+	deleted:    tools/proto/Dockerfile
+	deleted:    tools/tools.go
+	modified:   types/params.go
+
+Unmerged paths:
+  (use ""git add/rm <file>..."" as appropriate to mark resolution)
+	both modified:   go.mod
+	both modified:   go.sum
+	deleted by them: tools/README.md
+
+```
+
+
+To fix up this pull request, you can check it out locally. See
+documentation:
+https://docs.github.com/en/github/collaborating-with-pull-requests/reviewing-changes-in-pull-requests/checking-out-pull-requests-locally
+
+---
+
+
+<details>
+<summary>Mergify commands and options</summary>
+
+<br />
+
+More conditions and actions can be found in the
+[documentation](https://docs.mergify.com/).
+
+You can also trigger Mergify actions by commenting on this pull request:
+
+- `@Mergifyio refresh` will re-evaluate the rules
+- `@Mergifyio rebase` will rebase this PR on its base branch
+- `@Mergifyio update` will merge the base branch into this PR
+- `@Mergifyio backport <destination>` will backport this PR on
+`<destination>` branch
+
+Additionally, on Mergify [dashboard](https://dashboard.mergify.com) you
+can:
+
+- look at your merge queues
+- generate the Mergify configuration with the config editor.
+
+Finally, you can contact us on https://mergify.com
+</details>
+
+---------
+
+Co-authored-by: Jacob Gadikian <jacobgadikian@gmail.com>
+Co-authored-by: Anton Kaliaev <anton.kalyaev@gmail.com>",backport
+13,https://github.com/celestiaorg/celestia-core/pull/2103,Copilot,https://github.com/celestiaorg/celestia-core/commit/b74d5abae30c550096e5e5b22626e83c7e0c3385,"feat: add timestamp to the filenames of failed proposal blocks  (#2113)
+
+This PR addresses an oversight in PR #2103 where the round information
+was missing from the debug filenames when saving failed proposal blocks
+in the state execution layer.
+
+## Problem
+
+PR #2103 added block saving functionality for debugging purposes but
+forgot to include the round in the filename when saving failed proposal
+blocks via the `saveFailedProposalBlock` function in
+`state/execution.go`.
+
+The consensus layer (`consensus/state.go`) already correctly includes
+the round in its block saving with the format:
+```
+{chainID}-{height}-{round}_faulty_proposal.json
+```
+
+However, the execution layer was using:
+```
+{chainID}-{height}-{reason}_failed_proposal.pb
+```
+
+This inconsistency made it harder to correlate debug files between the
+two layers and reduced the debugging utility.
+
+## Solution
+
+### 1. Updated `saveFailedProposalBlock` function
+- Added `round int32` parameter to the function signature
+- Updated filename format to:
+`{chainID}-{height}-{round}-{reason}_failed_proposal.pb`
+
+### 2. Updated `CreateProposalBlock` function  
+- Added `round int32` parameter to pass round information down from
+consensus layer
+- Updated all calls to `saveFailedProposalBlock` to include the round
+parameter
+
+### 3. Updated all call sites
+- **consensus/state.go**: Pass `cs.Round` when calling
+`CreateProposalBlock`
+- **Test files**: Use appropriate round values (0 for tests, actual
+round for byzantine tests)
+
+### 4. Added test validation
+- Created `TestSaveFailedProposalBlockIncludesRound` to verify the
+filename format includes round information
+
+## Example
+
+Before:
+```
+test-chain-1-prepare_proposal_error_failed_proposal.pb
+```
+
+After:
+```
+test-chain-1-5-prepare_proposal_error_failed_proposal.pb
+```
+
+Now the round (5 in this example) is clearly visible in the filename,
+making it easier to correlate with consensus logs and understand the
+debugging context.
+
+## Testing
+
+- ✅ All existing tests pass
+- ✅ Build succeeds without errors  
+- ✅ New test validates round inclusion in filename
+- ✅ Byzantine consensus tests pass
+- ✅ Node tests pass
+
+Fixes #2112.
+
+<!-- START COPILOT CODING AGENT TIPS -->
+---
+
+💡 You can make Copilot smarter by setting up custom instructions,
+customizing its development environment and configuring Model Context
+Protocol (MCP) servers. Learn more [Copilot coding agent
+tips](https://gh.io/copilot-coding-agent-tips) in the docs.
+
+---------
+
+Co-authored-by: copilot-swe-agent[bot] <198982749+Copilot@users.noreply.github.com>
+Co-authored-by: rach-id <36426637+rach-id@users.noreply.github.com>
+Co-authored-by: CHAMI Rachid <chamirachid1@gmail.com>
+Co-authored-by: evan-forbes <42654277+evan-forbes@users.noreply.github.com>
+Co-authored-by: tzdybal <1138893+tzdybal@users.noreply.github.com>",add
+14,https://github.com/doodlum/skyrim-community-shaders/pull/1264,Copilot,https://github.com/doodlum/skyrim-community-shaders/commit/5b521b731c7ae5cf96035d0c1de2b7a48036cf81,"chore: set extended translucency category to ""lighting"" (#1264)
+
+Co-authored-by: copilot-swe-agent[bot] <198982749+Copilot@users.noreply.github.com>
+Co-authored-by: alandtse <7086117+alandtse@users.noreply.github.com>
+Co-authored-by: Alan Tse <alandtse@users.noreply.github.com>
+Co-authored-by: Copilot <175728472+Copilot@users.noreply.github.com>",update
+15,https://github.com/dotnet/android-libraries/pull/1198,Copilot,https://github.com/dotnet/android-libraries/commit/b874d9b25381779f254ac39c02b5741118f65220,"[Xamarin.AndroidX.Media3.Session] fix `OnGetSeesionFromMediaLibraryService` typo (#1198)
+
+Fixes: https://github.com/dotnet/android-libraries/issues/1195
+
+Fixed a typo in the managedName attribute for the
+`MediaLibraryService.onGetSession` method binding where ""Session"" was
+misspelled as ""Seesion"". This was causing build errors when developers
+tried to override the method with the correct spelling.
+
+## Problem
+
+When developers attempted to override the
+`OnGetSessionFromMediaLibraryService` method (with correct spelling),
+they would get Java errors during build. However, using the misspelled
+version `OnGetSeesionFromMediaLibraryService` would compile but not
+build properly.
+
+## Solution
+
+- Changed `OnGetSeesionFromMediaLibraryService` to
+  `OnGetSessionFromMediaLibraryService` in
+  `/source/androidx.media3/media3-session/Transforms/Metadata.xml`
+- This is a minimal, single-character fix that corrects the typo
+  without affecting any other functionality
+- Removed the problematic `managedReturn` and `managedOverride`
+  attributes from lines 56-67 in Metadata.xml. These were forcing the
+  `onGetSession` method to return `MediaSession` instead of the
+  correct `MediaLibrarySession` type, causing the Java compatibility
+  errors.
+
+Now developers can properly override the method using the correct
+spelling:
+
+```csharp
+public override MediaLibrarySession OnGetSessionFromMediaLibraryService(MediaSession.ControllerInfo controllerInfo)
+{
+    // Implementation
+}
+```",fix
+16,https://github.com/dotnet/android-libraries/pull/1203,Copilot,https://github.com/dotnet/android-libraries/commit/a33cd3cdddfe13447d6a2077a92e151b873177a9,"Stable Updates 20250714 (#1203)
+
+Fixes: https://github.com/dotnet/android-libraries/issues/1202
+
+This PR implements the standard stable updates process for Android
+libraries by running the automated update commands and committing the
+results.
+
+## Updated Packages
+
+1. `androidx.databinding:databindingadapters` - 8.11.0 → 8.11.1
+2. `androidx.databinding:databindingcommon` - 8.11.0 → 8.11.1
+3. `androidx.databinding:databindingruntime` - 8.11.0 → 8.11.1
+4. `androidx.databinding:viewbinding` - 8.11.0 → 8.11.1
+5. `com.google.android.gms:playservicesbase` - 18.7.1 → 18.7.2
+6. `com.google.android.gms:playservicestasks` - 18.3.1 → 18.3.2
+7. `com.google.errorprone:error_prone_annotations` - 2.39.0 → 2.40.0
+8. `com.google.errorprone:error_prone_type_annotations` - 2.39.0 → 2.40.0
+9. `com.google.firebase:firebaseannotations` - 16.2.0 → 17.0.0
+10. `com.google.firebase:firebasecommon` - 21.0.0 → 22.0.0
+11. `com.google.firebase:firebasecomponents` - 18.0.1 → 19.0.0
+
+## Files Modified
+
+- `config.json` - Updated Maven artifact versions (26 lines changed) -
+`cgmanifest.json` - Updated component governance manifest -
+`docs/artifact-list.md` - Updated artifact documentation -
+`docs/artifact-list-with-versions.md` - Updated versioned artifact
+documentation
+
+This update includes 11 package version bumps across AndroidX
+DataBinding, Google Play Services, Error Prone, and Firebase
+components. All changes are automatically generated updates to the
+latest stable versions following the standard weekly update process.
+
+Co-authored-by: Jonathan Peppers <jonathan.peppers@microsoft.com>
+Co-authored-by: sheiksyedm <sheiksyedm@syncfusion.com>",update
+17,https://github.com/dotnet/android/pull/10206,Copilot,https://github.com/dotnet/android/commit/04c44a87357285ae740ab0ed8976e8ff0645865a,"[xabt] remove unused MSBuild tasks (#10209)
+
+Context: https://github.com/dotnet/android/pull/10206
+
+@copilot found these in #10206, so I checked their usage one-by-one to
+remove completely unused code.
+
+Many of these look *very* old, like `<GetConvertedJavaLibraries/>` for
+example, mentions an old Android tool named `jack`.
+
+Removing the `<UsingTask>` declarations should also slightly improve
+MSBuild evaluation time. From what I've seen profiling in the past,
+MSBuild creates a full path string for each `AssemblyFile` entry.",context
+18,https://github.com/dotnet/android/pull/10206,Copilot,https://github.com/dotnet/android/commit/6e8c48ff83743e94034a1f8fcb1f8aaba19c468d,"[xabt] remove unused MSBuild tasks
+
+Context: https://github.com/dotnet/android/pull/10206
+
+@copilot found these in #10206, so I checked their usage one-by-one to
+remove completely unused code.
+
+Many of these look *very* old, like `<GetConvertedJavaLibraries/>` for
+example, mentions an old Android tool named `jack`.
+
+Removing the `<UsingTask>` declarations should also slightly improve
+MSBuild evaluation time. From what I've seen profiling in the past,
+MSBuild creates a full path string for each `AssemblyFile` entry.",context
+19,https://github.com/dotnet/aspire/pull/10067,Copilot,https://github.com/dotnet/aspire/commit/db51d78b3f7dc3f5a2d252325733aa7d8ab5b6b1,"Add ProgressReporter property to DeployingContext (#10067)
+
+Co-authored-by: captainsafia <1857993+captainsafia@users.noreply.github.com>
+Co-authored-by: copilot-swe-agent[bot] <198982749+Copilot@users.noreply.github.com>",context
+20,https://github.com/dotnet/aspire/pull/10067,Copilot,https://github.com/dotnet/aspire/commit/ea3ddb52125c20be5b4c2e942a0183db078166c5,"Add ProgressReporter property to DeployingContext (#10067)
+
+Co-authored-by: captainsafia <1857993+captainsafia@users.noreply.github.com>
+Co-authored-by: copilot-swe-agent[bot] <198982749+Copilot@users.noreply.github.com>",context
+21,https://github.com/dotnet/aspire/pull/10453,Copilot,https://github.com/dotnet/aspire/commit/13f3d2906642b64b629b5a641050d97d3f4a3573,"Remove deprecated parameterless GetDashboardUrlsAsync method from AppHostRpcTarget (#10453)
+
+* Initial plan
+
+* Remove deprecated parameterless GetDashboardUrlsAsync method
+
+Co-authored-by: mitchdenny <513398+mitchdenny@users.noreply.github.com>
+
+---------
+
+Co-authored-by: copilot-swe-agent[bot] <198982749+Copilot@users.noreply.github.com>
+Co-authored-by: mitchdenny <513398+mitchdenny@users.noreply.github.com>
+Co-authored-by: Mitch Denny <midenn@microsoft.com>",remove deprecated
+22,https://github.com/dotnet/aspire/pull/10453,Copilot,https://github.com/dotnet/aspire/commit/8df86347a22939c42c2080fe4d8363908bf59c18,"Remove deprecated parameterless GetDashboardUrlsAsync method from AppHostRpcTarget (#10453) (#10478)
+
+* Initial plan
+
+* Remove deprecated parameterless GetDashboardUrlsAsync method
+
+
+
+---------
+
+Co-authored-by: Copilot <198982749+Copilot@users.noreply.github.com>
+Co-authored-by: mitchdenny <513398+mitchdenny@users.noreply.github.com>",remove deprecated
+23,https://github.com/dotnet/aspire/pull/10624,Copilot,https://github.com/dotnet/aspire/commit/9ba93cb5157e5fb6bb4e702c27481b1e3a27d1b9,"[release/9.4] Fix GitHubModels health check dependency on IHttpClientFactory (#10626)
+
+* Initial plan
+
+* Apply PR #10624 changes to fix GitHubModels health check dependency on IHttpClientFactory
+
+Co-authored-by: sebastienros <1165805+sebastienros@users.noreply.github.com>
+
+---------
+
+Co-authored-by: copilot-swe-agent[bot] <198982749+Copilot@users.noreply.github.com>
+Co-authored-by: sebastienros <1165805+sebastienros@users.noreply.github.com>",fix
+24,https://github.com/dotnet/fsharp/pull/18707,Copilot,https://github.com/dotnet/fsharp/commit/44a24dcd6677639f3b62e361d99f6495175dc49f,"[automated] Merge branch 'main' => 'release/dev18.0' (#18711)
+
+* More test for error recovery  (#18669)
+
+* [main] Update dependencies from dnceng/internal/dotnet-optimization (#18683)
+
+* Update dependencies from https://dev.azure.com/dnceng/internal/_git/dotnet-optimization build 20250610.1
+
+optimization.linux-arm64.MIBC.Runtime , optimization.linux-x64.MIBC.Runtime , optimization.windows_nt-arm64.MIBC.Runtime , optimization.windows_nt-x64.MIBC.Runtime , optimization.windows_nt-x86.MIBC.Runtime
+ From Version 1.0.0-prerelease.25309.1 -> To Version 1.0.0-prerelease.25310.1
+
+* Update dependencies from https://dev.azure.com/dnceng/internal/_git/dotnet-optimization build 20250611.1
+
+optimization.linux-arm64.MIBC.Runtime , optimization.linux-x64.MIBC.Runtime , optimization.windows_nt-arm64.MIBC.Runtime , optimization.windows_nt-x64.MIBC.Runtime , optimization.windows_nt-x86.MIBC.Runtime
+ From Version 1.0.0-prerelease.25309.1 -> To Version 1.0.0-prerelease.25311.1
+
+* Update dependencies from https://dev.azure.com/dnceng/internal/_git/dotnet-optimization build 20250616.1
+
+optimization.linux-arm64.MIBC.Runtime , optimization.linux-x64.MIBC.Runtime , optimization.windows_nt-arm64.MIBC.Runtime , optimization.windows_nt-x64.MIBC.Runtime , optimization.windows_nt-x86.MIBC.Runtime
+ From Version 1.0.0-prerelease.25309.1 -> To Version 1.0.0-prerelease.25316.1
+
+* Update dependencies from https://dev.azure.com/dnceng/internal/_git/dotnet-optimization build 20250617.1
+
+optimization.linux-arm64.MIBC.Runtime , optimization.linux-x64.MIBC.Runtime , optimization.windows_nt-arm64.MIBC.Runtime , optimization.windows_nt-x64.MIBC.Runtime , optimization.windows_nt-x86.MIBC.Runtime
+ From Version 1.0.0-prerelease.25309.1 -> To Version 1.0.0-prerelease.25317.1
+
+---------
+
+Co-authored-by: dotnet-maestro[bot] <dotnet-maestro[bot]@users.noreply.github.com>
+Co-authored-by: Tomas Grosup <tomasgrosup@microsoft.com>
+
+* [main] Update dependencies from dotnet/arcade (#18643)
+
+* Expand docstring on SynModuleDecl.Types (#18698)
+
+* Update dependencies from https://github.com/dotnet/arcade build 20250620.5 (#18703)
+
+Microsoft.DotNet.Arcade.Sdk
+ From Version 10.0.0-beta.25316.2 -> To Version 10.0.0-beta.25320.5
+
+Co-authored-by: dotnet-maestro[bot] <dotnet-maestro[bot]@users.noreply.github.com>
+
+* Remove feature/lsp merge from branch-merge.yml (#18705)
+
+Cleaning up, sicne we've merged feature/lsp to main some time ago
+
+* Update dependencies from https://dev.azure.com/dnceng/internal/_git/dotnet-optimization build 20250623.1 (#18710)
+
+optimization.linux-arm64.MIBC.Runtime , optimization.linux-x64.MIBC.Runtime , optimization.windows_nt-arm64.MIBC.Runtime , optimization.windows_nt-x64.MIBC.Runtime , optimization.windows_nt-x86.MIBC.Runtime
+ From Version 1.0.0-prerelease.25317.1 -> To Version 1.0.0-prerelease.25323.1
+
+Co-authored-by: dotnet-maestro[bot] <dotnet-maestro[bot]@users.noreply.github.com>
+
+* Update dependencies from https://github.com/dotnet/arcade build 20250623.3 (#18709)
+
+Microsoft.DotNet.Arcade.Sdk
+ From Version 10.0.0-beta.25320.5 -> To Version 10.0.0-beta.25323.3
+
+Co-authored-by: dotnet-maestro[bot] <dotnet-maestro[bot]@users.noreply.github.com>
+
+* Remove ActivityDisposable conditional directives and replace with System.IDisposable | null (#18707)
+
+---------
+
+Co-authored-by: Edgar Gonzalez <egonzalez@totallymoney.com>
+Co-authored-by: dotnet-maestro[bot] <42748379+dotnet-maestro[bot]@users.noreply.github.com>
+Co-authored-by: dotnet-maestro[bot] <dotnet-maestro[bot]@users.noreply.github.com>
+Co-authored-by: Tomas Grosup <tomasgrosup@microsoft.com>
+Co-authored-by: Patrick Stevens <3138005+Smaug123@users.noreply.github.com>
+Co-authored-by: Adam Boniecki <20281641+abonie@users.noreply.github.com>
+Co-authored-by: Copilot <198982749+Copilot@users.noreply.github.com>",context
+25,https://github.com/dotnet/maui/pull/29578,Copilot,https://github.com/dotnet/maui/commit/52fffe9ad59d5f3a89190d79fb1edf8f1bc84365,"Update README.md with link to .NET MAUI for .NET 10 (#29578)
+
+* Initial plan for issue
+
+* Update README with link to .NET 10
+
+Co-authored-by: rachelkang <21988533+rachelkang@users.noreply.github.com>
+
+* Update date format for .NET 10 announcement
+
+Co-authored-by: mattleibow <1096616+mattleibow@users.noreply.github.com>
+
+* Remove .NET 10 entry from README based on feedback
+
+Co-authored-by: jsuarezruiz <6755973+jsuarezruiz@users.noreply.github.com>
+
+* Re-add .NET 10 link with just the year 2025
+
+Co-authored-by: jsuarezruiz <6755973+jsuarezruiz@users.noreply.github.com>
+
+---------
+
+Co-authored-by: copilot-swe-agent[bot] <198982749+Copilot@users.noreply.github.com>
+Co-authored-by: rachelkang <21988533+rachelkang@users.noreply.github.com>
+Co-authored-by: mattleibow <1096616+mattleibow@users.noreply.github.com>
+Co-authored-by: jsuarezruiz <6755973+jsuarezruiz@users.noreply.github.com>",update
+1,https://github.com/0x80/isolate-package/pull/133,Cursor,https://github.com/0x80/isolate-package/commit/4a8ca511c8ee820fed02932c23440743a81f9d6e,"Revert ""Prevent empty pnpm-workspace file (#133)""
+
+This reverts commit e771c34689d8547789486708f85c5bef79e43d3b.",revert
+2,https://github.com/acts-project/acts/pull/4414,Cursor,https://github.com/acts-project/acts/commit/af6915339ed375fdc977870d69d84076683a353b,"ci: Add check for devcontainer configuration (#4414)
+
+Add a basic check that verifies the dev container can load, configure and build ACTS.
+
+
+
+Co-authored-by: Cursor Agent <199161495+cursoragent@users.noreply.github.com>",add
+3,https://github.com/acts-project/acts/pull/4414,Cursor,https://github.com/acts-project/acts/commit/cb445348ef7a5578d54239c7122c9309b1899b20,"ci: Add check for devcontainer configuration (#4414)
+
+Add a basic check that verifies the dev container can load, configure and build ACTS.
+
+
+
+Co-authored-by: Cursor Agent <199161495+cursoragent@users.noreply.github.com>",add
+4,https://github.com/aldinokemal/go-whatsapp-web-multidevice/pull/314,Cursor,https://github.com/aldinokemal/go-whatsapp-web-multidevice/commit/fa509a6c15316bb8783643f5a8803cd0f4d26108,"feat: Support Send Audio from URL (#313)
+
+* Add support for sending audio via URL in send audio endpoint
+
+Co-authored-by: aldinokemal2104 <aldinokemal2104@gmail.com>
+
+* Fix DownloadAudioFromURL function issues (#314)
+
+* Improve audio download validation and size limit handling
+
+Co-authored-by: aldinokemal2104 <aldinokemal2104@gmail.com>
+
+* Refine audio download size validation and limit handling
+
+- Adjusted the size limit logic to ensure proper handling of maximum audio size.
+- Enhanced error message to provide clearer feedback on size violations.
+
+---------
+
+Co-authored-by: Cursor Agent <cursoragent@cursor.com>
+
+* fix(utils): add HTTP status code validation to download functions
+
+* feat(audio): add URL support for audio messages
+
+- Add audio_url data property and input field
+- Update validation to accept either file or URL
+- Enhance send payload to include audio_url when provided
+- Add explanatory UI text for upload alternatives
+- Update reset functionality to clear audio_url
+
+---------
+
+Co-authored-by: Cursor Agent <cursoragent@cursor.com>",fix
+5,https://github.com/aldinokemal/go-whatsapp-web-multidevice/pull/334,Cursor,https://github.com/aldinokemal/go-whatsapp-web-multidevice/commit/81246e9e06c873441f2b91a212532164cc05e5a9,"feat: Migrate chat storage from CSV to SQLite with enhanced WhatsApp integration (#333)
+
+* refactor(chatstorage): replace CSV storage with SQLite database
+
+Migrate from CSV-based chat storage with periodic flushing to a proper SQLite
+database implementation. This architectural change provides better data
+persistence, query capabilities, and eliminates the need for manual flush
+intervals.
+
+Key changes:
+- Remove CSV storage implementation and auto-flush functionality
+- Add SQLite-based chat storage with proper repository pattern
+- Store complete message metadata including media information
+- Support for chat and message queries with filtering
+- Integrate with WhatsApp event handlers for automatic message storage
+- Remove APP_CHAT_FLUSH_INTERVAL and WHATSAPP_CHAT_STORAGE config options
+
+The new storage system maintains backward compatibility for reply functionality
+while providing a more robust foundation for future features.
+
+* refactor(utils): migrate WhatsApp utilities from infrastructure to pkg/utils
+
+- Move WhatsApp utility functions from infrastructure/whatsapp/utils.go to pkg/utils/whatsapp.go
+- Update function signatures to accept client parameter to avoid import cycles
+- Update all import statements across 12 files in usecase/ and ui/rest/ packages
+- Consolidate media extraction, phone sanitization, JID validation, and login utilities
+- Maintain backward compatibility with existing error types and function behavior
+- Remove old utils.go file and clean up unused imports
+- All tests pass and build succeeds
+
+This migration improves code organization by centralizing shared utilities in the pkg/utils package while maintaining all existing functionality.
+
+* refactor(chatstorage): enhance chat name retrieval with pushname support
+
+- Update GetChatName function to GetChatNameWithPushName, allowing for the use of pushname when determining chat names.
+- Implement logic to prioritize pushname over senderUser and JID user for more accurate chat identification.
+- Adjust CreateMessage and StoreSentMessage methods to utilize the new chat name retrieval function, ensuring compatibility with existing functionality.
+
+This change improves the accuracy of chat name assignments in WhatsApp integration, enhancing user experience.
+
+* feat(chatstorage): add batch message storage and WhatsApp history sync integration
+
+- Add StoreMessagesBatch method for efficient bulk message operations
+- Implement comprehensive history sync processing for conversations and push names
+- Add helper methods for chat and message storage in whatsapp_integration
+- Apply consistent code formatting across send domain structs
+- Support automatic chat creation with proper naming from history sync data
+
+* feat(whatsapp): implement database cleanup during logout operations
+
+- Introduce ChatStorageTestSuite for unit testing chat storage functionalities.
+- Add tests for truncating messages, chats, and all data, ensuring referential integrity.
+- Implement logging for data truncation during user logout, enhancing cleanup processes.
+- Provide methods for retrieving storage statistics, improving monitoring capabilities.
+- Ensure all tests validate expected outcomes for chat and message operations.
+
+* fix: address security vulnerabilities and performance issues in chat storage
+
+- Fix SQL injection vulnerability by using parameterized queries for LIMIT/OFFSET
+- Fix race condition in StoreSentMessage with timeout-based approach
+- Optimize FindMessageByID with O(1) lookup instead of O(n*m)
+- Add index on message ID for better query performance
+- Fix memory issues in GetStorageStatistics using COUNT queries
+- Improve error handling and logging throughout the codebase
+- Fix TruncateAllChats to handle foreign key constraints properly
+
+* Handle chat storage initialization failure (#334)
+
+Terminate app on chat storage initialization failure
+
+Co-authored-by: Cursor Agent <cursoragent@cursor.com>
+
+* Add error handling for message storage (#335)
+
+Handle message storage errors with logging in WhatsApp handler
+
+Co-authored-by: Cursor Agent <cursoragent@cursor.com>
+
+* Fix inconsistent sender JID storage (#336)
+
+Fix WhatsApp sender JID handling for message storage and replies
+
+Co-authored-by: Cursor Agent <cursoragent@cursor.com>
+
+* Update src/pkg/utils/whatsapp.go
+
+Co-authored-by: coderabbitai[bot] <136622811+coderabbitai[bot]@users.noreply.github.com>
+Signed-off-by: Aldino Kemal <aldinokemal2104@gmail.com>
+
+* feat(chatstorage): add context cancellation support to sent message storage
+
+Add context.Context parameter to StoreSentMessageWithContext method to enable proper cancellation and timeout handling. Implement context checks at key points during database operations to allow early termination. Refactor usecase to use the new context-aware method with proper goroutine-based async storage and timeout handling.
+
+* feat(chatstorage): implement database-level message search functionality
+
+Add SearchMessages method to Repository interface and SQLiteRepository with case-insensitive LIKE search. Replace client-side filtering in Storage.SearchMessages with efficient database queries. Include comprehensive test coverage for various search scenarios including case sensitivity, chat isolation, and limit handling.
+
+* refactor(whatsapp): improve filename sanitization and fix code formatting
+
+Replace multiple string replacements with regex-based sanitization for media filename generation to handle special characters more comprehensively. Also standardize indentation from spaces to tabs in SanitizePhone function for consistency.
+
+* refactor(whatsapp): improve message handling and storage integration
+
+- Simplify media filename generation logic by consolidating string concatenation
+- Remove redundant if-else branches in GenerateMediaFilename function
+- Use errors.Is() for proper error comparison in sent message storage
+- Improve code readability and maintainability
+
+Changes in detail:
+1. pkg/utils/whatsapp.go:
+   - Refactored GenerateMediaFilename to use single name variable
+   - Simplified caption sanitization and length limiting
+   - Reduced code duplication in filename construction
+
+2. usecase/send.go:
+   - Fixed error comparison to use errors.Is() instead of direct comparison
+   - Ensures proper handling of wrapped errors from context cancellation
+
+* refactor(whatsapp): enhance self-message handling and timestamp conversion
+
+- Update sender identification to use full JID format for self-messages and group messages for consistency.
+- Implement logging to skip self-messages when client ID is unavailable and handle empty participant cases.
+- Change timestamp conversion from Unix seconds to milliseconds to align with WhatsApp's timestamp format.
+
+* Fix JID construction for reply messages (#338)
+
+Simplify reply message JID handling in SendText method
+
+Co-authored-by: Cursor Agent <cursoragent@cursor.com>
+
+---------
+
+Signed-off-by: Aldino Kemal <aldinokemal2104@gmail.com>
+Co-authored-by: Cursor Agent <cursoragent@cursor.com>
+Co-authored-by: coderabbitai[bot] <136622811+coderabbitai[bot]@users.noreply.github.com>",fix
+6,https://github.com/aldinokemal/go-whatsapp-web-multidevice/pull/335,Cursor,https://github.com/aldinokemal/go-whatsapp-web-multidevice/commit/81246e9e06c873441f2b91a212532164cc05e5a9,"feat: Migrate chat storage from CSV to SQLite with enhanced WhatsApp integration (#333)
+
+* refactor(chatstorage): replace CSV storage with SQLite database
+
+Migrate from CSV-based chat storage with periodic flushing to a proper SQLite
+database implementation. This architectural change provides better data
+persistence, query capabilities, and eliminates the need for manual flush
+intervals.
+
+Key changes:
+- Remove CSV storage implementation and auto-flush functionality
+- Add SQLite-based chat storage with proper repository pattern
+- Store complete message metadata including media information
+- Support for chat and message queries with filtering
+- Integrate with WhatsApp event handlers for automatic message storage
+- Remove APP_CHAT_FLUSH_INTERVAL and WHATSAPP_CHAT_STORAGE config options
+
+The new storage system maintains backward compatibility for reply functionality
+while providing a more robust foundation for future features.
+
+* refactor(utils): migrate WhatsApp utilities from infrastructure to pkg/utils
+
+- Move WhatsApp utility functions from infrastructure/whatsapp/utils.go to pkg/utils/whatsapp.go
+- Update function signatures to accept client parameter to avoid import cycles
+- Update all import statements across 12 files in usecase/ and ui/rest/ packages
+- Consolidate media extraction, phone sanitization, JID validation, and login utilities
+- Maintain backward compatibility with existing error types and function behavior
+- Remove old utils.go file and clean up unused imports
+- All tests pass and build succeeds
+
+This migration improves code organization by centralizing shared utilities in the pkg/utils package while maintaining all existing functionality.
+
+* refactor(chatstorage): enhance chat name retrieval with pushname support
+
+- Update GetChatName function to GetChatNameWithPushName, allowing for the use of pushname when determining chat names.
+- Implement logic to prioritize pushname over senderUser and JID user for more accurate chat identification.
+- Adjust CreateMessage and StoreSentMessage methods to utilize the new chat name retrieval function, ensuring compatibility with existing functionality.
+
+This change improves the accuracy of chat name assignments in WhatsApp integration, enhancing user experience.
+
+* feat(chatstorage): add batch message storage and WhatsApp history sync integration
+
+- Add StoreMessagesBatch method for efficient bulk message operations
+- Implement comprehensive history sync processing for conversations and push names
+- Add helper methods for chat and message storage in whatsapp_integration
+- Apply consistent code formatting across send domain structs
+- Support automatic chat creation with proper naming from history sync data
+
+* feat(whatsapp): implement database cleanup during logout operations
+
+- Introduce ChatStorageTestSuite for unit testing chat storage functionalities.
+- Add tests for truncating messages, chats, and all data, ensuring referential integrity.
+- Implement logging for data truncation during user logout, enhancing cleanup processes.
+- Provide methods for retrieving storage statistics, improving monitoring capabilities.
+- Ensure all tests validate expected outcomes for chat and message operations.
+
+* fix: address security vulnerabilities and performance issues in chat storage
+
+- Fix SQL injection vulnerability by using parameterized queries for LIMIT/OFFSET
+- Fix race condition in StoreSentMessage with timeout-based approach
+- Optimize FindMessageByID with O(1) lookup instead of O(n*m)
+- Add index on message ID for better query performance
+- Fix memory issues in GetStorageStatistics using COUNT queries
+- Improve error handling and logging throughout the codebase
+- Fix TruncateAllChats to handle foreign key constraints properly
+
+* Handle chat storage initialization failure (#334)
+
+Terminate app on chat storage initialization failure
+
+Co-authored-by: Cursor Agent <cursoragent@cursor.com>
+
+* Add error handling for message storage (#335)
+
+Handle message storage errors with logging in WhatsApp handler
+
+Co-authored-by: Cursor Agent <cursoragent@cursor.com>
+
+* Fix inconsistent sender JID storage (#336)
+
+Fix WhatsApp sender JID handling for message storage and replies
+
+Co-authored-by: Cursor Agent <cursoragent@cursor.com>
+
+* Update src/pkg/utils/whatsapp.go
+
+Co-authored-by: coderabbitai[bot] <136622811+coderabbitai[bot]@users.noreply.github.com>
+Signed-off-by: Aldino Kemal <aldinokemal2104@gmail.com>
+
+* feat(chatstorage): add context cancellation support to sent message storage
+
+Add context.Context parameter to StoreSentMessageWithContext method to enable proper cancellation and timeout handling. Implement context checks at key points during database operations to allow early termination. Refactor usecase to use the new context-aware method with proper goroutine-based async storage and timeout handling.
+
+* feat(chatstorage): implement database-level message search functionality
+
+Add SearchMessages method to Repository interface and SQLiteRepository with case-insensitive LIKE search. Replace client-side filtering in Storage.SearchMessages with efficient database queries. Include comprehensive test coverage for various search scenarios including case sensitivity, chat isolation, and limit handling.
+
+* refactor(whatsapp): improve filename sanitization and fix code formatting
+
+Replace multiple string replacements with regex-based sanitization for media filename generation to handle special characters more comprehensively. Also standardize indentation from spaces to tabs in SanitizePhone function for consistency.
+
+* refactor(whatsapp): improve message handling and storage integration
+
+- Simplify media filename generation logic by consolidating string concatenation
+- Remove redundant if-else branches in GenerateMediaFilename function
+- Use errors.Is() for proper error comparison in sent message storage
+- Improve code readability and maintainability
+
+Changes in detail:
+1. pkg/utils/whatsapp.go:
+   - Refactored GenerateMediaFilename to use single name variable
+   - Simplified caption sanitization and length limiting
+   - Reduced code duplication in filename construction
+
+2. usecase/send.go:
+   - Fixed error comparison to use errors.Is() instead of direct comparison
+   - Ensures proper handling of wrapped errors from context cancellation
+
+* refactor(whatsapp): enhance self-message handling and timestamp conversion
+
+- Update sender identification to use full JID format for self-messages and group messages for consistency.
+- Implement logging to skip self-messages when client ID is unavailable and handle empty participant cases.
+- Change timestamp conversion from Unix seconds to milliseconds to align with WhatsApp's timestamp format.
+
+* Fix JID construction for reply messages (#338)
+
+Simplify reply message JID handling in SendText method
+
+Co-authored-by: Cursor Agent <cursoragent@cursor.com>
+
+---------
+
+Signed-off-by: Aldino Kemal <aldinokemal2104@gmail.com>
+Co-authored-by: Cursor Agent <cursoragent@cursor.com>
+Co-authored-by: coderabbitai[bot] <136622811+coderabbitai[bot]@users.noreply.github.com>",add
+7,https://github.com/aldinokemal/go-whatsapp-web-multidevice/pull/336,Cursor,https://github.com/aldinokemal/go-whatsapp-web-multidevice/commit/81246e9e06c873441f2b91a212532164cc05e5a9,"feat: Migrate chat storage from CSV to SQLite with enhanced WhatsApp integration (#333)
+
+* refactor(chatstorage): replace CSV storage with SQLite database
+
+Migrate from CSV-based chat storage with periodic flushing to a proper SQLite
+database implementation. This architectural change provides better data
+persistence, query capabilities, and eliminates the need for manual flush
+intervals.
+
+Key changes:
+- Remove CSV storage implementation and auto-flush functionality
+- Add SQLite-based chat storage with proper repository pattern
+- Store complete message metadata including media information
+- Support for chat and message queries with filtering
+- Integrate with WhatsApp event handlers for automatic message storage
+- Remove APP_CHAT_FLUSH_INTERVAL and WHATSAPP_CHAT_STORAGE config options
+
+The new storage system maintains backward compatibility for reply functionality
+while providing a more robust foundation for future features.
+
+* refactor(utils): migrate WhatsApp utilities from infrastructure to pkg/utils
+
+- Move WhatsApp utility functions from infrastructure/whatsapp/utils.go to pkg/utils/whatsapp.go
+- Update function signatures to accept client parameter to avoid import cycles
+- Update all import statements across 12 files in usecase/ and ui/rest/ packages
+- Consolidate media extraction, phone sanitization, JID validation, and login utilities
+- Maintain backward compatibility with existing error types and function behavior
+- Remove old utils.go file and clean up unused imports
+- All tests pass and build succeeds
+
+This migration improves code organization by centralizing shared utilities in the pkg/utils package while maintaining all existing functionality.
+
+* refactor(chatstorage): enhance chat name retrieval with pushname support
+
+- Update GetChatName function to GetChatNameWithPushName, allowing for the use of pushname when determining chat names.
+- Implement logic to prioritize pushname over senderUser and JID user for more accurate chat identification.
+- Adjust CreateMessage and StoreSentMessage methods to utilize the new chat name retrieval function, ensuring compatibility with existing functionality.
+
+This change improves the accuracy of chat name assignments in WhatsApp integration, enhancing user experience.
+
+* feat(chatstorage): add batch message storage and WhatsApp history sync integration
+
+- Add StoreMessagesBatch method for efficient bulk message operations
+- Implement comprehensive history sync processing for conversations and push names
+- Add helper methods for chat and message storage in whatsapp_integration
+- Apply consistent code formatting across send domain structs
+- Support automatic chat creation with proper naming from history sync data
+
+* feat(whatsapp): implement database cleanup during logout operations
+
+- Introduce ChatStorageTestSuite for unit testing chat storage functionalities.
+- Add tests for truncating messages, chats, and all data, ensuring referential integrity.
+- Implement logging for data truncation during user logout, enhancing cleanup processes.
+- Provide methods for retrieving storage statistics, improving monitoring capabilities.
+- Ensure all tests validate expected outcomes for chat and message operations.
+
+* fix: address security vulnerabilities and performance issues in chat storage
+
+- Fix SQL injection vulnerability by using parameterized queries for LIMIT/OFFSET
+- Fix race condition in StoreSentMessage with timeout-based approach
+- Optimize FindMessageByID with O(1) lookup instead of O(n*m)
+- Add index on message ID for better query performance
+- Fix memory issues in GetStorageStatistics using COUNT queries
+- Improve error handling and logging throughout the codebase
+- Fix TruncateAllChats to handle foreign key constraints properly
+
+* Handle chat storage initialization failure (#334)
+
+Terminate app on chat storage initialization failure
+
+Co-authored-by: Cursor Agent <cursoragent@cursor.com>
+
+* Add error handling for message storage (#335)
+
+Handle message storage errors with logging in WhatsApp handler
+
+Co-authored-by: Cursor Agent <cursoragent@cursor.com>
+
+* Fix inconsistent sender JID storage (#336)
+
+Fix WhatsApp sender JID handling for message storage and replies
+
+Co-authored-by: Cursor Agent <cursoragent@cursor.com>
+
+* Update src/pkg/utils/whatsapp.go
+
+Co-authored-by: coderabbitai[bot] <136622811+coderabbitai[bot]@users.noreply.github.com>
+Signed-off-by: Aldino Kemal <aldinokemal2104@gmail.com>
+
+* feat(chatstorage): add context cancellation support to sent message storage
+
+Add context.Context parameter to StoreSentMessageWithContext method to enable proper cancellation and timeout handling. Implement context checks at key points during database operations to allow early termination. Refactor usecase to use the new context-aware method with proper goroutine-based async storage and timeout handling.
+
+* feat(chatstorage): implement database-level message search functionality
+
+Add SearchMessages method to Repository interface and SQLiteRepository with case-insensitive LIKE search. Replace client-side filtering in Storage.SearchMessages with efficient database queries. Include comprehensive test coverage for various search scenarios including case sensitivity, chat isolation, and limit handling.
+
+* refactor(whatsapp): improve filename sanitization and fix code formatting
+
+Replace multiple string replacements with regex-based sanitization for media filename generation to handle special characters more comprehensively. Also standardize indentation from spaces to tabs in SanitizePhone function for consistency.
+
+* refactor(whatsapp): improve message handling and storage integration
+
+- Simplify media filename generation logic by consolidating string concatenation
+- Remove redundant if-else branches in GenerateMediaFilename function
+- Use errors.Is() for proper error comparison in sent message storage
+- Improve code readability and maintainability
+
+Changes in detail:
+1. pkg/utils/whatsapp.go:
+   - Refactored GenerateMediaFilename to use single name variable
+   - Simplified caption sanitization and length limiting
+   - Reduced code duplication in filename construction
+
+2. usecase/send.go:
+   - Fixed error comparison to use errors.Is() instead of direct comparison
+   - Ensures proper handling of wrapped errors from context cancellation
+
+* refactor(whatsapp): enhance self-message handling and timestamp conversion
+
+- Update sender identification to use full JID format for self-messages and group messages for consistency.
+- Implement logging to skip self-messages when client ID is unavailable and handle empty participant cases.
+- Change timestamp conversion from Unix seconds to milliseconds to align with WhatsApp's timestamp format.
+
+* Fix JID construction for reply messages (#338)
+
+Simplify reply message JID handling in SendText method
+
+Co-authored-by: Cursor Agent <cursoragent@cursor.com>
+
+---------
+
+Signed-off-by: Aldino Kemal <aldinokemal2104@gmail.com>
+Co-authored-by: Cursor Agent <cursoragent@cursor.com>
+Co-authored-by: coderabbitai[bot] <136622811+coderabbitai[bot]@users.noreply.github.com>",fix
+8,https://github.com/aldinokemal/go-whatsapp-web-multidevice/pull/338,Cursor,https://github.com/aldinokemal/go-whatsapp-web-multidevice/commit/81246e9e06c873441f2b91a212532164cc05e5a9,"feat: Migrate chat storage from CSV to SQLite with enhanced WhatsApp integration (#333)
+
+* refactor(chatstorage): replace CSV storage with SQLite database
+
+Migrate from CSV-based chat storage with periodic flushing to a proper SQLite
+database implementation. This architectural change provides better data
+persistence, query capabilities, and eliminates the need for manual flush
+intervals.
+
+Key changes:
+- Remove CSV storage implementation and auto-flush functionality
+- Add SQLite-based chat storage with proper repository pattern
+- Store complete message metadata including media information
+- Support for chat and message queries with filtering
+- Integrate with WhatsApp event handlers for automatic message storage
+- Remove APP_CHAT_FLUSH_INTERVAL and WHATSAPP_CHAT_STORAGE config options
+
+The new storage system maintains backward compatibility for reply functionality
+while providing a more robust foundation for future features.
+
+* refactor(utils): migrate WhatsApp utilities from infrastructure to pkg/utils
+
+- Move WhatsApp utility functions from infrastructure/whatsapp/utils.go to pkg/utils/whatsapp.go
+- Update function signatures to accept client parameter to avoid import cycles
+- Update all import statements across 12 files in usecase/ and ui/rest/ packages
+- Consolidate media extraction, phone sanitization, JID validation, and login utilities
+- Maintain backward compatibility with existing error types and function behavior
+- Remove old utils.go file and clean up unused imports
+- All tests pass and build succeeds
+
+This migration improves code organization by centralizing shared utilities in the pkg/utils package while maintaining all existing functionality.
+
+* refactor(chatstorage): enhance chat name retrieval with pushname support
+
+- Update GetChatName function to GetChatNameWithPushName, allowing for the use of pushname when determining chat names.
+- Implement logic to prioritize pushname over senderUser and JID user for more accurate chat identification.
+- Adjust CreateMessage and StoreSentMessage methods to utilize the new chat name retrieval function, ensuring compatibility with existing functionality.
+
+This change improves the accuracy of chat name assignments in WhatsApp integration, enhancing user experience.
+
+* feat(chatstorage): add batch message storage and WhatsApp history sync integration
+
+- Add StoreMessagesBatch method for efficient bulk message operations
+- Implement comprehensive history sync processing for conversations and push names
+- Add helper methods for chat and message storage in whatsapp_integration
+- Apply consistent code formatting across send domain structs
+- Support automatic chat creation with proper naming from history sync data
+
+* feat(whatsapp): implement database cleanup during logout operations
+
+- Introduce ChatStorageTestSuite for unit testing chat storage functionalities.
+- Add tests for truncating messages, chats, and all data, ensuring referential integrity.
+- Implement logging for data truncation during user logout, enhancing cleanup processes.
+- Provide methods for retrieving storage statistics, improving monitoring capabilities.
+- Ensure all tests validate expected outcomes for chat and message operations.
+
+* fix: address security vulnerabilities and performance issues in chat storage
+
+- Fix SQL injection vulnerability by using parameterized queries for LIMIT/OFFSET
+- Fix race condition in StoreSentMessage with timeout-based approach
+- Optimize FindMessageByID with O(1) lookup instead of O(n*m)
+- Add index on message ID for better query performance
+- Fix memory issues in GetStorageStatistics using COUNT queries
+- Improve error handling and logging throughout the codebase
+- Fix TruncateAllChats to handle foreign key constraints properly
+
+* Handle chat storage initialization failure (#334)
+
+Terminate app on chat storage initialization failure
+
+Co-authored-by: Cursor Agent <cursoragent@cursor.com>
+
+* Add error handling for message storage (#335)
+
+Handle message storage errors with logging in WhatsApp handler
+
+Co-authored-by: Cursor Agent <cursoragent@cursor.com>
+
+* Fix inconsistent sender JID storage (#336)
+
+Fix WhatsApp sender JID handling for message storage and replies
+
+Co-authored-by: Cursor Agent <cursoragent@cursor.com>
+
+* Update src/pkg/utils/whatsapp.go
+
+Co-authored-by: coderabbitai[bot] <136622811+coderabbitai[bot]@users.noreply.github.com>
+Signed-off-by: Aldino Kemal <aldinokemal2104@gmail.com>
+
+* feat(chatstorage): add context cancellation support to sent message storage
+
+Add context.Context parameter to StoreSentMessageWithContext method to enable proper cancellation and timeout handling. Implement context checks at key points during database operations to allow early termination. Refactor usecase to use the new context-aware method with proper goroutine-based async storage and timeout handling.
+
+* feat(chatstorage): implement database-level message search functionality
+
+Add SearchMessages method to Repository interface and SQLiteRepository with case-insensitive LIKE search. Replace client-side filtering in Storage.SearchMessages with efficient database queries. Include comprehensive test coverage for various search scenarios including case sensitivity, chat isolation, and limit handling.
+
+* refactor(whatsapp): improve filename sanitization and fix code formatting
+
+Replace multiple string replacements with regex-based sanitization for media filename generation to handle special characters more comprehensively. Also standardize indentation from spaces to tabs in SanitizePhone function for consistency.
+
+* refactor(whatsapp): improve message handling and storage integration
+
+- Simplify media filename generation logic by consolidating string concatenation
+- Remove redundant if-else branches in GenerateMediaFilename function
+- Use errors.Is() for proper error comparison in sent message storage
+- Improve code readability and maintainability
+
+Changes in detail:
+1. pkg/utils/whatsapp.go:
+   - Refactored GenerateMediaFilename to use single name variable
+   - Simplified caption sanitization and length limiting
+   - Reduced code duplication in filename construction
+
+2. usecase/send.go:
+   - Fixed error comparison to use errors.Is() instead of direct comparison
+   - Ensures proper handling of wrapped errors from context cancellation
+
+* refactor(whatsapp): enhance self-message handling and timestamp conversion
+
+- Update sender identification to use full JID format for self-messages and group messages for consistency.
+- Implement logging to skip self-messages when client ID is unavailable and handle empty participant cases.
+- Change timestamp conversion from Unix seconds to milliseconds to align with WhatsApp's timestamp format.
+
+* Fix JID construction for reply messages (#338)
+
+Simplify reply message JID handling in SendText method
+
+Co-authored-by: Cursor Agent <cursoragent@cursor.com>
+
+---------
+
+Signed-off-by: Aldino Kemal <aldinokemal2104@gmail.com>
+Co-authored-by: Cursor Agent <cursoragent@cursor.com>
+Co-authored-by: coderabbitai[bot] <136622811+coderabbitai[bot]@users.noreply.github.com>",fix
+9,https://github.com/Arize-ai/phoenix/pull/8571,Cursor,https://github.com/Arize-ai/phoenix/commit/efcc7717582031e9fb615f3177f66f2758cb891b,"fix: Improve error message for missing email scope (#8571)
+
+* Handle missing email scope in OAuth2 user info parsing
+
+Co-authored-by: mikyo <mikyo@arize.com>
+
+* ruff
+
+* clean
+
+* email scope
+
+---------
+
+Co-authored-by: Cursor Agent <cursoragent@cursor.com>
+Co-authored-by: Alexander Song <axiomofjoy@gmail.com>",fix
+10,https://github.com/BerriAI/litellm/pull/11523,Cursor,https://github.com/BerriAI/litellm/commit/4c39f572271938e707bd38e443af63b57ada7bf6,"Update Anthropic unified docs with multi-provider examples and proxy usage (#11523)
+
+Co-authored-by: Cursor Agent <cursoragent@cursor.com>",update
+11,https://github.com/BerriAI/litellm/pull/11564,Cursor,https://github.com/BerriAI/litellm/commit/cd8ec4556f9f9f16e8ddf39e68f9d412b911ff00,"[Feat] Add `reasoning_effort` support for perplexity models (#11562)
+
+* fix: add reasoning_effort for pplx
+
+* docs pplx reasoning
+
+* [tests] add mock tests for pplx reasoning (#11564)
+
+* Add tests for Perplexity reasoning models and effort parameter
+
+* tests perplexity reasoning effort
+
+---------
+
+Co-authored-by: Cursor Agent <cursoragent@cursor.com>
+
+* test pplx reasoning effort
+
+---------
+
+Co-authored-by: Cursor Agent <cursoragent@cursor.com>",add
+12,https://github.com/BerriAI/litellm/pull/11564,Cursor,https://github.com/BerriAI/litellm/commit/fab8261f0dc47637f19fefa3a3e35ac995cf3331,"[Feat] Add `reasoning_effort` support for perplexity models (#11562)
+
+* fix: add reasoning_effort for pplx
+
+* docs pplx reasoning
+
+* [tests] add mock tests for pplx reasoning (#11564)
+
+* Add tests for Perplexity reasoning models and effort parameter
+
+* tests perplexity reasoning effort
+
+---------
+
+Co-authored-by: Cursor Agent <cursoragent@cursor.com>
+
+* test pplx reasoning effort
+
+---------
+
+Co-authored-by: Cursor Agent <cursoragent@cursor.com>",add
+13,https://github.com/browser-use/browser-use/pull/2327,Cursor,https://github.com/browser-use/browser-use/commit/0dfffbaebb8dfab10b1ae8171ddb5d1125ea3240,"Revert ""Make tool call example parameter optional"" (#2331)
+
+Reverts browser-use/browser-use#2327",revert
+14,https://github.com/buster-so/buster/pull/381,Cursor,https://github.com/buster-so/buster/commit/3db2cf72b20a97a4e877122097fa354dbc154e43,,
+15,https://github.com/buster-so/buster/pull/381,Cursor,https://github.com/buster-so/buster/commit/3ec9e775a3365ff9dc25d7845387ccb2325e79da,,
+16,https://github.com/buster-so/buster/pull/381,Cursor,https://github.com/buster-so/buster/commit/58f9d261e6966e872eeb67be8343f068c07b71a2,,
+17,https://github.com/buster-so/buster/pull/381,Cursor,https://github.com/buster-so/buster/commit/7feecbe088b508b135ac5771d0f91fccda290bba,,
+18,https://github.com/buster-so/buster/pull/381,Cursor,https://github.com/buster-so/buster/commit/bed288f4e1dc1976c25fd73007e910cc72dbc751,,
+19,https://github.com/buster-so/buster/pull/382,Cursor,https://github.com/buster-so/buster/commit/3db2cf72b20a97a4e877122097fa354dbc154e43,,
+20,https://github.com/buster-so/buster/pull/382,Cursor,https://github.com/buster-so/buster/commit/3ec9e775a3365ff9dc25d7845387ccb2325e79da,,
+21,https://github.com/buster-so/buster/pull/382,Cursor,https://github.com/buster-so/buster/commit/58f9d261e6966e872eeb67be8343f068c07b71a2,,
+22,https://github.com/buster-so/buster/pull/382,Cursor,https://github.com/buster-so/buster/commit/7feecbe088b508b135ac5771d0f91fccda290bba,,
+23,https://github.com/buster-so/buster/pull/382,Cursor,https://github.com/buster-so/buster/commit/bed288f4e1dc1976c25fd73007e910cc72dbc751,,
+24,https://github.com/channel-io/bezier-react/pull/2661,Cursor,https://github.com/channel-io/bezier-react/commit/30e8a4910828705ab2c054797bd0a8efe5c682c0,"ci(changesets): version packages (#2662)
+
+This PR was opened by the [Changesets
+release](https://github.com/changesets/action) GitHub action. When
+you're ready to do a release, you can merge this and the packages will
+be published to npm automatically. If you're not ready to do a release
+yet, that's fine, whenever you add more changesets to main, this PR will
+be updated.
+
+
+# Releases
+## @channel.io/bezier-react@3.1.5
+
+### Patch Changes
+
+- Optimize warn function to prevent duplicate console logs
+([#2661](https://github.com/channel-io/bezier-react/pull/2661)) by
+@sungik-choi
+
+- Add `scope` parameter to `warn` so each message logs only once per
+scope
+- Apply the scoped warning to legacy-icon deprecation in Button, Banner,
+SectionLabel
+    -   Add comprehensive tests for the new `warn` behavior
+- Prevent UI blocking and developer tool freezing when using legacy
+icons with virtual lists
+
+## bezier-figma-plugin@0.7.2
+
+### Patch Changes
+
+-   Updated dependencies
+    -   @channel.io/bezier-react@3.1.5
+
+
+<!-- This is an auto-generated comment: release notes by coderabbit.ai
+-->
+
+## Summary by CodeRabbit
+
+* **버그 수정**
+* 레거시 아이콘이 사용된 Button, Banner, SectionLabel 컴포넌트에서 중복 경고 메시지가 콘솔에 여러 번
+출력되는 현상이 개선되었습니다. 이제 각 경고 메시지는 지정된 범위(scope) 내에서 한 번만 표시되어 개발자 도구의 성능 저하
+및 UI 멈춤 현상이 방지됩니다.
+
+* **기타**
+  * bezier-figma-plugin 및 @channel.io/bezier-react 패키지의 버전이 업데이트되었습니다.
+
+<!-- end of auto-generated comment: release notes by coderabbit.ai -->
+
+Co-authored-by: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>",fix
+25,https://github.com/datahub-project/datahub/pull/13958,Cursor,https://github.com/datahub-project/datahub/commit/51c03e2ee1f438f3f7422c17c9d849ff9f8ecd26,"feat(actions): require pydantic v2 (#13958)
+
+Co-authored-by: Cursor Agent <cursoragent@cursor.com>",fix
+1,https://github.com/AgentDock/AgentDock/pull/140,Devin,https://github.com/AgentDock/AgentDock/commit/9289da2ee09c8fc6c37c45a9ff73be77a2e265e6,"Establish Comprehensive Core Test Setup & Mocking Strategy (#140)
+* [Issue #101] Establish comprehensive core test setup and mocking strategy
+
+Co-Authored-By: Oguz Serdar <oguz@agentdock.ai>
+
+* [Issue #101] Move testing documentation to docs directory
+
+Co-Authored-By: Oguz Serdar <oguz@agentdock.ai>
+
+---------
+
+Co-authored-by: Devin AI <158243242+devin-ai-integration[bot]@users.noreply.github.com>
+Co-authored-by: Oguz Serdar <oguz@agentdock.ai>
+",add
+2,https://github.com/AgentDock/AgentDock/pull/141,Devin,https://github.com/AgentDock/AgentDock/commit/7e1470080e2d0c9b3d5b19d460cb24948983987f,"[Issue #102] Add comprehensive unit tests for orchestration module (#141)
+
+Co-authored-by: Devin AI <158243242+devin-ai-integration[bot]@users.noreply.github.com>
+Co-authored-by: Oguz Serdar <oguz@agentdock.ai>",add
+3,https://github.com/AgentOps-AI/agentops/pull/1179,Devin,https://github.com/AgentOps-AI/agentops/commit/02e22f4bcbcbb20486edeeaa941c8e6b88b39003,"Add llms.txt compilation system for AI model documentation (#1179)
+
+* Add llms.txt compilation system for AI model documentation
+
+- Create docs/compile_llms_txt.py script to compile all documentation
+- Add GitHub Actions workflow to auto-update llms.txt on doc changes
+- Generate initial llms.txt file with comprehensive AgentOps documentation
+- Include all versions (v0, v1, v2) and key repository documentation
+
+Co-Authored-By: Pratyush Shukla <pratyush@agentops.ai>
+
+* Fix lint issues: remove unused variable and apply formatting
+
+- Remove unused current_dir variable to fix F841 error
+- Apply ruff formatting changes for consistent code style
+
+Co-Authored-By: Pratyush Shukla <pratyush@agentops.ai>
+
+* Update llms.txt to follow official standard with structured links instead of full content
+
+Co-Authored-By: Pratyush Shukla <pratyush@agentops.ai>
+
+* Apply ruff formatting fixes to compilation script
+
+Co-Authored-By: Pratyush Shukla <pratyush@agentops.ai>
+
+* Enhance llms.txt with comprehensive repository content and llms-txt library integration
+
+- Include actual repository content: README, CONTRIBUTING, core SDK files, documentation, instrumentation, and examples
+- Integrate llms-txt library for proper validation and parsing
+- Generated comprehensive 167KB llms.txt with real code content instead of just links
+- Fix llms-txt API usage to use parse_llms_file() function correctly
+- Add detailed validation output showing parsed title, summary, sections, and links
+
+Co-Authored-By: Pratyush Shukla <pratyush@agentops.ai>
+
+* Fix llms.txt content cleaning to remove tables and emojis that cause parsing issues
+
+- Enhanced clean_html_content function to remove markdown tables and special characters
+- Remove emojis and non-ASCII characters that break llms-txt library regex parsing
+- Generated comprehensive 154KB llms.txt with actual repository content
+- Note: llms-txt library has parsing issues with comprehensive content but online validator should work
+
+Co-Authored-By: Pratyush Shukla <pratyush@agentops.ai>
+
+* Apply ruff formatting fixes from pre-commit hooks
+
+Co-Authored-By: Pratyush Shukla <pratyush@agentops.ai>
+
+* Add URL conversion to fix relative URL validation errors in llms.txt
+
+Co-Authored-By: Pratyush Shukla <pratyush@agentops.ai>
+
+* Improve URL conversion to handle anchor links and path normalization for llms.txt validation
+
+Co-Authored-By: Pratyush Shukla <pratyush@agentops.ai>
+
+* Apply comprehensive URL conversion to all content sources in llms.txt compilation
+
+Co-Authored-By: Pratyush Shukla <pratyush@agentops.ai>
+
+* Fix lint error and finalize llms-txt library integration with graceful error handling
+
+- Remove unused variable to pass ruff checks
+- Implement comprehensive manual validation as fallback for llms-txt parsing issues
+- Maintain full llms.txt library integration with proper error handling
+- File now validates with 0 errors online and includes 149KB of comprehensive repository content
+
+Co-Authored-By: Pratyush Shukla <pratyush@agentops.ai>
+
+* Remove emojis from compilation script for professional developer appearance
+
+- Replace emoji indicators with professional text labels (SUCCESS, WARNING, INFO)
+- Change emoji status indicators to PASS/FAIL text format
+- Maintain all existing functionality and validation logic
+- Keep comprehensive llms.txt generation and validation intact
+
+Co-Authored-By: Pratyush Shukla <pratyush@agentops.ai>
+
+---------
+
+Co-authored-by: Devin AI <158243242+devin-ai-integration[bot]@users.noreply.github.com>
+Co-authored-by: Pratyush Shukla <pratyush@agentops.ai>",add
+4,https://github.com/AgentOps-AI/agentops/pull/605,Devin,https://github.com/AgentOps-AI/agentops/commit/5328492ad8b8732769f073a5dca973993b0156d0,"Revert ""Add integration tests for Anthropic/Cohere/Groq/Litellm/Mistral/AI21 (#605)""
+
+This reverts commit a9f3e7b6f6daf5273e08c6916db82c3f45acd2c3.",revert
+5,https://github.com/AgentOps-AI/agentops/pull/605,Devin,https://github.com/AgentOps-AI/agentops/commit/ad43fa78e2721dfd636b53bb0c8595c101951ce2,"Revert ""Add integration tests for Anthropic/Cohere/Groq/Litellm/Mistr… (#614)
+
+Revert ""Add integration tests for Anthropic/Cohere/Groq/Litellm/Mistral/AI21 (#605)""
+
+This reverts commit a9f3e7b6f6daf5273e08c6916db82c3f45acd2c3.",revert
+6,https://github.com/ai-shifu/ai-shifu/pull/579,Devin,https://github.com/ai-shifu/ai-shifu/commit/4d3266965b5ebfc98bf611b463d22eda252634bd,"Revert ""fix: resolve ESLint warnings by replacing img tags with Next.js Image (#579)""
+
+This reverts commit 74a67a366f783033c40977624af0571c88a76a41.",revert
+7,https://github.com/ai-shifu/ai-shifu/pull/579,Devin,https://github.com/ai-shifu/ai-shifu/commit/a569b913748005d8e7974cd913b77adb3896f9b0,"Revert ""fix: resolve ESLint warnings by replacing img tags with Next.js Image (#579)""
+
+This reverts commit 74a67a366f783033c40977624af0571c88a76a41.",revert
+8,https://github.com/airbytehq/airbyte/pull/52143,Devin,https://github.com/airbytehq/airbyte/commit/0b0fb3335914357cd99dc619989a9414ce4d2e4e,"Always show Reference section in connector docs (#52143)
+
+Co-authored-by: Devin AI <158243242+devin-ai-integration[bot]@users.noreply.github.com>
+Co-authored-by: Aaron <AJ> Steers <aj@airbyte.io>",add
+9,https://github.com/airbytehq/airbyte/pull/52143,Devin,https://github.com/airbytehq/airbyte/commit/5f1d27e237570299d14c7af0f82dd4b9108b8078,,
+10,https://github.com/airbytehq/airbyte/pull/52575,Devin,https://github.com/airbytehq/airbyte/commit/2be569b9f4bb80b5205f1573bc2784d90299b1f9,"feat: dynamic release notes for version bump (via PR title) (#52575)
+
+Co-authored-by: Devin AI <158243242+devin-ai-integration[bot]@users.noreply.github.com>
+Co-authored-by: francis.genet@airbyte.io <francis.genet@airbyte.io>",add
+11,https://github.com/airbytehq/airbyte/pull/52575,Devin,https://github.com/airbytehq/airbyte/commit/d36057ace99779a36aad9ec680621107daf1f35d,,
+12,https://github.com/airbytehq/airbyte/pull/52585,Devin,https://github.com/airbytehq/airbyte/commit/06a60bfff609163163c185de70f86800714f4a72,"chore: increase Gradle Check workflow timeout to 60 minutes (#52585)
+
+Co-authored-by: Devin AI <158243242+devin-ai-integration[bot]@users.noreply.github.com>
+Co-authored-by: Aaron <AJ> Steers <aj@airbyte.io>",update
+13,https://github.com/airbytehq/airbyte/pull/52585,Devin,https://github.com/airbytehq/airbyte/commit/df5447c02553276bc4619adebde5b36b33953b9a,,
+14,https://github.com/airbytehq/airbyte/pull/52659,Devin,https://github.com/airbytehq/airbyte/commit/f46a47db7ba8458f231b9936cba11bfabf9a7c9c,,
+15,https://github.com/airbytehq/airbyte/pull/53238,Devin,https://github.com/airbytehq/airbyte/commit/ba5583694795af5e08d7174e8205170bb9885a22,"feat: add ability to opt out of version increment checks (#53238)
+
+Co-authored-by: Devin AI <158243242+devin-ai-integration[bot]@users.noreply.github.com>
+Co-authored-by: natik@airbyte.io <natik@airbyte.io>",add
+16,https://github.com/airbytehq/airbyte/pull/54663,Devin,https://github.com/airbytehq/airbyte/commit/603d8b3fab58dc4f85d4481f3281aeb7b1d89c1c,,
+17,https://github.com/airbytehq/airbyte/pull/54670,Devin,https://github.com/airbytehq/airbyte/commit/88c5f1b1187fb8ed72bc730812aa4408b7ca54e8,,
+18,https://github.com/airbytehq/airbyte/pull/54670,Devin,https://github.com/airbytehq/airbyte/commit/c2f467575bfee1f93963a5f88f5ad38174370b1f,"Revert ""chore(airbyte-ci): update dagger-io from 0.13.3 to 0.16.0 (#54670)""
+
+This reverts commit 3647b1b8a8762e6051476de9828355e62f5ed3e6.",revert
+19,https://github.com/airbytehq/airbyte/pull/54733,Devin,https://github.com/airbytehq/airbyte/commit/2abedd91d911086a54c46d9d4579463a62422801,,
+20,https://github.com/airbytehq/airbyte/pull/54737,Devin,https://github.com/airbytehq/airbyte/commit/201dcbc9c82aeaf770cfb1c119d9a71ee8d89d36,,
+21,https://github.com/airbytehq/airbyte/pull/54738,Devin,https://github.com/airbytehq/airbyte/commit/ae6eb025877b519ecf8526405913d34871f68c02,,
+22,https://github.com/airbytehq/airbyte/pull/54739,Devin,https://github.com/airbytehq/airbyte/commit/de32830ab744bf3a700e8187198ec51f961981c3,,
+23,https://github.com/airbytehq/airbyte/pull/54740,Devin,https://github.com/airbytehq/airbyte/commit/395ccbce8ac25caff6475f90d65d531c05bd4b4d,,
+24,https://github.com/airbytehq/airbyte/pull/54741,Devin,https://github.com/airbytehq/airbyte/commit/9ab4fc208ba1950d0e68002fb024b8abb17d4f5b,,
+25,https://github.com/airbytehq/airbyte/pull/54878,Devin,https://github.com/airbytehq/airbyte/commit/850c25aa07c198c310f6dab8649da90364cb8aff,,
+1,https://github.com/afadil/wealthfolio/pull/265,OpenAI_Codex,https://github.com/afadil/wealthfolio/commit/f3beac7bba060251bbf3d87376882a07842231b1,fix all time return calculation. fix #265: duplicate deposits when reopening or updating,fix
+2,https://github.com/aipotheosis-labs/aci/pull/431,OpenAI_Codex,https://github.com/aipotheosis-labs/aci/commit/2078bbb56796b888d730e58c6aa491830fb1e8fb,"chore: simplify project selector (#431)
+
+## Summary
+- remove intermediate ProjectSelectOption state
+- use projects directly to populate list
+
+<!-- This is an auto-generated comment: release notes by coderabbit.ai
+-->
+
+## Summary by CodeRabbit
+
+- **Refactor**
+- Streamlined the project selector for improved performance and
+responsiveness by simplifying how projects are displayed and selected.
+No visible changes to the user interface.
+
+<!-- end of auto-generated comment: release notes by coderabbit.ai -->",update
+3,https://github.com/alchemyplatform/aa-sdk/pull/1747,OpenAI_Codex,https://github.com/alchemyplatform/aa-sdk/commit/367ed1805f72aa45166fece4bdefe8c3a3baec8b,docs: remove outdated naming guidance (#1747),update
+4,https://github.com/alexanderjeurissen/ranger_devicons/pull/130,OpenAI_Codex,https://github.com/alexanderjeurissen/ranger_devicons/commit/cd730e7b1ef7ad093f37fed7b71b2cc10bcfdcca,"Revert ""Add Python test workflow (#130)""
+
+This reverts commit 357b8678766070ba5e148fa9ba7d1f90b1e61138.",revert
+5,https://github.com/alexanderjeurissen/ranger_devicons/pull/130,OpenAI_Codex,https://github.com/alexanderjeurissen/ranger_devicons/commit/d97282b3cff16f6bb201303c36712b442bcb8eea,"Revert ""Add Python test workflow (#130)"" (#132)
+
+This reverts commit 357b8678766070ba5e148fa9ba7d1f90b1e61138.",revert
+6,https://github.com/amantus-ai/vibetunnel/pull/322,OpenAI_Codex,https://github.com/amantus-ai/vibetunnel/commit/10523543940c3f52e5541d3a5d814677d2a4c809,"feat: add keyboard navigation to session grid
+
+- Enable arrow key navigation (up/down/left/right) through sessions
+- Press Enter to open selected session
+- Add visual feedback for keyboard-selected sessions
+- Fix global event listener conflict by scoping to component
+- Make session-list focusable with proper focus indicators
+- Pass selected state to session-card for visual highlighting
+
+Adopts PR #322 with improvements based on review feedback",context
+7,https://github.com/AMICI-dev/AMICI/pull/2829,OpenAI_Codex,https://github.com/AMICI-dev/AMICI/commit/f4e57f2308214947da417f28c39f9251ad57c127,Improve sigma<=0 error message (#2829),update
+8,https://github.com/AMICI-dev/AMICI/pull/2840,OpenAI_Codex,https://github.com/AMICI-dev/AMICI/commit/ac676efa87bf6469a2a42de1fd167961d08ae706,"SBML import: Boolean handling (#2856)
+
+Test. Related to #2840.",context
+9,https://github.com/AMICI-dev/AMICI/pull/2840,OpenAI_Codex,https://github.com/AMICI-dev/AMICI/commit/b2477ea4ce41f982e5f6c549b072e7f43069c48c,"SBML import: Boolean handling
+
+Test. Related to #2840.",context
+10,https://github.com/analogdotnow/Analog/pull/129,OpenAI_Codex,https://github.com/analogdotnow/Analog/commit/6944b052db8143671302c2a649294bda37165328,feat(api): add respond to event invite endpoint (#129),context
+11,https://github.com/analogdotnow/Analog/pull/133,OpenAI_Codex,https://github.com/analogdotnow/Analog/commit/28a60e5febf28ca63741a82695f6a99b916addc4,chore(web): add discord redirect (#133),add
+12,https://github.com/angular-eslint/angular-eslint/pull/2440,OpenAI_Codex,https://github.com/angular-eslint/angular-eslint/commit/fbeb7b5cb8e2aab7f4a51c4ec111174b8b63ced8,docs: fix choose typo (#2440),fix
+13,https://github.com/angular-eslint/angular-eslint/pull/2441,OpenAI_Codex,https://github.com/angular-eslint/angular-eslint/commit/466a5eecffb4cd284084b17f2b69c719190a3e2e,fix(eslint-plugin-template): [alt-text] ensure multiple attributes do not cause false negatives (#2441),fix
+14,https://github.com/angular-eslint/angular-eslint/pull/2442,OpenAI_Codex,https://github.com/angular-eslint/angular-eslint/commit/ffa9d0e25fde75cb79dc45a50df8613347b693dd,docs: introduce AGENTS guidelines (#2442),add
+15,https://github.com/angular-eslint/angular-eslint/pull/2443,OpenAI_Codex,https://github.com/angular-eslint/angular-eslint/commit/36e90d89c769d61789c85ff4d9a94fc8aef0b16e,fix(builder): correct option name in flat config error (#2443),fix
+16,https://github.com/angular-eslint/angular-eslint/pull/2444,OpenAI_Codex,https://github.com/angular-eslint/angular-eslint/commit/e306a06f6449a6d9efbd55473d312dbf9ad02c89,docs: correct prettier configuration example (#2444),update
+17,https://github.com/angular-eslint/angular-eslint/pull/2446,OpenAI_Codex,https://github.com/angular-eslint/angular-eslint/commit/ea4af08fbfe6f218c9fcbdb514351e1037f2cd89,chore(template-parser): adapt to new eslint-scope types (#2446),update
+18,https://github.com/angular-eslint/angular-eslint/pull/2447,OpenAI_Codex,https://github.com/angular-eslint/angular-eslint/commit/6ae2dce2fec1f47670cad65519c8805c517f4827,fix(eslint-plugin-template): [cyclomatic-complexity] handle new control flow syntax (#2447),fix
+19,https://github.com/angular-eslint/angular-eslint/pull/2451,OpenAI_Codex,https://github.com/angular-eslint/angular-eslint/commit/66b9a04378b29893658d1cac1b4da438774dc46b,feat(schematics): support --skip-install for ng-add (#2451),update
+20,https://github.com/angular-eslint/angular-eslint/pull/2453,OpenAI_Codex,https://github.com/angular-eslint/angular-eslint/commit/6816bc7b04543c07f3c83d9652777c614dc766b4,feat(builder): add stats option (#2453),add
+21,https://github.com/angular-eslint/angular-eslint/pull/2461,OpenAI_Codex,https://github.com/angular-eslint/angular-eslint/commit/29f33c0176b2c889acdd4c7c199af4d6bd9bcfa4,feat(eslint-plugin): [prefer-inject] add new rule (#2461),add
+22,https://github.com/apache/arrow-rs-object-store/pull/426,OpenAI_Codex,https://github.com/apache/arrow-rs-object-store/commit/bed1ceaac41e4530e55d01054bd9921a03270851,feat: retry on 429 and 408 (#426),add
+23,https://github.com/apache/pinot/pull/16078,OpenAI_Codex,https://github.com/apache/pinot/commit/3d4b06ef912e95dc1d396760a9e2089b53627c08,Add reset segment operation to UI (#16078),add
+24,https://github.com/astral-sh/uv/pull/14731,OpenAI_Codex,https://github.com/astral-sh/uv/commit/29a3b93a9db0bf8fc7732d18ac9f0a5db44da25a,,

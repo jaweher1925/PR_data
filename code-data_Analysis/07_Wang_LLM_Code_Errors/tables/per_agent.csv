@@ -1,0 +1,7 @@
+llm,errors,tasks_failed,median_wrong_lines
+InCoder-1.3B,182,144,17.0
+SantaCoder,181,139,15.0
+CodeGen-16B,129,110,16.0
+StarCoder,123,104,14.0
+GPT-3.5,52,42,20.5
+GPT-4,20,18,25.0

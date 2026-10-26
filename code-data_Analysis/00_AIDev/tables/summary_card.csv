@@ -1,0 +1,2 @@
+paper,unit (1 row =),rows,repos,first date,latest date,agents,how the agent is involved,fixes of AI code
+AIDev (v4),AI pull request,2743854,6673,2024-12-24,2025-10-24,"OpenAI_Codex, Copilot, Cursor, Google_Jules, Devin, Claude_Code",Agent opens the PR; commits by agent and/or humans,need linker.py

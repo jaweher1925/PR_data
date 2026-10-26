@@ -1,0 +1,2 @@
+paper,unit (1 row =),rows,repos,first date,latest date,agents,how the agent is involved,fixes of AI code
+Watanabe et al. 2025,Claude Code PR,797,240,2025-02-21,2025-04-30,Claude Code,Developer writes the PR with Claude Code; revisions by human or with Claude,214

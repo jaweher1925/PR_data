@@ -1,0 +1,11 @@
+# Python / Jupyter
+__pycache__/
+.ipynb_checkpoints/
+*.pyc
+# Office temp files
+~$*
+# downloaded repositories (clone_all.py / miner.py) - too big, re-download with the scripts
+
+# test outputs
+test_out.jsonl
+reports/ 
