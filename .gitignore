@@ -10,3 +10,6 @@ reports/
 repos/bare/
 # test outputs
 test_out.jsonl
+# full AIDev v4 copy (255 MB, too big for GitHub) - rebuilt by 10_Build_AI_PRs_Dataset section 8
+data/AI_PRS_DATASET/AI_PRS_AIDEV_V4_FULL.parquet
+AGENT_REPORT/

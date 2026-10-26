@@ -1,0 +1,36 @@
+dataset,agent,count
+AIDev v4,Codex,2069595
+AIDev v4,Copilot,349695
+AIDev v4,Cursor,212544
+AIDev v4,Jules,50490
+AIDev v4,Devin,43298
+AIDev v4,Claude Code,18232
+AIDev v4 – Python,Codex,564751
+AIDev v4 – Python,Copilot,65719
+AIDev v4 – Python,Cursor,33904
+AIDev v4 – Python,Jules,11556
+AIDev v4 – Python,Devin,7608
+AIDev v4 – Python,Claude Code,4233
+AIDev-pop,Codex,21799
+AIDev-pop,Copilot,4970
+AIDev-pop,Devin,4827
+AIDev-pop,Cursor,1541
+AIDev-pop,Claude Code,459
+AIDev-pop – Python,Codex,5209
+AIDev-pop – Python,Devin,1069
+AIDev-pop – Python,Copilot,559
+AIDev-pop – Python,Cursor,254
+AIDev-pop – Python,Claude Code,100
+Watanabe,Claude Code,797
+Xia & Miller (fixed AI commits),Claude Code,4980
+Xia & Miller (fixed AI commits),Copilot,2256
+Xia & Miller (fixed AI commits),Cursor,229
+Xia & Miller (fixed AI commits),Devin,175
+Xia & Miller (fixed AI commits),Jules,77
+Xia & Miller (fixed AI commits),Gemini,49
+Xia & Miller (fixed AI commits),Codex,44
+Xia & Miller (fixed AI commits),AI (not recognised),12
+Sawada,Copilot,169
+Sawada,Devin,144
+Sawada,Cursor,12
+Sawada,Claude Code,3
