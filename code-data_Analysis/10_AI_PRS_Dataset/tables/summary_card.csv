@@ -1,0 +1,2 @@
+paper,unit (1 row =),rows,repos,first date,latest date,agents,how the agent is involved,fixes of AI code
+AI-generated PRs (from the papers),AI pull request,34352,2988,2024-12-24,2025-07-30,"Codex, Copilot, Devin, Cursor, Claude Code",Agent opens the PR (Watanabe: developer with Claude Code),948 AI PRs fixed later (Who Finishes + Khemissi)

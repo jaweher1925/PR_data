@@ -5,7 +5,6 @@ __pycache__/
 # Office temp files
 ~$*
 # downloaded repositories (clone_all.py / miner.py) - too big, re-download with the scripts
-
+repos/
 # test outputs
 test_out.jsonl
-reports/ 
