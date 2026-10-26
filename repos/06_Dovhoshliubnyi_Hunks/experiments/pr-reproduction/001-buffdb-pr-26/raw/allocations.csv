@@ -1,0 +1,11 @@
+variant,index_count,iterations,allocation_calls,allocations_per_update
+baseline,1,100000,400000,4
+baseline,2,100000,800000,8
+baseline,10,100000,4000000,40
+historical_devin,1,100000,400000,4
+historical_devin,2,100000,800000,8
+historical_devin,10,100000,4000000,40
+sol_xhigh,1,100000,400000,4
+sol_xhigh,2,100000,600000,6
+sol_xhigh,10,100000,1400000,14
+

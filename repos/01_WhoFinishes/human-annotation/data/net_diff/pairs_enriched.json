@@ -1,0 +1,1349 @@
+[
+ {
+  "pair_id": 1,
+  "agent": "Claude_Code",
+  "day_gap": 30,
+  "q_type": "fix",
+  "q_references_p": false,
+  "p_url": "https://github.com/Shopify/roast/pull/76",
+  "p_title": "Add dot notation access for workflow outputs",
+  "q_url": "https://github.com/Shopify/roast/pull/294",
+  "q_title": "Improve workflow system with bug fixes and optimizations",
+  "n_shared_commitunion": 2,
+  "fetch_ok": true,
+  "shared": [
+   {
+    "name": "test/roast/workflow/interpolator_test.rb",
+    "boilerplate": false,
+    "q_patch": "@@ -62,12 +62,7 @@ def test_preserves_expression_on_error\n       def test_logs_error_for_failed_interpolation\n         logger = mock(\"Logger\")\n         interpolator = Interpolator.new(@context, logger: logger)\n-\n-        logger.expects(:error) do |msg|\n-          msg.include?(\"Error interpolating {{unknown}}:\") &&\n-            msg.include?(\"undefined local variable or method\") &&\n-            msg.include?(\"This variable is not defined in the workflow context.\")\n-        end\n+        logger.expects(:error).with(includes(\"Error interpolating {{unknown}}:\", \"undefined local variable or method\", \"This variable is not defined in the workflow context.\"))\n \n         interpolator.interpolate(\"{{unknown}}\")\n       end",
+    "q_link": "https://github.com/Shopify/roast/pull/294/files#diff-16ca81fd27313c934ff4750b3716137b8529db348f78b22fbb321469f1bbdc3b",
+    "p_link": "https://github.com/Shopify/roast/pull/76/files#diff-16ca81fd27313c934ff4750b3716137b8529db348f78b22fbb321469f1bbdc3b"
+   },
+   {
+    "name": "test/roast/workflow/step_loader_test.rb",
+    "boilerplate": false,
+    "q_patch": "@@ -30,20 +30,20 @@ def test_loads_prompt_step_when_name_contains_spaces\n       def test_loads_ruby_step_from_context_path\n         # Create a temporary step file\n         Dir.mktmpdir do |dir|\n-          step_file = File.join(dir, \"test_step.rb\")\n+          step_file = File.join(dir, \"context_test_step.rb\")\n           File.write(step_file, <<~RUBY)\n-            class TestStep < Roast::Workflow::BaseStep\n+            class ContextTestStep < Roast::Workflow::BaseStep\n               def call\n                 \"Test step executed\"\n               end\n             end\n           RUBY\n \n           loader = StepLoader.new(@workflow, @config_hash, dir)\n-          step = loader.load(\"test_step\")\n+          step = loader.load(\"context_test_step\")\n \n-          assert_instance_of(TestStep, step)\n-          assert_equal(\"test_step\", step.name)\n+          assert_instance_of(ContextTestStep, step)\n+          assert_equal(\"context_test_step\", step.name)\n           assert_equal(dir, step.context_path)\n         end\n       end\n@@ -56,20 +56,20 @@ def test_loads_ruby_step_from_shared_directory\n           FileUtils.mkdir_p(context_dir)\n           FileUtils.mkdir_p(shared_dir)\n \n-          step_file = File.join(shared_dir, \"test_step.rb\")\n+          step_file = File.join(shared_dir, \"shared_test_step.rb\")\n           File.write(step_file, <<~RUBY)\n-            class TestStep < Roast::Workflow::BaseStep\n+            class SharedTestStep < Roast::Workflow::BaseStep\n               def call\n                 \"Test step from shared\"\n               end\n             end\n           RUBY\n \n           loader = StepLoader.new(@workflow, @config_hash, context_dir)\n-          step = loader.load(\"test_step\")\n+          step = loader.load(\"shared_test_step\")\n \n-          assert_instance_of(TestStep, step)\n-          assert_equal(\"test_step\", step.name)\n+          assert_instance_of(SharedTestStep, step)\n+          assert_equal(\"shared_test_step\", step.name)\n           assert_equal(shared_dir, step.context_path)\n         end\n       end",
+    "q_link": "https://github.com/Shopify/roast/pull/294/files#diff-ba558450c8538e2132200caf7bb67d29b61c49b218be9f515f4d1e4a1a510d2b",
+    "p_link": "https://github.com/Shopify/roast/pull/76/files#diff-ba558450c8538e2132200caf7bb67d29b61c49b218be9f515f4d1e4a1a510d2b"
+   }
+  ],
+  "n_net_shared": 2,
+  "n_net_substantive": 2
+ },
+ {
+  "pair_id": 2,
+  "agent": "Claude_Code",
+  "day_gap": 29,
+  "q_type": "fix",
+  "q_references_p": false,
+  "p_url": "https://github.com/mlflow/mlflow/pull/16442",
+  "p_title": "Update ArtifactRepository constructors to accept tracking_uri parameter",
+  "q_url": "https://github.com/mlflow/mlflow/pull/16878",
+  "q_title": "Fix tracking_uri positional argument bug in artifact repositories",
+  "n_shared_commitunion": 5,
+  "fetch_ok": true,
+  "shared": [
+   {
+    "name": "mlflow/store/artifact/artifact_repository_registry.py",
+    "boilerplate": false,
+    "q_patch": "@@ -79,7 +79,7 @@ def get_artifact_repository(\n                 f\"Could not find a registered artifact repository for: {artifact_uri}. \"\n                 f\"Currently registered schemes are: {list(self._registry.keys())}\"\n             )\n-        return repository(artifact_uri, tracking_uri)\n+        return repository(artifact_uri, tracking_uri=tracking_uri)\n \n     def get_registered_artifact_repositories(self):\n         \"\"\"",
+    "q_link": "https://github.com/mlflow/mlflow/pull/16878/files#diff-8c2ebb5314a7500e18a0fa2f343ec5764e70d313058090a405aa0c90bca2915e",
+    "p_link": "https://github.com/mlflow/mlflow/pull/16442/files#diff-8c2ebb5314a7500e18a0fa2f343ec5764e70d313058090a405aa0c90bca2915e"
+   },
+   {
+    "name": "mlflow/store/artifact/dbfs_artifact_repo.py",
+    "boilerplate": false,
+    "q_patch": "@@ -220,8 +220,10 @@ def dbfs_artifact_repo_factory(artifact_uri: str, tracking_uri: Optional[str] =\n     db_profile_uri = get_databricks_profile_uri_from_artifact_uri(cleaned_artifact_uri)\n     if is_databricks_acled_artifacts_uri(artifact_uri):\n         if DatabricksLoggedModelArtifactRepository.is_logged_model_uri(artifact_uri):\n-            return DatabricksLoggedModelArtifactRepository(cleaned_artifact_uri, tracking_uri)\n-        return DatabricksArtifactRepository(cleaned_artifact_uri, tracking_uri)\n+            return DatabricksLoggedModelArtifactRepository(\n+                cleaned_artifact_uri, tracking_uri=tracking_uri\n+            )\n+        return DatabricksArtifactRepository(cleaned_artifact_uri, tracking_uri=tracking_uri)\n     elif (\n         mlflow.utils.databricks_utils.is_dbfs_fuse_available()\n         and MLFLOW_ENABLE_DBFS_FUSE_ARTIFACT_REPO.get()\n@@ -236,5 +238,5 @@ def dbfs_artifact_repo_factory(artifact_uri: str, tracking_uri: Optional[str] =\n         # workspace's DBFS should still work; it just may be slower.\n         final_artifact_uri = remove_databricks_profile_info_from_artifact_uri(cleaned_artifact_uri)\n         file_uri = \"file:///dbfs/{}\".format(strip_prefix(final_artifact_uri, \"dbfs:/\"))\n-        return LocalArtifactRepository(file_uri, tracking_uri)\n-    return DbfsRestArtifactRepository(cleaned_artifact_uri, tracking_uri)\n+        return LocalArtifactRepository(file_uri, tracking_uri=tracking_uri)\n+    return DbfsRestArtifactRepository(cleaned_artifact_uri, tracking_uri=tracking_uri)",
+    "q_link": "https://github.com/mlflow/mlflow/pull/16878/files#diff-1eef12d971fc9ce2d4c18c7591f66bed137e0dcdee714880110ac0ff26e48128",
+    "p_link": "https://github.com/mlflow/mlflow/pull/16442/files#diff-1eef12d971fc9ce2d4c18c7591f66bed137e0dcdee714880110ac0ff26e48128"
+   },
+   {
+    "name": "mlflow/store/artifact/runs_artifact_repo.py",
+    "boilerplate": false,
+    "q_patch": "@@ -34,7 +34,7 @@ def __init__(self, artifact_uri: str, tracking_uri: Optional[str] = None) -> Non\n \n         super().__init__(artifact_uri, tracking_uri)\n         uri = RunsArtifactRepository.get_underlying_uri(artifact_uri, tracking_uri)\n-        self.repo = get_artifact_repository(uri, self.tracking_uri)\n+        self.repo = get_artifact_repository(uri, tracking_uri=self.tracking_uri)\n \n     @staticmethod\n     def is_runs_uri(uri):\n@@ -158,7 +158,9 @@ def iter_models() -> Iterator[LoggedModel]:\n                 page_token = page.token\n \n         if matched := next((m for m in iter_models() if m.source_run_id == run_id), None):\n-            return get_artifact_repository(matched.artifact_location, self.tracking_uri)\n+            return get_artifact_repository(\n+                matched.artifact_location, tracking_uri=self.tracking_uri\n+            )\n \n         return None\n ",
+    "q_link": "https://github.com/mlflow/mlflow/pull/16878/files#diff-311f4f287ef01d25f3ef83233cd76b2d145f90e87aed61854198aa6cecd0377a",
+    "p_link": "https://github.com/mlflow/mlflow/pull/16442/files#diff-311f4f287ef01d25f3ef83233cd76b2d145f90e87aed61854198aa6cecd0377a"
+   },
+   {
+    "name": "mlflow/store/artifact/uc_volume_artifact_repo.py",
+    "boilerplate": false,
+    "q_patch": "@@ -72,5 +72,5 @@ def uc_volume_artifact_repo_factory(artifact_uri: str, tracking_uri: Optional[st\n         # the current workspace's Volumes should still work; it just may be slower.\n         uri_without_profile = remove_databricks_profile_info_from_artifact_uri(artifact_uri)\n         path = strip_scheme(uri_without_profile).lstrip(\"/\")\n-        return LocalArtifactRepository(f\"file:///{path}\", tracking_uri)\n-    return UCVolumesArtifactRepository(artifact_uri, tracking_uri)\n+        return LocalArtifactRepository(f\"file:///{path}\", tracking_uri=tracking_uri)\n+    return UCVolumesArtifactRepository(artifact_uri, tracking_uri=tracking_uri)",
+    "q_link": "https://github.com/mlflow/mlflow/pull/16878/files#diff-7e8aea1d2f1d90c8ff8fe8f9cabfa5254a1407c01c9c772bbae69d265171e91d",
+    "p_link": "https://github.com/mlflow/mlflow/pull/16442/files#diff-7e8aea1d2f1d90c8ff8fe8f9cabfa5254a1407c01c9c772bbae69d265171e91d"
+   },
+   {
+    "name": "tests/store/artifact/test_artifact_repository_registry.py",
+    "boilerplate": false,
+    "q_patch": "@@ -62,7 +62,7 @@ def test_plugin_registration():\n     )\n     assert repository_instance == mock_plugin.return_value\n \n-    mock_plugin.assert_called_once_with(\"mock-scheme://fake-host/fake-path\", None)\n+    mock_plugin.assert_called_once_with(\"mock-scheme://fake-host/fake-path\", tracking_uri=None)\n \n \n def test_get_unknown_scheme():\n@@ -90,7 +90,9 @@ def test_plugin_registration_via_entrypoints():\n         == mock_plugin_function.return_value\n     )\n \n-    mock_plugin_function.assert_called_once_with(\"mock-scheme://fake-host/fake-path\", None)\n+    mock_plugin_function.assert_called_once_with(\n+        \"mock-scheme://fake-host/fake-path\", tracking_uri=None\n+    )\n     mock_get_group_all.assert_called_once_with(\"mlflow.artifact_repository\")\n \n ",
+    "q_link": "https://github.com/mlflow/mlflow/pull/16878/files#diff-80bbf1ebd1e66b06bde95e482f965b7167d36a062e4d727629f1ca74b73f240a",
+    "p_link": "https://github.com/mlflow/mlflow/pull/16442/files#diff-80bbf1ebd1e66b06bde95e482f965b7167d36a062e4d727629f1ca74b73f240a"
+   }
+  ],
+  "n_net_shared": 5,
+  "n_net_substantive": 5
+ },
+ {
+  "pair_id": 3,
+  "agent": "Cursor",
+  "day_gap": 11,
+  "q_type": "fix",
+  "q_references_p": false,
+  "p_url": "https://github.com/invoke-ai/InvokeAI/pull/8122",
+  "p_title": "Add hotkey and button for layer visibility",
+  "q_url": "https://github.com/invoke-ai/InvokeAI/pull/8215",
+  "q_title": "fix(ui): Update support links to playlists ",
+  "n_shared_commitunion": 1,
+  "fetch_ok": true,
+  "shared": [
+   {
+    "name": "invokeai/frontend/web/public/locales/en.json",
+    "boilerplate": false,
+    "q_patch": "@@ -2565,62 +2565,16 @@\n     \"supportVideos\": {\n         \"supportVideos\": \"Support Videos\",\n         \"gettingStarted\": \"Getting Started\",\n-        \"controlCanvas\": \"Control Canvas\",\n         \"watch\": \"Watch\",\n-        \"studioSessionsDesc1\": \"Check out the <StudioSessionsPlaylistLink /> for Invoke deep dives.\",\n-        \"studioSessionsDesc2\": \"Join our <DiscordLink /> to participate in the live sessions and ask questions. Sessions are uploaded to the playlist the following week.\",\n+        \"studioSessionsDesc\": \"Join our <DiscordLink /> to participate in the live sessions and ask questions. Sessions are uploaded to the playlist the following week.\",\n         \"videos\": {\n-            \"creatingYourFirstImage\": {\n-                \"title\": \"Creating Your First Image\",\n-                \"description\": \"Introduction to creating an image from scratch using Invoke's tools.\"\n+            \"gettingStarted\": {\n+                \"title\": \"Getting Started with Invoke\",\n+                \"description\": \"Complete video series covering everything you need to know to get started with Invoke, from creating your first image to advanced techniques.\"\n             },\n-            \"usingControlLayersAndReferenceGuides\": {\n-                \"title\": \"Using Control Layers and Reference Guides\",\n-                \"description\": \"Learn how to guide your image creation with control layers and reference images.\"\n-            },\n-            \"understandingImageToImageAndDenoising\": {\n-                \"title\": \"Understanding Image-to-Image and Denoising\",\n-                \"description\": \"Overview of image-to-image transformations and denoising in Invoke.\"\n-            },\n-            \"exploringAIModelsAndConceptAdapters\": {\n-                \"title\": \"Exploring AI Models and Concept Adapters\",\n-                \"description\": \"Dive into AI models and how to use concept adapters for creative control.\"\n-            },\n-            \"creatingAndComposingOnInvokesControlCanvas\": {\n-                \"title\": \"Creating and Composing on Invoke's Control Canvas\",\n-                \"description\": \"Learn to compose images using Invoke's control canvas.\"\n-            },\n-            \"upscaling\": {\n-                \"title\": \"Upscaling\",\n-                \"description\": \"How to upscale images with Invoke's tools to enhance resolution.\"\n-            },\n-            \"howDoIGenerateAndSaveToTheGallery\": {\n-                \"title\": \"How Do I Generate and Save to the Gallery?\",\n-                \"description\": \"Steps to generate and save images to the gallery.\"\n-            },\n-            \"howDoIEditOnTheCanvas\": {\n-                \"title\": \"How Do I Edit on the Canvas?\",\n-                \"description\": \"Guide to editing images directly on the canvas.\"\n-            },\n-            \"howDoIDoImageToImageTransformation\": {\n-                \"title\": \"How Do I Do Image-to-Image Transformation?\",\n-                \"description\": \"Tutorial on performing image-to-image transformations in Invoke.\"\n-            },\n-            \"howDoIUseControlNetsAndControlLayers\": {\n-                \"title\": \"How Do I Use Control Nets and Control Layers?\",\n-                \"description\": \"Learn to apply control layers and controlnets to your images.\"\n-            },\n-            \"howDoIUseGlobalIPAdaptersAndReferenceImages\": {\n-                \"title\": \"How Do I Use Global IP Adapters and Reference Images?\",\n-                \"description\": \"Introduction to adding reference images and global IP adapters.\"\n-            },\n-            \"howDoIUseInpaintMasks\": {\n-                \"title\": \"How Do I Use Inpaint Masks?\",\n-                \"description\": \"How to apply inpaint masks for image correction and variation.\"\n-            },\n-            \"howDoIOutpaint\": {\n-                \"title\": \"How Do I Outpaint?\",\n-                \"description\": \"Guide to outpainting beyond the original image borders.\"\n+            \"studioSessions\": {\n+                \"title\": \"Studio Sessions\",\n+                \"description\": \"Deep dive sessions exploring advanced Invoke features, creative workflows, and community discussions.\"\n             }\n         }\n     }",
+    "q_link": "https://github.com/invoke-ai/InvokeAI/pull/8215/files#diff-8ffa81481e12d94596e025f1eda51abdff444a34bfc57028be9bb11b13762615",
+    "p_link": "https://github.com/invoke-ai/InvokeAI/pull/8122/files#diff-8ffa81481e12d94596e025f1eda51abdff444a34bfc57028be9bb11b13762615"
+   }
+  ],
+  "n_net_shared": 1,
+  "n_net_substantive": 1
+ },
+ {
+  "pair_id": 4,
+  "agent": "Cursor",
+  "day_gap": 1,
+  "q_type": "fix",
+  "q_references_p": false,
+  "p_url": "https://github.com/sakaiproject/sakai/pull/13875",
+  "p_title": "SAK-51536 Gradebook improve handling custom export options and consistent columns in CSV export",
+  "q_url": "https://github.com/sakaiproject/sakai/pull/13874",
+  "q_title": "SAK-51535 Gradebook course grade export use raw entered grade instead of formatted display",
+  "n_shared_commitunion": 1,
+  "fetch_ok": true,
+  "shared": [
+   {
+    "name": "gradebookng/tool/src/java/org/sakaiproject/gradebookng/tool/panels/importExport/ExportPanel.java",
+    "boilerplate": false,
+    "q_patch": "@@ -482,7 +482,7 @@ private File buildFile(final boolean isCustomExport) {\n \t\t\t\t\t}\n \t\t\t\t\tif (isCustomExport && this.includeGradeOverride) {\n \t\t\t\t\t\tif (courseGrade.getEnteredGrade() != null) {\n-\t\t\t\t\t\t\tline.add(FormatHelper.formatGradeForDisplay(courseGrade.getEnteredGrade()));\n+\t\t\t\t\t\t\tline.add(courseGrade.getEnteredGrade());\n \t\t\t\t\t\t} else {\n \t\t\t\t\t\t\tline.add(null);\n \t\t\t\t\t\t}",
+    "q_link": "https://github.com/sakaiproject/sakai/pull/13874/files#diff-638aeade566a684fc23a9027245e72a5a8c5464cd4096be335ab2e282434a88d",
+    "p_link": "https://github.com/sakaiproject/sakai/pull/13875/files#diff-638aeade566a684fc23a9027245e72a5a8c5464cd4096be335ab2e282434a88d"
+   }
+  ],
+  "n_net_shared": 1,
+  "n_net_substantive": 1
+ },
+ {
+  "pair_id": 5,
+  "agent": "Cursor",
+  "day_gap": 2,
+  "q_type": "fix",
+  "q_references_p": false,
+  "p_url": "https://github.com/oven-sh/bun/pull/20265",
+  "p_title": "Introduce ahead of time bundling for HTML imports with `bun build`",
+  "q_url": "https://github.com/oven-sh/bun/pull/20295",
+  "q_title": "Fix proxy handling in bun audit",
+  "n_shared_commitunion": 1,
+  "fetch_ok": true,
+  "shared": [
+   {
+    "name": "test/cli/install/bun-workspaces.test.ts",
+    "boilerplate": false,
+    "q_patch": "@@ -1,8 +1,7 @@\n import { file, spawn, write } from \"bun\";\n import { install_test_helpers } from \"bun:internal-for-testing\";\n-import { afterAll, beforeAll, beforeEach, describe, expect, test, afterEach } from \"bun:test\";\n+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, test } from \"bun:test\";\n import { mkdirSync, rmSync, writeFileSync } from \"fs\";\n-import { readlink } from \"fs/promises\";\n import { cp, exists, mkdir, rm } from \"fs/promises\";\n import {\n   assertManifestsPopulated,",
+    "q_link": "https://github.com/oven-sh/bun/pull/20295/files#diff-17818e56932bc606e200f4a23c98ebd095f996893abc7f11c67fa24c4b108dab",
+    "p_link": "https://github.com/oven-sh/bun/pull/20265/files#diff-17818e56932bc606e200f4a23c98ebd095f996893abc7f11c67fa24c4b108dab"
+   }
+  ],
+  "n_net_shared": 1,
+  "n_net_substantive": 1
+ },
+ {
+  "pair_id": 6,
+  "agent": "Cursor",
+  "day_gap": 0,
+  "q_type": "fix",
+  "q_references_p": false,
+  "p_url": "https://github.com/ryokun6/ryos/pull/155",
+  "p_title": "Simplify login and sign up dialogs",
+  "q_url": "https://github.com/ryokun6/ryos/pull/158",
+  "q_title": "Investigate user credential restoration issue",
+  "n_shared_commitunion": 1,
+  "fetch_ok": true,
+  "shared": [
+   {
+    "name": "src/apps/control-panels/components/ControlPanelsAppComponent.tsx",
+    "boilerplate": false,
+    "q_patch": "@@ -423,12 +423,23 @@ export function ControlPanelsAppComponent({\n   };\n \n   const performReset = () => {\n-    // Preserve file metadata store while clearing everything else\n+    // Preserve critical recovery keys while clearing everything else\n     const fileMetadataStore = localStorage.getItem(\"ryos:files\");\n+    const usernameRecovery = localStorage.getItem(\"_usr_recovery_key_\");\n+    const authTokenRecovery = localStorage.getItem(\"_auth_recovery_key_\");\n+\n     clearAllAppStates();\n+\n     if (fileMetadataStore) {\n       localStorage.setItem(\"ryos:files\", fileMetadataStore);\n     }\n+    if (usernameRecovery) {\n+      localStorage.setItem(\"_usr_recovery_key_\", usernameRecovery);\n+    }\n+    if (authTokenRecovery) {\n+      localStorage.setItem(\"_auth_recovery_key_\", authTokenRecovery);\n+    }\n+\n     window.location.reload();\n   };\n ",
+    "q_link": "https://github.com/ryokun6/ryos/pull/158/files#diff-94a7826e6efa88bf6104457919cfb3d78b3b85a72b509034b264c564530065d6",
+    "p_link": "https://github.com/ryokun6/ryos/pull/155/files#diff-94a7826e6efa88bf6104457919cfb3d78b3b85a72b509034b264c564530065d6"
+   }
+  ],
+  "n_net_shared": 1,
+  "n_net_substantive": 1
+ },
+ {
+  "pair_id": 7,
+  "agent": "Cursor",
+  "day_gap": 2,
+  "q_type": "fix",
+  "q_references_p": false,
+  "p_url": "https://github.com/getsentry/sentry/pull/93224",
+  "p_title": "feat(replay): Add AI Summary tab for replay details [INTERNAL]",
+  "q_url": "https://github.com/getsentry/sentry/pull/93946",
+  "q_title": "fix(replay): Fix summaries not loading due to using wrong `project_id`",
+  "n_shared_commitunion": 1,
+  "fetch_ok": true,
+  "shared": [
+   {
+    "name": "static/app/views/replays/detail/ai/index.tsx",
+    "boilerplate": false,
+    "q_patch": "@@ -11,8 +11,6 @@ import {t} from 'sentry/locale';\n import {space} from 'sentry/styles/space';\n import type {ApiQueryKey} from 'sentry/utils/queryClient';\n import {useApiQuery} from 'sentry/utils/queryClient';\n-import {decodeScalar} from 'sentry/utils/queryString';\n-import useLocationQuery from 'sentry/utils/url/useLocationQuery';\n import useOrganization from 'sentry/utils/useOrganization';\n import useProjectFromId from 'sentry/utils/useProjectFromId';\n import BreadcrumbRow from 'sentry/views/replays/detail/breadcrumbs/breadcrumbRow';\n@@ -58,10 +56,7 @@ export default function Ai({replayRecord}: Props) {\n function AiContent({replayRecord}: Props) {\n   const {replay} = useReplayContext();\n   const organization = useOrganization();\n-  const {project: project_id} = useLocationQuery({\n-    fields: {project: decodeScalar},\n-  });\n-  const project = useProjectFromId({project_id});\n+  const project = useProjectFromId({project_id: replayRecord?.project_id});\n \n   const {\n     data: summaryData,\n@@ -92,6 +87,14 @@ function AiContent({replayRecord}: Props) {\n     );\n   }\n \n+  if (replayRecord?.project_id && !project) {\n+    return (\n+      <SummaryContainer>\n+        <Alert type=\"error\">{t('Project not found. Unable to load AI summary.')}</Alert>\n+      </SummaryContainer>\n+    );\n+  }\n+\n   if (isPending || isRefetching) {\n     return (\n       <LoadingContainer>",
+    "q_link": "https://github.com/getsentry/sentry/pull/93946/files#diff-f52c6319c4992e9649358000d35e19051a672ba02ffe2ac08b9b806446e037cf",
+    "p_link": "https://github.com/getsentry/sentry/pull/93224/files#diff-f52c6319c4992e9649358000d35e19051a672ba02ffe2ac08b9b806446e037cf"
+   }
+  ],
+  "n_net_shared": 1,
+  "n_net_substantive": 1
+ },
+ {
+  "pair_id": 8,
+  "agent": "Cursor",
+  "day_gap": 7,
+  "q_type": "fix",
+  "q_references_p": false,
+  "p_url": "https://github.com/keephq/keep/pull/5002",
+  "p_title": "feat: Improve selected columns storage mechanism",
+  "q_url": "https://github.com/keephq/keep/pull/5113",
+  "q_title": "fix: bug with saving presets and default columns",
+  "n_shared_commitunion": 2,
+  "fetch_ok": true,
+  "shared": [
+   {
+    "name": "keep-ui/widgets/alerts-table/ui/ColumnSelection.tsx",
+    "boilerplate": false,
+    "q_patch": "@@ -38,28 +38,28 @@ export default function ColumnSelection({\n   const [searchTerm, setSearchTerm] = useState(\"\");\n   const [isSearching, setIsSearching] = useState(false);\n   // Local state to track checkbox changes before submission\n-  // Use a ref to avoid re-initializing on every render\n   const [localColumnVisibility, setLocalColumnVisibility] =\n     useState<VisibilityState>(columnVisibility);\n+  \n+  // Use a ref to track the previous columnVisibility to prevent infinite loops\n+  const prevColumnVisibilityRef = React.useRef<VisibilityState>(columnVisibility);\n \n-  // Update local state when backend state changes - but only if the component just mounted\n-  // or if the visibility object has actually changed (not just a new reference)\n+  // Update local state when backend state changes\n   React.useEffect(() => {\n-    const currentKeys = Object.keys(localColumnVisibility);\n-    const newKeys = Object.keys(columnVisibility);\n-\n-    // Only update if the keys or values have actually changed\n-    const hasChanged =\n-      currentKeys.length !== newKeys.length ||\n-      currentKeys.some(\n-        (key) => localColumnVisibility[key] !== columnVisibility[key]\n-      ) ||\n-      newKeys.some((key) => !(key in localColumnVisibility));\n-\n-    if (hasChanged) {\n+    console.log('ColumnSelection: columnVisibility changed', {\n+      presetName,\n+      useBackend,\n+      columnVisibility,\n+      localColumnVisibility\n+    });\n+    \n+    // Only update if the columnVisibility has actually changed\n+    if (JSON.stringify(prevColumnVisibilityRef.current) !== JSON.stringify(columnVisibility)) {\n+      console.log('ColumnSelection: updating localColumnVisibility');\n       setLocalColumnVisibility(columnVisibility);\n+      prevColumnVisibilityRef.current = columnVisibility;\n     }\n-  }, [columnVisibility]); // Don't include localColumnVisibility in deps to avoid infinite loop\n+  }, [columnVisibility, presetName]);\n \n   const columnsOptions = tableColumns\n     .filter((col) => col.getIsPinned() === false)\n@@ -95,10 +95,20 @@ export default function ColumnSelection({\n   };\n \n   const handleCheckboxChange = (column: string, checked: boolean) => {\n-    setLocalColumnVisibility((prev) => ({\n-      ...prev,\n-      [column]: checked,\n-    }));\n+    console.log('ColumnSelection: handleCheckboxChange', {\n+      column,\n+      checked,\n+      currentLocalState: localColumnVisibility\n+    });\n+    \n+    setLocalColumnVisibility((prev) => {\n+      const newState = {\n+        ...prev,\n+        [column]: checked,\n+      };\n+      console.log('ColumnSelection: new local state', newState);\n+      return newState;\n+    });\n   };\n \n   const onMultiSelectChange = async (event: FormEvent<HTMLFormElement>) => {",
+    "q_link": "https://github.com/keephq/keep/pull/5113/files#diff-7cc5c3899666b78cd3c6113a0923fc2c292e946266b49b9ac822bf2cac924e5e",
+    "p_link": "https://github.com/keephq/keep/pull/5002/files#diff-7cc5c3899666b78cd3c6113a0923fc2c292e946266b49b9ac822bf2cac924e5e"
+   },
+   {
+    "name": "pyproject.toml",
+    "boilerplate": false,
+    "q_patch": "@@ -1,6 +1,6 @@\n [tool.poetry]\n name = \"keep\"\n-version = \"0.45.10\"\n+version = \"0.45.11\"\n description = \"Alerting. for developers, by developers.\"\n authors = [\"Keep Alerting LTD\"]\n packages = [{include = \"keep\"}]",
+    "q_link": "https://github.com/keephq/keep/pull/5113/files#diff-50c86b7ed8ac2cf95bd48334961bf0530cdc77b5a56f852c5c61b89d735fd711",
+    "p_link": "https://github.com/keephq/keep/pull/5002/files#diff-50c86b7ed8ac2cf95bd48334961bf0530cdc77b5a56f852c5c61b89d735fd711"
+   }
+  ],
+  "n_net_shared": 2,
+  "n_net_substantive": 2
+ },
+ {
+  "pair_id": 9,
+  "agent": "Copilot",
+  "day_gap": 1,
+  "q_type": "fix",
+  "q_references_p": false,
+  "p_url": "https://github.com/dotnet/aspire/pull/10037",
+  "p_title": "Refactor publishing state model and CLI protocol to aggregate CompletionState at all levels",
+  "q_url": "https://github.com/dotnet/aspire/pull/10077",
+  "q_title": "Fix output when publish completes with warning",
+  "n_shared_commitunion": 1,
+  "fetch_ok": true,
+  "shared": [
+   {
+    "name": "src/Aspire.Cli/Commands/PublishCommandBase.cs",
+    "boilerplate": false,
+    "q_patch": "@@ -382,17 +382,17 @@ public static async Task<bool> ProcessAndDisplayPublishingActivitiesAsync(IAsync\n         }\n \n         var hasErrors = publishingActivity is not null && IsCompletionStateError(publishingActivity.Data.CompletionState);\n+        var hasWarnings = publishingActivity is not null && IsCompletionStateWarning(publishingActivity.Data.CompletionState);\n \n         if (publishingActivity is not null)\n         {\n-            if (hasErrors)\n-            {\n-                AnsiConsole.MarkupLine($\"[red bold]\u274c PUBLISHING FAILED:[/] {publishingActivity.Data.StatusText.EscapeMarkup()}\");\n-            }\n-            else\n-            {\n-                AnsiConsole.MarkupLine($\"[green bold]\u2705 PUBLISHING COMPLETED:[/] {publishingActivity.Data.StatusText.EscapeMarkup()}\");\n-            }\n+            var prefix = hasErrors\n+                ? \"[red]\u2717 PUBLISHING FAILED:[/]\"\n+: hasWarnings\n+                    ? \"[yellow]\u26a0 PUBLISHING COMPLETED:[/]\"\n+                    : \"[green]\u2713 PUBLISHING COMPLETED:[/]\";\n+            \n+            AnsiConsole.MarkupLine($\"{prefix} {publishingActivity.Data.StatusText.EscapeMarkup()}\");\n         }\n \n         return !hasErrors;",
+    "q_link": "https://github.com/dotnet/aspire/pull/10077/files#diff-6304f3fa7f29af7c1878a0c341df4d15735410964b8e8978a408133058179e62",
+    "p_link": "https://github.com/dotnet/aspire/pull/10037/files#diff-6304f3fa7f29af7c1878a0c341df4d15735410964b8e8978a408133058179e62"
+   }
+  ],
+  "n_net_shared": 1,
+  "n_net_substantive": 1
+ },
+ {
+  "pair_id": 10,
+  "agent": "Copilot",
+  "day_gap": 25,
+  "q_type": "fix",
+  "q_references_p": false,
+  "p_url": "https://github.com/lostintangent/gistpad/pull/396",
+  "p_title": "Add auto-save functionality for gist files",
+  "q_url": "https://github.com/lostintangent/gistpad/pull/406",
+  "q_title": "Fix tree expansion error for gists with no files",
+  "n_shared_commitunion": 1,
+  "fetch_ok": true,
+  "shared": [
+   {
+    "name": "CHANGELOG.md",
+    "boilerplate": true,
+    "q_patch": "@@ -1,3 +1,7 @@\n+## v0.9.5 (07/07/25)\n+\n+- Fixed a bug where gists with no files and no description would break the tree view from loading\n+\n ## v0.9.4 (06/16/25)\n \n - Introduced the `GistPad > MCP > Resources: Include Starred` and `GistPad > MCP > Resources: Include Archived` settings",
+    "q_link": "https://github.com/lostintangent/gistpad/pull/406/files#diff-06572a96a58dc510037d5efa622f9bec8519bc1beab13c9f251e97e657a9d4ed",
+    "p_link": "https://github.com/lostintangent/gistpad/pull/396/files#diff-06572a96a58dc510037d5efa622f9bec8519bc1beab13c9f251e97e657a9d4ed"
+   },
+   {
+    "name": "package.json",
+    "boilerplate": false,
+    "q_patch": "@@ -3,7 +3,7 @@\n   \"displayName\": \"GistPad\",\n   \"description\": \"Manage your code snippets and developer notes using GitHub Gists and repositories.\",\n   \"publisher\": \"vsls-contrib\",\n-  \"version\": \"0.9.4\",\n+  \"version\": \"0.9.5\",\n   \"extensionKind\": [\n     \"ui\",\n     \"workspace\"",
+    "q_link": "https://github.com/lostintangent/gistpad/pull/406/files#diff-7ae45ad102eab3b6d7e7896acd08c427a9b25b346470d7bc6507b6481575d519",
+    "p_link": "https://github.com/lostintangent/gistpad/pull/396/files#diff-7ae45ad102eab3b6d7e7896acd08c427a9b25b346470d7bc6507b6481575d519"
+   }
+  ],
+  "n_net_shared": 2,
+  "n_net_substantive": 1
+ },
+ {
+  "pair_id": 11,
+  "agent": "Copilot",
+  "day_gap": 21,
+  "q_type": "fix",
+  "q_references_p": false,
+  "p_url": "https://github.com/microsoft/perfview/pull/2212",
+  "p_title": "Fix ObjectDisposedException when opening Net OS Heap Alloc Stacks",
+  "q_url": "https://github.com/microsoft/perfview/pull/2232",
+  "q_title": "Extend PredefinedDynamicTraceEventParser to Support Dynamic Events from EventPipeEventSource",
+  "n_shared_commitunion": 1,
+  "fetch_ok": true,
+  "shared": [
+   {
+    "name": "src/PerfView/PerfViewData.cs",
+    "boilerplate": false,
+    "q_patch": "@@ -7,6 +7,7 @@\n using Microsoft.Diagnostics.Tracing.Etlx;\n using Microsoft.Diagnostics.Tracing.EventPipe;\n using Microsoft.Diagnostics.Tracing.Parsers;\n+using Microsoft.Diagnostics.Tracing.Parsers.Universal.Events;\n using Microsoft.Diagnostics.Tracing.Parsers.AspNet;\n using Microsoft.Diagnostics.Tracing.Parsers.Clr;\n using Microsoft.Diagnostics.Tracing.Parsers.ClrPrivate;\n@@ -42,7 +43,6 @@\n using Utilities;\n using Address = System.UInt64;\n using EventSource = EventSources.EventSource;\n-using Microsoft.Diagnostics.Tracing.Parsers.Universal.Events;\n \n namespace PerfView\n {",
+    "q_link": "https://github.com/microsoft/perfview/pull/2232/files#diff-150caaec536644dcc4629e0327956178fd5e0f7fd82fb155562cd104cd45a919",
+    "p_link": "https://github.com/microsoft/perfview/pull/2212/files#diff-150caaec536644dcc4629e0327956178fd5e0f7fd82fb155562cd104cd45a919"
+   }
+  ],
+  "n_net_shared": 1,
+  "n_net_substantive": 1
+ },
+ {
+  "pair_id": 12,
+  "agent": "Copilot",
+  "day_gap": 15,
+  "q_type": "fix",
+  "q_references_p": false,
+  "p_url": "https://github.com/microsoft/perfview/pull/2216",
+  "p_title": "Add GC Heap Analyzer support to .nettrace files",
+  "q_url": "https://github.com/microsoft/perfview/pull/2232",
+  "q_title": "Extend PredefinedDynamicTraceEventParser to Support Dynamic Events from EventPipeEventSource",
+  "n_shared_commitunion": 1,
+  "fetch_ok": true,
+  "shared": [
+   {
+    "name": "src/PerfView/PerfViewData.cs",
+    "boilerplate": false,
+    "q_patch": "@@ -7,6 +7,7 @@\n using Microsoft.Diagnostics.Tracing.Etlx;\n using Microsoft.Diagnostics.Tracing.EventPipe;\n using Microsoft.Diagnostics.Tracing.Parsers;\n+using Microsoft.Diagnostics.Tracing.Parsers.Universal.Events;\n using Microsoft.Diagnostics.Tracing.Parsers.AspNet;\n using Microsoft.Diagnostics.Tracing.Parsers.Clr;\n using Microsoft.Diagnostics.Tracing.Parsers.ClrPrivate;\n@@ -42,7 +43,6 @@\n using Utilities;\n using Address = System.UInt64;\n using EventSource = EventSources.EventSource;\n-using Microsoft.Diagnostics.Tracing.Parsers.Universal.Events;\n \n namespace PerfView\n {",
+    "q_link": "https://github.com/microsoft/perfview/pull/2232/files#diff-150caaec536644dcc4629e0327956178fd5e0f7fd82fb155562cd104cd45a919",
+    "p_link": "https://github.com/microsoft/perfview/pull/2216/files#diff-150caaec536644dcc4629e0327956178fd5e0f7fd82fb155562cd104cd45a919"
+   }
+  ],
+  "n_net_shared": 1,
+  "n_net_substantive": 1
+ },
+ {
+  "pair_id": 13,
+  "agent": "Copilot",
+  "day_gap": 6,
+  "q_type": "fix",
+  "q_references_p": false,
+  "p_url": "https://github.com/microsoft/perfview/pull/2222",
+  "p_title": "Fix TraceEvent CaptureState API to work with keywords not previously enabled in session",
+  "q_url": "https://github.com/microsoft/perfview/pull/2177",
+  "q_title": "NRE when calling TraceEventProviders.GetProviderGuidByName",
+  "n_shared_commitunion": 1,
+  "fetch_ok": true,
+  "shared": [
+   {
+    "name": "src/TraceEvent/TraceEventSession.cs",
+    "boilerplate": false,
+    "q_patch": "@@ -1762,7 +1762,7 @@ internal static SortedDictionary<string, Guid> ProviderNameToGuid\n                             }\n                             else\n                             {\n-                                Trace.WriteLine(\"TdhEnumerateProviders failed HR = \" + hr);\n+                                throw new Exception(\"TdhEnumerateProviders failed HR = \" + hr);\n                             }\n                         }\n                     }",
+    "q_link": "https://github.com/microsoft/perfview/pull/2177/files#diff-1f06bc7c79946634f1cf3b0eea5ef2e74db9cea1b22a251df4b9173f5c5136ab",
+    "p_link": "https://github.com/microsoft/perfview/pull/2222/files#diff-1f06bc7c79946634f1cf3b0eea5ef2e74db9cea1b22a251df4b9173f5c5136ab"
+   }
+  ],
+  "n_net_shared": 1,
+  "n_net_substantive": 1
+ },
+ {
+  "pair_id": 14,
+  "agent": "Copilot",
+  "day_gap": 2,
+  "q_type": "fix",
+  "q_references_p": false,
+  "p_url": "https://github.com/celestiaorg/celestia-core/pull/1954",
+  "p_title": "feat: update dependabot config for main branch and add go/docker support",
+  "q_url": "https://github.com/celestiaorg/celestia-core/pull/1987",
+  "q_title": "fix: remove extra blank lines from dependabot.yml to fix linter CI",
+  "n_shared_commitunion": 1,
+  "fetch_ok": true,
+  "shared": [
+   {
+    "name": ".github/dependabot.yml",
+    "boilerplate": false,
+    "q_patch": "@@ -51,5 +51,3 @@ updates:\n     labels:\n       - dependencies\n       - automerge\n-\n-",
+    "q_link": "https://github.com/celestiaorg/celestia-core/pull/1987/files#diff-dd4fbda47e51f1e35defb9275a9cd9c212ecde0b870cba89ddaaae65c5f3cd28",
+    "p_link": "https://github.com/celestiaorg/celestia-core/pull/1954/files#diff-dd4fbda47e51f1e35defb9275a9cd9c212ecde0b870cba89ddaaae65c5f3cd28"
+   }
+  ],
+  "n_net_shared": 1,
+  "n_net_substantive": 1
+ },
+ {
+  "pair_id": 15,
+  "agent": "Copilot",
+  "day_gap": 1,
+  "q_type": "fix",
+  "q_references_p": false,
+  "p_url": "https://github.com/celestiaorg/celestia-core/pull/1938",
+  "p_title": "fix: update Go version requirement to 1.24 to resolve govuln CI failures",
+  "q_url": "https://github.com/celestiaorg/celestia-core/pull/1995",
+  "q_title": "fix: update Go toolchain and dependencies to resolve govuln vulnerabilities",
+  "n_shared_commitunion": 1,
+  "fetch_ok": true,
+  "shared": [
+   {
+    "name": "go.mod",
+    "boilerplate": false,
+    "q_patch": "@@ -2,7 +2,7 @@ module github.com/cometbft/cometbft\n \n go 1.24.0\n \n-toolchain go1.24.2\n+toolchain go1.24.4\n \n require (\n \tgithub.com/BurntSushi/toml v1.4.0\n@@ -89,7 +89,7 @@ require (\n \tgithub.com/aws/smithy-go v1.22.2 // indirect\n \tgithub.com/beorn7/perks v1.0.1 // indirect\n \tgithub.com/cespare/xxhash/v2 v2.3.0 // indirect\n-\tgithub.com/cloudflare/circl v1.3.7 // indirect\n+\tgithub.com/cloudflare/circl v1.6.1 // indirect\n \tgithub.com/cockroachdb/errors v1.11.3 // indirect\n \tgithub.com/cockroachdb/fifo v0.0.0-20240606204812-0bbfbd93a7ce // indirect\n \tgithub.com/cockroachdb/logtags v0.0.0-20230118201751-21c54148d20b // indirect",
+    "q_link": "https://github.com/celestiaorg/celestia-core/pull/1995/files#diff-33ef32bf6c23acb95f5902d7097b7a1d5128ca061167ec0716715b0b9eeaa5f6",
+    "p_link": "https://github.com/celestiaorg/celestia-core/pull/1938/files#diff-33ef32bf6c23acb95f5902d7097b7a1d5128ca061167ec0716715b0b9eeaa5f6"
+   }
+  ],
+  "n_net_shared": 1,
+  "n_net_substantive": 1
+ },
+ {
+  "pair_id": 16,
+  "agent": "Copilot",
+  "day_gap": 1,
+  "q_type": "fix",
+  "q_references_p": false,
+  "p_url": "https://github.com/tokens-studio/figma-plugin/pull/3374",
+  "p_title": "Remember variable export settings and themes in file",
+  "q_url": "https://github.com/tokens-studio/figma-plugin/pull/3438",
+  "q_title": "Version Packages",
+  "n_shared_commitunion": 1,
+  "fetch_ok": true,
+  "shared": [
+   {
+    "name": ".changeset/early-walls-itch.md",
+    "boilerplate": false,
+    "q_patch": "@@ -1,5 +0,0 @@\n----\n-\"@tokens-studio/figma-plugin\": patch\n----\n-\n-When you create Variables we now remember the choice of theme you made on that file on subsequent runs",
+    "q_link": "https://github.com/tokens-studio/figma-plugin/pull/3438/files#diff-39929be514e8bcde781e7ce5c77a5a12150ed24704b48e6736b8549d20b80b15",
+    "p_link": "https://github.com/tokens-studio/figma-plugin/pull/3374/files#diff-39929be514e8bcde781e7ce5c77a5a12150ed24704b48e6736b8549d20b80b15"
+   }
+  ],
+  "n_net_shared": 1,
+  "n_net_substantive": 1
+ },
+ {
+  "pair_id": 17,
+  "agent": "Devin",
+  "day_gap": 2,
+  "q_type": "fix",
+  "q_references_p": false,
+  "p_url": "https://github.com/onlook-dev/onlook/pull/1386",
+  "p_title": "Add settings modal UI with custom domains feature",
+  "q_url": "https://github.com/onlook-dev/onlook/pull/1401",
+  "q_title": "Fix the settings modal",
+  "n_shared_commitunion": 2,
+  "fetch_ok": true,
+  "shared": [
+   {
+    "name": "apps/studio/src/routes/editor/TopBar/ProjectSelect/SettingsModal/index.tsx",
+    "boilerplate": false,
+    "q_patch": "@@ -1,92 +1,81 @@\n import { Button } from '@onlook/ui/button';\n-import { Dialog, DialogContent, DialogTitle } from '@onlook/ui/dialog';\n+import { DialogTitle } from '@onlook/ui/dialog';\n import { Icons } from '@onlook/ui/icons';\n import { Separator } from '@onlook/ui/separator';\n import { cn } from '@onlook/ui/utils';\n import { useState } from 'react';\n import { DomainTab } from './DomainTab';\n-import ProjectTab from './ProjectTab';\n import EditorTab from './EditorTab';\n+import ProjectTab from './ProjectTab';\n \n enum TabValue {\n     DOMAIN = 'domain',\n     PROJECT = 'project',\n     EDITOR = 'editor',\n }\n \n-export const SettingsModal = ({\n-    open,\n-    onOpenChange,\n-}: {\n-    open: boolean;\n-    onOpenChange: (open: boolean) => void;\n-}) => {\n+export const SettingsModal = () => {\n     const [activeTab, setActiveTab] = useState<TabValue>(TabValue.DOMAIN);\n-\n     return (\n-        <Dialog open={open} onOpenChange={onOpenChange}>\n-            <DialogContent className=\"max-w-4xl h-[600px] p-0\">\n-                <div className=\"flex flex-col h-full overflow-hidden\">\n-                    {/* Top bar - fixed height */}\n-                    <div className=\"shrink-0 flex items-center p-6 pb-4\">\n-                        <DialogTitle className=\"text-title3\">Settings</DialogTitle>\n-                    </div>\n-                    <Separator orientation=\"horizontal\" className=\"shrink-0\" />\n+        <div className=\"flex flex-col h-full overflow-hidden\">\n+            {/* Top bar - fixed height */}\n+            <div className=\"shrink-0 flex items-center p-6 pb-4\">\n+                <DialogTitle className=\"text-title3\">Settings</DialogTitle>\n+            </div>\n+            <Separator orientation=\"horizontal\" className=\"shrink-0\" />\n \n-                    {/* Main content */}\n-                    <div className=\"flex gap-4 flex-1 min-h-0 overflow-hidden\">\n-                        {/* Left navigation - fixed width */}\n-                        <div className=\"shrink-0 w-32 space-y-2 p-6 text-regularPlus\">\n-                            <Button\n-                                variant=\"ghost\"\n-                                className={cn(\n-                                    'w-full justify-start px-0 hover:bg-transparent',\n-                                    activeTab === 'domain'\n-                                        ? 'text-foreground-active'\n-                                        : 'text-muted-foreground',\n-                                )}\n-                                onClick={() => setActiveTab(TabValue.DOMAIN)}\n-                            >\n-                                <Icons.Globe className=\"mr-2 h-4 w-4\" />\n-                                Domain\n-                            </Button>\n-                            <Button\n-                                variant=\"ghost\"\n-                                className={cn(\n-                                    'w-full justify-start px-0 hover:bg-transparent',\n-                                    activeTab === TabValue.PROJECT\n-                                        ? 'text-foreground-active'\n-                                        : 'text-muted-foreground',\n-                                )}\n-                                onClick={() => setActiveTab(TabValue.PROJECT)}\n-                            >\n-                                <Icons.Gear className=\"mr-2 h-4 w-4\" />\n-                                Project\n-                            </Button>\n-                            <Button\n-                                variant=\"ghost\"\n-                                className={cn(\n-                                    'w-full justify-start px-0 hover:bg-transparent',\n-                                    activeTab === TabValue.EDITOR\n-                                        ? 'text-foreground-active'\n-                                        : 'text-muted-foreground',\n-                                )}\n-                                onClick={() => setActiveTab(TabValue.EDITOR)}\n-                            >\n-                                <Icons.Pencil className=\"mr-2 h-4 w-4\" />\n-                                Editor\n-                            </Button>\n-                        </div>\n-                        <Separator orientation=\"vertical\" className=\"h-full\" />\n-                        {/* Right content */}\n-                        <div className=\"flex-1 min-w-0 overflow-y-auto p-6 pl-4\">\n-                            {activeTab === TabValue.DOMAIN && <DomainTab />}\n-                            {activeTab === TabValue.PROJECT && <ProjectTab />}\n-                            {activeTab === TabValue.EDITOR && <EditorTab />}\n-                        </div>\n-                    </div>\n+            {/* Main content */}\n+            <div className=\"flex gap-4 flex-1 min-h-0 overflow-hidden\">\n+                {/* Left navigation - fixed width */}\n+                <div className=\"shrink-0 w-32 space-y-2 p-6 text-regularPlus\">\n+                    <Button\n+                        variant=\"ghost\"\n+                        className={cn(\n+                            'w-full justify-start px-0 hover:bg-transparent',\n+                            activeTab === 'domain'\n+                                ? 'text-foreground-active'\n+                                : 'text-muted-foreground',\n+                        )}\n+                        onClick={() => setActiveTab(TabValue.DOMAIN)}\n+                    >\n+                        <Icons.Globe className=\"mr-2 h-4 w-4\" />\n+                        Domain\n+                    </Button>\n+                    <Button\n+                        variant=\"ghost\"\n+                        className={cn(\n+                            'w-full justify-start px-0 hover:bg-transparent',\n+                            activeTab === TabValue.PROJECT\n+                                ? 'text-foreground-active'\n+                                : 'text-muted-foreground',\n+                        )}\n+                      ",
+    "q_link": "https://github.com/onlook-dev/onlook/pull/1401/files#diff-6788a767fa669d60504a81ef2ca322dae58474b584c78a42353bf72e4dde7465",
+    "p_link": "https://github.com/onlook-dev/onlook/pull/1386/files#diff-6788a767fa669d60504a81ef2ca322dae58474b584c78a42353bf72e4dde7465"
+   },
+   {
+    "name": "apps/studio/src/routes/editor/TopBar/ProjectSelect/index.tsx",
+    "boilerplate": false,
+    "q_patch": "@@ -5,7 +5,7 @@ import { invokeMainChannel } from '@/lib/utils';\n import { SettingsModal } from '@/routes/editor/TopBar/ProjectSelect/SettingsModal';\n import { MainChannels } from '@onlook/models/constants';\n import { Button } from '@onlook/ui/button';\n-import { Dialog } from '@onlook/ui/dialog';\n+import { Dialog, DialogContent, DialogTrigger } from '@onlook/ui/dialog';\n import {\n     DropdownMenu,\n     DropdownMenuContent,\n@@ -25,7 +25,6 @@ const ProjectBreadcrumb = observer(() => {\n     const editorEngine = useEditorEngine();\n     const projectsManager = useProjectsManager();\n     const routeManager = useRouteManager();\n-    const [isSettingsOpen, setIsSettingsOpen] = useState(false);\n     const [isDropdownOpen, setIsDropdownOpen] = useState(false);\n     const closeTimeoutRef = useRef<Timer>();\n \n@@ -75,103 +74,92 @@ const ProjectBreadcrumb = observer(() => {\n     }\n \n     return (\n-        <>\n-            <Dialog\n-                open={editorEngine.isPlansOpen}\n-                onOpenChange={(open) => (editorEngine.isPlansOpen = open)}\n-            >\n-                <div className=\"mx-2 flex flex-row items-center text-small gap-2\">\n-                    <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>\n-                        <DropdownMenuTrigger asChild>\n-                            <Button\n-                                variant={'ghost'}\n-                                className=\"mx-0 px-0 gap-2 text-foreground-onlook text-small hover:text-foreground-active hover:bg-transparent\"\n-                            >\n-                                <Icons.OnlookLogo className=\"w-6 h-6 hidden md:block\" />\n-                                <span className=\"mx-0 max-w-[60px] md:max-w-[100px] lg:max-w-[200px] px-0 text-foreground-onlook text-small truncate cursor-pointer\">\n-                                    {projectsManager.project?.name}\n-                                </span>\n-                                <Icons.ChevronDown className=\"transition-all rotate-0 group-data-[state=open]:-rotate-180 duration-200 ease-in-out text-foreground-onlook \" />\n-                            </Button>\n-                        </DropdownMenuTrigger>\n-                        <DropdownMenuContent\n-                            align=\"start\"\n-                            className=\"w-48\"\n-                            onMouseEnter={() => {\n-                                if (closeTimeoutRef.current) {\n-                                    clearTimeout(closeTimeoutRef.current);\n-                                }\n-                            }}\n-                            onMouseLeave={() => {\n-                                closeTimeoutRef.current = setTimeout(() => {\n-                                    setIsDropdownOpen(false);\n-                                }, 300);\n-                            }}\n+        <Dialog>\n+            <div className=\"mx-2 flex flex-row items-center text-small gap-2\">\n+                <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>\n+                    <DropdownMenuTrigger asChild>\n+                        <Button\n+                            variant={'ghost'}\n+                            className=\"mx-0 px-0 gap-2 text-foreground-onlook text-small hover:text-foreground-active hover:bg-transparent\"\n                         >\n-                            <DropdownMenuItem onClick={handleReturn}>\n-                                <div className=\"flex row center items-center group\">\n-                                    <Icons.Tokens className=\"mr-2 group-hover:rotate-12 transition-transform\" />\n-                                    {'Go to all Projects'}\n-                                </div>\n-                            </DropdownMenuItem>\n-                            <DropdownMenuSeparator />\n-                            <DropdownMenuSub>\n-                                <DropdownMenuSubTrigger>New Project</DropdownMenuSubTrigger>\n-                                <DropdownMenuSubContent>\n-                                    <DropdownMenuItem\n-                                        onClick={() =>\n-                                            handleNavigateToProject(ProjectTabs.PROMPT_CREATE)\n-                                        }\n-                                        className={cn(\n-                                            'focus:bg-blue-100 focus:text-blue-900',\n-                                            'hover:bg-blue-100 hover:text-blue-900',\n-                                            'dark:focus:bg-blue-900 dark:focus:text-blue-100',\n-                                            'dark:hover:bg-blue-900 dark:hover:text-blue-100',\n-                                        )}\n-                                    >\n-                                        <Icons.FilePlus className=\"mr-2 h-4 w-4\" />\n-                                        Start from scratch\n-                                    </DropdownMenuItem>\n-                                    <DropdownMenuItem\n-                                        onClick={() =>\n-                                            handleNavigateToProject(ProjectTabs.IMPORT_PROJECT)\n-                                        }\n-                                        className={cn(\n-                                            'focus:bg-teal-100 focus:text-teal-900',\n-                                            'hover:bg-teal-100 hover:text-teal-900',\n-                                            'dark:focus:bg-teal-900 dark:focus:text-teal-100',\n-                                            'dark:hover:bg-teal-900 dark:hover:text-teal-100',\n-                                        )}\n-                                    >\n-                                        <Icons.Download className=\"mr-2 h-4 w-4\" />\n-                                        Import a project\n-                                    </DropdownMenuItem>\n-                                </DropdownMenuSubContent>\n-                    ",
+    "q_link": "https://github.com/onlook-dev/onlook/pull/1401/files#diff-ca5b6207020b9c06106161ee70995952fee125ae1b5e6f017cd71a8ac36119b5",
+    "p_link": "https://github.com/onlook-dev/onlook/pull/1386/files#diff-ca5b6207020b9c06106161ee70995952fee125ae1b5e6f017cd71a8ac36119b5"
+   }
+  ],
+  "n_net_shared": 2,
+  "n_net_substantive": 2
+ },
+ {
+  "pair_id": 18,
+  "agent": "Devin",
+  "day_gap": 4,
+  "q_type": "fix",
+  "q_references_p": false,
+  "p_url": "https://github.com/near/nearcore/pull/13266",
+  "p_title": "Deprecate protocol features LowerRegularOpCost2 and LimitContractFunctionsNumber",
+  "q_url": "https://github.com/near/nearcore/pull/13321",
+  "q_title": "Deprecate AliasValidatorSelectionAlgorithm feature",
+  "n_shared_commitunion": 1,
+  "fetch_ok": true,
+  "shared": [
+   {
+    "name": "core/primitives-core/src/version.rs",
+    "boilerplate": false,
+    "q_patch": "@@ -108,7 +108,8 @@ pub enum ProtocolFeature {\n     /// within epoch.  See <https://github.com/near/NEPs/pull/167> for general\n     /// description, note that we would not introduce chunk-only validators with\n     /// this feature\n-    AliasValidatorSelectionAlgorithm,\n+    #[deprecated]\n+    _DeprecatedAliasValidatorSelectionAlgorithm,\n     /// Make block producers produce chunks for the same block they would later produce to avoid\n     /// network delays\n     #[deprecated]\n@@ -324,7 +325,7 @@ impl ProtocolFeature {\n             ProtocolFeature::_DeprecatedLowerRegularOpCost2\n             | ProtocolFeature::_DeprecatedLimitContractFunctionsNumber\n             | ProtocolFeature::_DeprecatedBlockHeaderV3\n-            | ProtocolFeature::AliasValidatorSelectionAlgorithm => 49,\n+            | ProtocolFeature::_DeprecatedAliasValidatorSelectionAlgorithm => 49,\n             ProtocolFeature::_DeprecatedSynchronizeBlockChunkProduction\n             | ProtocolFeature::_DeprecatedCorrectStackLimit => 50,\n             ProtocolFeature::_DeprecatedAccessKeyNonceForImplicitAccounts => 51,",
+    "q_link": "https://github.com/near/nearcore/pull/13321/files#diff-9c942a9254d8ef4f9e4d4cbe3a8690ea4928f6e9951b3e6b1271245e8107bd57",
+    "p_link": "https://github.com/near/nearcore/pull/13266/files#diff-9c942a9254d8ef4f9e4d4cbe3a8690ea4928f6e9951b3e6b1271245e8107bd57"
+   }
+  ],
+  "n_net_shared": 1,
+  "n_net_substantive": 1
+ },
+ {
+  "pair_id": 19,
+  "agent": "Devin",
+  "day_gap": 5,
+  "q_type": "fix",
+  "q_references_p": false,
+  "p_url": "https://github.com/calcom/cal.com/pull/20631",
+  "p_title": "feat(insights): add progress indicator to download button on /insights and /insights/routing (CAL-5408)",
+  "q_url": "https://github.com/calcom/cal.com/pull/20983",
+  "q_title": "fix: Remove 30 seats minimum text from organization setup page",
+  "n_shared_commitunion": 1,
+  "fetch_ok": true,
+  "shared": [
+   {
+    "name": "apps/web/public/static/locales/en/common.json",
+    "boilerplate": false,
+    "q_patch": "@@ -2584,7 +2584,7 @@\n   \"email|existing_user_added_link_changed\": \"Your link has been changed from {{a0}} to {{a1}} but don't worry, all previous links still work and redirect appropriately. <br /><br />Please note: All of your personal event types have been moved into the <strong>{{teamName}}</strong> organisation, which may also include potential personal link.<br /><br />Please log in and make sure you have no private events on your new organisational account.<br /><br />For personal events we recommend creating a new account with a personal email address.<br /><br />Enjoy your new clean link: {{a2}}\",\n   \"email_organization_created|subject\": \"Your organization has been created\",\n   \"your_current_plan\": \"Your current plan\",\n-  \"organization_price_per_user_month\": \"$37 per user per month (30 seats minimum)\",\n+  \"organization_price_per_user_month\": \"$37 per user per month\",\n   \"privacy_organization_description\": \"Manage privacy settings for your organization\",\n   \"privacy\": \"Privacy\",\n   \"team_will_be_under_org\": \"New teams will be under your organization\",",
+    "q_link": "https://github.com/calcom/cal.com/pull/20983/files#diff-57de4b8e5231f1d699891d98b0381d56e9e24537b0ca5420d1fba4f0597370bc",
+    "p_link": "https://github.com/calcom/cal.com/pull/20631/files#diff-57de4b8e5231f1d699891d98b0381d56e9e24537b0ca5420d1fba4f0597370bc"
+   }
+  ],
+  "n_net_shared": 1,
+  "n_net_substantive": 1
+ },
+ {
+  "pair_id": 20,
+  "agent": "Devin",
+  "day_gap": 14,
+  "q_type": "fix",
+  "q_references_p": false,
+  "p_url": "https://github.com/liam-hq/liam/pull/1296",
+  "p_title": "\u2728 feat: implement organization-specific project pages",
+  "q_url": "https://github.com/liam-hq/liam/pull/1495",
+  "q_title": "\ud83d\udc1b Hide OrganizationItem in GlobalNav when no organizations exist instead of triggering notFound",
+  "n_shared_commitunion": 1,
+  "fetch_ok": true,
+  "shared": [
+   {
+    "name": "frontend/apps/app/components/CommonLayout/CommonLayout.tsx",
+    "boilerplate": false,
+    "q_patch": "@@ -17,36 +17,24 @@ export async function CommonLayout({ children }: CommonLayoutProps) {\n   // In a Server Component, we can't directly access the URL path\n   // We'll let the ClientAppBar handle path detection and project ID extraction\n   const organizationId = await getOrganizationId()\n-  const { data: organization, error } = await getOrganization(organizationId)\n+  const { data: organization } = await getOrganization(organizationId)\n \n+  const { data: authUser, error } = await getAuthUser()\n   if (error) {\n     return notFound()\n   }\n \n-  const { data: authUser, error: authUserError } = await getAuthUser()\n-\n-  if (authUserError) {\n-    return notFound()\n-  }\n-\n-  const { data: organizations, error: organizationsError } =\n-    await getOrganizationsByUserId(authUser.user.id)\n-\n-  if (organizationsError) {\n-    return notFound()\n-  }\n+  const { data: organizations } = await getOrganizationsByUserId(\n+    authUser.user.id,\n+  )\n \n   return (\n     <div className={styles.layout}>\n-      {organization && (\n-        <>\n-          <OrgCookie orgId={organization.id} />\n-          <GlobalNav\n-            currentOrganization={organization}\n-            organizations={organizations}\n-          />\n-        </>\n-      )}\n+      {organization && <OrgCookie orgId={organization.id} />}\n+      <GlobalNav\n+        currentOrganization={organization}\n+        organizations={organizations}\n+      />\n       <div className={styles.mainContent}>\n         <ClientAppBar avatarInitial=\"L\" avatarColor=\"var(--color-teal-800)\" />\n         <main className={styles.content}>{children}</main>",
+    "q_link": "https://github.com/liam-hq/liam/pull/1495/files#diff-6f6acdaa340a061452d00683078d451ff961a52b63b9b1f3d3cbf0bb7c3e8dda",
+    "p_link": "https://github.com/liam-hq/liam/pull/1296/files#diff-6f6acdaa340a061452d00683078d451ff961a52b63b9b1f3d3cbf0bb7c3e8dda"
+   }
+  ],
+  "n_net_shared": 1,
+  "n_net_substantive": 1
+ },
+ {
+  "pair_id": 21,
+  "agent": "Devin",
+  "day_gap": 0,
+  "q_type": "fix",
+  "q_references_p": false,
+  "p_url": "https://github.com/mendableai/firecrawl/pull/1534",
+  "p_title": "Fix Supabase client configuration errors when USE_DB_AUTHENTICATION is false",
+  "q_url": "https://github.com/mendableai/firecrawl/pull/1557",
+  "q_title": "Fix LLMs.txt cache bug with subdomains and add bypass option",
+  "n_shared_commitunion": 1,
+  "fetch_ok": true,
+  "shared": [
+   {
+    "name": "apps/api/src/services/queue-worker.ts",
+    "boilerplate": false,
+    "q_patch": "@@ -653,6 +653,7 @@ const processGenerateLlmsTxtJobInternal = async (\n       maxUrls: job.data.request.maxUrls,\n       showFullText: job.data.request.showFullText,\n       subId: job.data.subId,\n+      cache: job.data.request.cache,\n     });\n \n     if (result.success) {",
+    "q_link": "https://github.com/mendableai/firecrawl/pull/1557/files#diff-6753e371514e1d188e797436080479e7c781d96183601ab8fa203e4df6ca0400",
+    "p_link": "https://github.com/mendableai/firecrawl/pull/1534/files#diff-6753e371514e1d188e797436080479e7c781d96183601ab8fa203e4df6ca0400"
+   }
+  ],
+  "n_net_shared": 1,
+  "n_net_substantive": 1
+ },
+ {
+  "pair_id": 22,
+  "agent": "Devin",
+  "day_gap": 9,
+  "q_type": "fix",
+  "q_references_p": false,
+  "p_url": "https://github.com/mendableai/firecrawl/pull/1508",
+  "p_title": "Fix: Handle both dict and model instances in actions parameter",
+  "q_url": "https://github.com/mendableai/firecrawl/pull/1533",
+  "q_title": "[Bug Fix] Make WaitAction milliseconds field optional in firecrawl-py",
+  "n_shared_commitunion": 1,
+  "fetch_ok": true,
+  "shared": [
+   {
+    "name": "apps/python-sdk/firecrawl/firecrawl.py",
+    "boilerplate": false,
+    "q_patch": "@@ -161,7 +161,7 @@ class ScrapeOptions(pydantic.BaseModel):\n class WaitAction(pydantic.BaseModel):\n     \"\"\"Wait action to perform during scraping.\"\"\"\n     type: Literal[\"wait\"]\n-    milliseconds: int\n+    milliseconds: Optional[int] = None\n     selector: Optional[str] = None\n \n class ScreenshotAction(pydantic.BaseModel):",
+    "q_link": "https://github.com/mendableai/firecrawl/pull/1533/files#diff-483c8de2767d25d6782630bce6706f6a8f3351729762c80b88ba21f93fe1be56",
+    "p_link": "https://github.com/mendableai/firecrawl/pull/1508/files#diff-483c8de2767d25d6782630bce6706f6a8f3351729762c80b88ba21f93fe1be56"
+   }
+  ],
+  "n_net_shared": 1,
+  "n_net_substantive": 1
+ },
+ {
+  "pair_id": 23,
+  "agent": "Devin",
+  "day_gap": 5,
+  "q_type": "fix",
+  "q_references_p": false,
+  "p_url": "https://github.com/appsmithorg/appsmith/pull/38656",
+  "p_title": "feat: disabledWhenInvalid in ButtonGroupWidget",
+  "q_url": "https://github.com/appsmithorg/appsmith/pull/38758",
+  "q_title": "fix: Update button property text",
+  "n_shared_commitunion": 1,
+  "fetch_ok": true,
+  "shared": [
+   {
+    "name": "app/client/src/widgets/ButtonGroupWidget/widget/index.tsx",
+    "boilerplate": false,
+    "q_patch": "@@ -528,7 +528,7 @@ class ButtonGroupWidget extends BaseWidget<\n                   children: [\n                     {\n                       propertyName: \"disabledWhenInvalid\",\n-                      label: \"Disabled invalid forms\",\n+                      label: \"Disable when form is invalid\",\n                       helpText:\n                         \"Disables this button if the form is invalid, if this button exists directly within a Form widget\",\n                       controlType: \"SWITCH\",",
+    "q_link": "https://github.com/appsmithorg/appsmith/pull/38758/files#diff-c6756cf702e26e3fba1e2e27b0024c8b293cf5a45266c220759f08fddb6d3043",
+    "p_link": "https://github.com/appsmithorg/appsmith/pull/38656/files#diff-c6756cf702e26e3fba1e2e27b0024c8b293cf5a45266c220759f08fddb6d3043"
+   }
+  ],
+  "n_net_shared": 1,
+  "n_net_substantive": 1
+ },
+ {
+  "pair_id": 24,
+  "agent": "Devin",
+  "day_gap": 0,
+  "q_type": "fix",
+  "q_references_p": false,
+  "p_url": "https://github.com/pdfme/pdfme/pull/764",
+  "p_title": "Fix eslint 9.21.0 Dependency Conflicts",
+  "q_url": "https://github.com/pdfme/pdfme/pull/766",
+  "q_title": "Fix: Update fast-xml-parser import to work with both CommonJS and ESM",
+  "n_shared_commitunion": 4,
+  "fetch_ok": true,
+  "shared": [
+   {
+    "name": ".github/workflows/publish-commit.yml",
+    "boilerplate": false,
+    "q_patch": "@@ -40,3 +40,27 @@ jobs:\n         run: npm publish --workspaces --access public --tag dev\n         env:\n           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}\n+\n+  playground-test:\n+    runs-on: ubuntu-latest\n+    steps:\n+      - uses: actions/checkout@v4\n+        with:\n+          fetch-depth: 0\n+\n+      - uses: actions/setup-node@v3\n+        with:\n+          node-version: '20'\n+\n+      - name: Install dependencies and build project\n+        run: |\n+          npm ci\n+          npm run build\n+\n+      - name: Run playground tests\n+        run: |\n+          cd playground\n+          npm install\n+          npm run test\n+        env:\n+          CI: true",
+    "q_link": "https://github.com/pdfme/pdfme/pull/766/files#diff-a39cbd593d4c431a91987533b07e9b1e6bd3ac5b5d505a8682f47cc99037bf32",
+    "p_link": "https://github.com/pdfme/pdfme/pull/764/files#diff-a39cbd593d4c431a91987533b07e9b1e6bd3ac5b5d505a8682f47cc99037bf32"
+   },
+   {
+    "name": ".github/workflows/publish-release.yml",
+    "boilerplate": false,
+    "q_patch": "@@ -42,3 +42,27 @@ jobs:\n         run: npm publish --workspaces --access public --tag ${{ env.NPM_TAG }}\n         env:\n           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}\n+\n+  playground-test:\n+    runs-on: ubuntu-latest\n+    steps:\n+      - uses: actions/checkout@v4\n+        with:\n+          fetch-depth: 0\n+\n+      - uses: actions/setup-node@v3\n+        with:\n+          node-version: '20'\n+\n+      - name: Install dependencies and build project\n+        run: |\n+          npm ci\n+          npm run build\n+\n+      - name: Run playground tests\n+        run: |\n+          cd playground\n+          npm install\n+          npm run test\n+        env:\n+          CI: true",
+    "q_link": "https://github.com/pdfme/pdfme/pull/766/files#diff-232ead425069ad86b523a739aa18b77f9088cd61a4b40c6a374d9774ff78cfc8",
+    "p_link": "https://github.com/pdfme/pdfme/pull/764/files#diff-232ead425069ad86b523a739aa18b77f9088cd61a4b40c6a374d9774ff78cfc8"
+   },
+   {
+    "name": "package.json",
+    "boilerplate": false,
+    "q_patch": "@@ -53,17 +53,17 @@\n     \"@babel/core\": \"^7.16.7\",\n     \"@types/jest\": \"^29.5.14\",\n     \"@types/jest-image-snapshot\": \"^6.4.0\",\n-    \"@typescript-eslint/eslint-plugin\": \"^5.9.1\",\n-    \"@typescript-eslint/parser\": \"^5.9.1\",\n+    \"@typescript-eslint/eslint-plugin\": \"^8.25.0\",\n+    \"@typescript-eslint/parser\": \"^8.25.0\",\n     \"babel-loader\": \"^8.2.2\",\n     \"eslint\": \"^8.6.0\",\n-    \"eslint-config-prettier\": \"^8.3.0\",\n+    \"eslint-config-prettier\": \"^10.0.2\",\n     \"eslint-plugin-prettier\": \"^4.0.0\",\n     \"jest\": \"^29.7.0\",\n     \"jest-image-snapshot\": \"^6.4.0\",\n     \"npm-run-all\": \"^4.1.5\",\n     \"prettier\": \"^2.8.8\",\n-    \"rimraf\": \"^3.0.2\",\n+    \"rimraf\": \"^6.0.1\",\n     \"ts-jest\": \"^29.2.5\",\n     \"ts-jest-resolver\": \"^2.0.1\",\n     \"ts-loader\": \"^9.2.5\",",
+    "q_link": "https://github.com/pdfme/pdfme/pull/766/files#diff-7ae45ad102eab3b6d7e7896acd08c427a9b25b346470d7bc6507b6481575d519",
+    "p_link": "https://github.com/pdfme/pdfme/pull/764/files#diff-7ae45ad102eab3b6d7e7896acd08c427a9b25b346470d7bc6507b6481575d519"
+   },
+   {
+    "name": "packages/schemas/__tests__/utils.test.ts",
+    "boilerplate": false,
+    "q_patch": "@@ -1,6 +1,6 @@\n import { Schema, mm2pt, pt2mm } from '@pdfme/common';\n-import { convertForPdfLayoutProps, rotatePoint, hex2RgbColor, createSvgStr } from '../src/utils';\n-import {  SquareCheck } from 'lucide';\n+import { convertForPdfLayoutProps, rotatePoint, hex2RgbColor, createSvgStr } from '../src/utils.js';\n+import { SquareCheck, IconNode } from 'lucide';\n \n describe('hex2RgbColor', () => {\n   it('should convert hex to rgb', () => {\n@@ -163,7 +163,80 @@ describe('convertForPdfLayoutProps', () => {\n   });\n });\n \n-it('createSvgStr', () => {\n-  const icon = createSvgStr(SquareCheck, { stroke: 'currentColor' });\n-  expect(icon).toBeTruthy();\n+describe('createSvgStr', () => {\n+  it('should convert a Lucide icon to SVG string', () => {\n+    const icon = createSvgStr(SquareCheck, { stroke: 'currentColor' });\n+    expect(icon).toBeTruthy();\n+    expect(icon).toContain('<svg');\n+    expect(icon).toContain('stroke=\"currentColor\"');\n+    expect(icon).toContain('</svg>');\n+  });\n+\n+  it('should merge custom attributes with SVG element', () => {\n+    const icon = createSvgStr(SquareCheck, { \n+      stroke: 'red', \n+      fill: 'blue',\n+      width: '24',\n+      height: '24'\n+    });\n+    expect(icon).toContain('stroke=\"red\"');\n+    expect(icon).toContain('fill=\"blue\"');\n+    expect(icon).toContain('width=\"24\"');\n+    expect(icon).toContain('height=\"24\"');\n+  });\n+\n+  it('should handle custom attributes overriding default ones', () => {\n+    // SquareCheck likely has default stroke attribute\n+    const defaultIcon = createSvgStr(SquareCheck);\n+    const customIcon = createSvgStr(SquareCheck, { stroke: 'purple' });\n+    \n+    expect(customIcon).toContain('stroke=\"purple\"');\n+    // The custom stroke should replace the default one\n+    expect(customIcon).not.toBe(defaultIcon);\n+  });\n+\n+  it('should handle different icons', () => {\n+    // Test with a different icon from lucide\n+    const icon1 = createSvgStr(SquareCheck);\n+    \n+    expect(icon1).toBeTruthy();\n+    expect(icon1).toContain('<svg');\n+    expect(icon1).toContain('</svg>');\n+  });\n+\n+  it('should produce valid SVG output', () => {\n+    const svgStr = createSvgStr(SquareCheck);\n+    \n+    // Check that the output is a valid SVG string\n+    expect(svgStr).toContain('<svg');\n+    expect(svgStr).toContain('</svg>');\n+    \n+    // Check that attributes are properly formatted\n+    expect(svgStr.includes('=\"')).toBeTruthy();\n+    \n+    // Check that tags are properly closed\n+    const openTags = svgStr.match(/<[^/][^>]*>/g) || [];\n+    const closeTags = svgStr.match(/<\\/[^>]+>/g) || [];\n+    expect(openTags.length).toBeGreaterThan(0);\n+    expect(closeTags.length).toBeGreaterThan(0);\n+  });\n+\n+  it('should handle multiple custom attributes', () => {\n+    const customAttrs = {\n+      width: '48',\n+      height: '48',\n+      fill: 'none',\n+      stroke: 'blue',\n+      'stroke-width': '1.5',\n+      'stroke-linecap': 'round',\n+      'stroke-linejoin': 'round'\n+    };\n+    \n+    const svgStr = createSvgStr(SquareCheck, customAttrs);\n+    \n+    // Check that all custom attributes are included\n+    Object.entries(customAttrs).forEach(([key, value]) => {\n+      expect(svgStr).toContain(`${key}=\"${value}\"`);\n+    });\n+  });\n });",
+    "q_link": "https://github.com/pdfme/pdfme/pull/766/files#diff-80765293fa7933f245fe3300875bc10ad2c10016993e80addcab19866bb3d255",
+    "p_link": "https://github.com/pdfme/pdfme/pull/764/files#diff-80765293fa7933f245fe3300875bc10ad2c10016993e80addcab19866bb3d255"
+   }
+  ],
+  "n_net_shared": 4,
+  "n_net_substantive": 4
+ },
+ {
+  "pair_id": 25,
+  "agent": "Devin",
+  "day_gap": 4,
+  "q_type": "fix",
+  "q_references_p": false,
+  "p_url": "https://github.com/near/nearcore/pull/13270",
+  "p_title": "Deprecate AccountIdInFunctionCallPermission protocol feature",
+  "q_url": "https://github.com/near/nearcore/pull/13321",
+  "q_title": "Deprecate AliasValidatorSelectionAlgorithm feature",
+  "n_shared_commitunion": 1,
+  "fetch_ok": true,
+  "shared": [
+   {
+    "name": "core/primitives-core/src/version.rs",
+    "boilerplate": false,
+    "q_patch": "@@ -108,7 +108,8 @@ pub enum ProtocolFeature {\n     /// within epoch.  See <https://github.com/near/NEPs/pull/167> for general\n     /// description, note that we would not introduce chunk-only validators with\n     /// this feature\n-    AliasValidatorSelectionAlgorithm,\n+    #[deprecated]\n+    _DeprecatedAliasValidatorSelectionAlgorithm,\n     /// Make block producers produce chunks for the same block they would later produce to avoid\n     /// network delays\n     #[deprecated]\n@@ -324,7 +325,7 @@ impl ProtocolFeature {\n             ProtocolFeature::_DeprecatedLowerRegularOpCost2\n             | ProtocolFeature::_DeprecatedLimitContractFunctionsNumber\n             | ProtocolFeature::_DeprecatedBlockHeaderV3\n-            | ProtocolFeature::AliasValidatorSelectionAlgorithm => 49,\n+            | ProtocolFeature::_DeprecatedAliasValidatorSelectionAlgorithm => 49,\n             ProtocolFeature::_DeprecatedSynchronizeBlockChunkProduction\n             | ProtocolFeature::_DeprecatedCorrectStackLimit => 50,\n             ProtocolFeature::_DeprecatedAccessKeyNonceForImplicitAccounts => 51,",
+    "q_link": "https://github.com/near/nearcore/pull/13321/files#diff-9c942a9254d8ef4f9e4d4cbe3a8690ea4928f6e9951b3e6b1271245e8107bd57",
+    "p_link": "https://github.com/near/nearcore/pull/13270/files#diff-9c942a9254d8ef4f9e4d4cbe3a8690ea4928f6e9951b3e6b1271245e8107bd57"
+   }
+  ],
+  "n_net_shared": 1,
+  "n_net_substantive": 1
+ },
+ {
+  "pair_id": 26,
+  "agent": "Claude_Code",
+  "day_gap": 0,
+  "q_type": "fix",
+  "q_references_p": false,
+  "p_url": "https://github.com/liam-hq/liam/pull/2156",
+  "p_title": "feat(db-structure): deprecate schema.relationships in favor of constraintsToRelationships",
+  "q_url": "https://github.com/liam-hq/liam/pull/2195",
+  "q_title": "fix: improve E2E test performance by avoiding unnecessary redirects",
+  "n_shared_commitunion": 1,
+  "fetch_ok": true,
+  "shared": [
+   {
+    "name": "frontend/internal-packages/e2e/tests/e2e/page.test.ts",
+    "boilerplate": false,
+    "q_patch": "@@ -1,7 +1,8 @@\n import { expect, test } from '@playwright/test'\n+import { DEFAULT_TEST_URL } from '../../default_test_url'\n \n test('Page has title', async ({ page }) => {\n-  await page.goto('/')\n+  await page.goto(DEFAULT_TEST_URL)\n   await expect(page).toHaveTitle(/Liam ERD/)\n })\n \n@@ -11,7 +12,7 @@ test('Copy link button copies current URL to clipboard', async ({\n }) => {\n   if (isMobile) test.skip()\n \n-  await page.goto('/')\n+  await page.goto(DEFAULT_TEST_URL)\n \n   const copyButton = page.getByTestId('copy-link')\n   await copyButton.click()\n@@ -23,7 +24,7 @@ test('Copy link button copies current URL to clipboard', async ({\n })\n \n test('Table node should be highlighted when clicked', async ({ page }) => {\n-  await page.goto('/')\n+  await page.goto(DEFAULT_TEST_URL)\n \n   const tableNode = page.getByTestId('rf__node-accounts').first()\n \n@@ -36,7 +37,7 @@ test('Table node should be highlighted when clicked', async ({ page }) => {\n test('Edge animation should be triggered when table node is clicked', async ({\n   page,\n }) => {\n-  await page.goto('/')\n+  await page.goto(DEFAULT_TEST_URL)\n \n   const tableNode = page.getByTestId('rf__node-account_aliases')\n \n@@ -56,7 +57,7 @@ test('Edge animation should be triggered when table node is clicked', async ({\n test('Cardinality should be highlighted when table node is clicked', async ({\n   page,\n }) => {\n-  await page.goto('/')\n+  await page.goto(DEFAULT_TEST_URL)\n \n   const tableNode = page.getByTestId('rf__node-account_aliases')\n ",
+    "q_link": "https://github.com/liam-hq/liam/pull/2195/files#diff-f1d955b0572c198376ae9f2ba9dedff6c7eb535ed5527d50619691afb7ac3548",
+    "p_link": "https://github.com/liam-hq/liam/pull/2156/files#diff-f1d955b0572c198376ae9f2ba9dedff6c7eb535ed5527d50619691afb7ac3548"
+   }
+  ],
+  "n_net_shared": 1,
+  "n_net_substantive": 1
+ },
+ {
+  "pair_id": 27,
+  "agent": "Cursor",
+  "day_gap": 0,
+  "q_type": "fix",
+  "q_references_p": false,
+  "p_url": "https://github.com/ryokun6/ryos/pull/145",
+  "p_title": "Replace iPod clickwheel sound",
+  "q_url": "https://github.com/ryokun6/ryos/pull/150",
+  "q_title": "Remove clickwheel vibrations during scrolling",
+  "n_shared_commitunion": 1,
+  "fetch_ok": true,
+  "shared": [
+   {
+    "name": "src/apps/ipod/components/IpodAppComponent.tsx",
+    "boilerplate": false,
+    "q_patch": "@@ -1484,7 +1484,7 @@ export function IpodAppComponent({\n   const handleWheelRotation = useCallback(\n     (direction: \"clockwise\" | \"counterclockwise\") => {\n       playScrollSound();\n-      vibrate();\n+      // vibrate(); // Removed vibration for wheel scrolling\n       registerActivity();\n \n       if (menuMode) {\n@@ -1549,7 +1549,6 @@ export function IpodAppComponent({\n     },\n     [\n       playScrollSound,\n-      vibrate,\n       registerActivity,\n       menuMode,\n       menuHistory,",
+    "q_link": "https://github.com/ryokun6/ryos/pull/150/files#diff-8a76c233732548cc16b0997281ceb3ffad0e8f429c7b944cd817f5e125d16115",
+    "p_link": "https://github.com/ryokun6/ryos/pull/145/files#diff-8a76c233732548cc16b0997281ceb3ffad0e8f429c7b944cd817f5e125d16115"
+   }
+  ],
+  "n_net_shared": 1,
+  "n_net_substantive": 1
+ },
+ {
+  "pair_id": 28,
+  "agent": "Cursor",
+  "day_gap": 0,
+  "q_type": "fix",
+  "q_references_p": false,
+  "p_url": "https://github.com/oven-sh/bun/pull/20295",
+  "p_title": "Fix proxy handling in bun audit",
+  "q_url": "https://github.com/oven-sh/bun/pull/20309",
+  "q_title": "Always use correct Zig version for `bun watch`",
+  "n_shared_commitunion": 1,
+  "fetch_ok": true,
+  "shared": [
+   {
+    "name": "test/cli/install/bun-workspaces.test.ts",
+    "boilerplate": false,
+    "q_patch": "@@ -1,8 +1,7 @@\n import { file, spawn, write } from \"bun\";\n import { install_test_helpers } from \"bun:internal-for-testing\";\n-import { afterAll, beforeAll, beforeEach, describe, expect, test, afterEach } from \"bun:test\";\n+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, test } from \"bun:test\";\n import { mkdirSync, rmSync, writeFileSync } from \"fs\";\n-import { readlink } from \"fs/promises\";\n import { cp, exists, mkdir, rm } from \"fs/promises\";\n import {\n   assertManifestsPopulated,",
+    "q_link": "https://github.com/oven-sh/bun/pull/20309/files#diff-17818e56932bc606e200f4a23c98ebd095f996893abc7f11c67fa24c4b108dab",
+    "p_link": "https://github.com/oven-sh/bun/pull/20295/files#diff-17818e56932bc606e200f4a23c98ebd095f996893abc7f11c67fa24c4b108dab"
+   }
+  ],
+  "n_net_shared": 1,
+  "n_net_substantive": 1
+ },
+ {
+  "pair_id": 29,
+  "agent": "Cursor",
+  "day_gap": 0,
+  "q_type": "fix",
+  "q_references_p": false,
+  "p_url": "https://github.com/ryokun6/ryos/pull/162",
+  "p_title": "Enable multi-device login with token management",
+  "q_url": "https://github.com/ryokun6/ryos/pull/163",
+  "q_title": "Update auth token handling in API",
+  "n_shared_commitunion": 1,
+  "fetch_ok": true,
+  "shared": [
+   {
+    "name": "api/chat.ts",
+    "boilerplate": false,
+    "q_patch": "@@ -477,15 +477,26 @@ export default async function handler(req: Request) {\n \n     const {\n       messages,\n-      systemState: incomingSystemState, // Renamed to allow mutation\n+      systemState: incomingSystemState, // still passed for dynamic prompt generation but NOT for auth\n       model: bodyModel = DEFAULT_MODEL,\n     } = await req.json();\n \n     // Use query parameter if available, otherwise use body parameter\n     const model = queryModel || bodyModel;\n \n+    // ---------------------------\n+    // Extract auth headers FIRST so we can use username for logging\n+    // ---------------------------\n+\n+    const authHeaderInitial = req.headers.get(\"authorization\");\n+    const headerAuthTokenInitial =\n+      authHeaderInitial && authHeaderInitial.startsWith(\"Bearer \")\n+        ? authHeaderInitial.substring(7)\n+        : null;\n+    const headerUsernameInitial = req.headers.get(\"x-username\");\n+\n     // Helper: prefix log lines with username (for easier tracing)\n-    const usernameForLogs = incomingSystemState?.username ?? \"unknown\";\n+    const usernameForLogs = headerUsernameInitial ?? \"unknown\";\n     const log = (...args: unknown[]) =>\n       console.log(`[User: ${usernameForLogs}]`, ...args);\n     const logError = (...args: unknown[]) =>\n@@ -511,12 +522,29 @@ export default async function handler(req: Request) {\n \n     log(`Request origin: ${origin}, IP: ${ip}`);\n \n-    // Check rate limits\n-    const username = incomingSystemState?.username;\n-    const authToken = incomingSystemState?.authToken;\n+    // ---------------------------\n+    // Authentication extraction\n+    // ---------------------------\n+    // Prefer credentials in the incoming system state (back-compat),\n+    // but fall back to HTTP headers for multi-token support (Authorization & X-Username)\n+\n+    const headerAuthToken = headerAuthTokenInitial;\n+    const headerUsername = headerUsernameInitial;\n \n+    // Combine sources \u2013 body first (if provided), then headers\n+    const username = headerUsername || null;\n+    const authToken = headerAuthToken; // Only trust token from header\n+\n+    // ---------------------------\n+    // Rate-limit & auth checks\n+    // ---------------------------\n     // Validate authentication first\n-    const validationResult = await validateAuthToken(username, authToken);\n+    let validationResult;\n+    if (username && username.toLowerCase() === \"ryo\") {\n+      validationResult = { valid: true };\n+    } else {\n+      validationResult = await validateAuthToken(username, authToken);\n+    }\n \n     // If username is provided but auth is invalid, reject the request\n     if (username && !validationResult.valid) {\n@@ -538,17 +566,20 @@ export default async function handler(req: Request) {\n \n     // Use validated auth status for rate limiting\n     const isAuthenticated = validationResult.valid;\n-    const identifier = isAuthenticated ? username!.toLowerCase() : `anon:${ip}`;\n+    const identifier = isAuthenticated && username\n+      ? username.toLowerCase()\n+      : `anon:${ip}`;\n \n     // Only check rate limits for user messages (not system messages)\n     const userMessages = messages.filter(\n       (m: { role: string }) => m.role === \"user\"\n     );\n     if (userMessages.length > 0) {\n+      /* eslint-disable-next-line @typescript-eslint/no-explicit-any */\n       const rateLimitResult = await checkAndIncrementAIMessageCount(\n         identifier,\n         isAuthenticated,\n-        authToken\n+        authToken as any // cast to satisfy type checker \u2013 rate-limit util is JS\n       );\n \n       if (!rateLimitResult.allowed) {",
+    "q_link": "https://github.com/ryokun6/ryos/pull/163/files#diff-c1ae371b5ea30ba8dc157c13aab8284c9b3f98428316c1a1212bf178639902a5",
+    "p_link": "https://github.com/ryokun6/ryos/pull/162/files#diff-c1ae371b5ea30ba8dc157c13aab8284c9b3f98428316c1a1212bf178639902a5"
+   }
+  ],
+  "n_net_shared": 1,
+  "n_net_substantive": 1
+ },
+ {
+  "pair_id": 30,
+  "agent": "Cursor",
+  "day_gap": 0,
+  "q_type": "fix",
+  "q_references_p": false,
+  "p_url": "https://github.com/getsentry/sentry/pull/94261",
+  "p_title": "fix(migrations): Add upper bounds check in 0925",
+  "q_url": "https://github.com/getsentry/sentry/pull/94264",
+  "q_title": "fix(migrations): Fix data integrity error in 0925",
+  "n_shared_commitunion": 1,
+  "fetch_ok": true,
+  "shared": [
+   {
+    "name": "src/sentry/migrations/0925_backfill_open_periods.py",
+    "boilerplate": false,
+    "q_patch": "@@ -7,7 +7,7 @@\n from typing import Any\n \n from django.conf import settings\n-from django.db import IntegrityError, migrations, router, transaction\n+from django.db import DataError, IntegrityError, migrations, router, transaction\n from django.db.backends.base.schema import BaseDatabaseSchemaEditor\n from django.db.migrations.state import StateApps\n \n@@ -170,7 +170,7 @@ def _backfill_group_open_periods(\n     with transaction.atomic(router.db_for_write(GroupOpenPeriod)):\n         try:\n             GroupOpenPeriod.objects.bulk_create(open_periods)\n-        except IntegrityError as e:\n+        except (IntegrityError, DataError) as e:\n             logger.exception(\n                 \"Error creating open period\",\n                 extra={\"group_ids\": group_ids, \"error\": e},",
+    "q_link": "https://github.com/getsentry/sentry/pull/94264/files#diff-b463d6404099ae4f0e98ff668592df2dbfdeda9afa8c1b087adc5801b3e18484",
+    "p_link": "https://github.com/getsentry/sentry/pull/94261/files#diff-b463d6404099ae4f0e98ff668592df2dbfdeda9afa8c1b087adc5801b3e18484"
+   }
+  ],
+  "n_net_shared": 1,
+  "n_net_substantive": 1
+ },
+ {
+  "pair_id": 31,
+  "agent": "Cursor",
+  "day_gap": 26,
+  "q_type": "fix",
+  "q_references_p": false,
+  "p_url": "https://github.com/gensx-inc/gensx/pull/766",
+  "p_title": "fix: prevent components from showing up as APIs in the dev server",
+  "q_url": "https://github.com/gensx-inc/gensx/pull/837",
+  "q_title": "fix!: Update publishObject to use json patches",
+  "n_shared_commitunion": 1,
+  "fetch_ok": true,
+  "shared": [
+   {
+    "name": "packages/gensx/src/dev-server.ts",
+    "boilerplate": false,
+    "q_patch": "@@ -1,5 +1,4 @@\n /* eslint-disable @typescript-eslint/no-explicit-any */\n-/* eslint-disable @typescript-eslint/no-unsafe-assignment */\n \n /* eslint-disable @typescript-eslint/no-unsafe-call */\n /* eslint-disable @typescript-eslint/no-unsafe-member-access */",
+    "q_link": "https://github.com/gensx-inc/gensx/pull/837/files#diff-309477728f90574b43622a637f788de0c8aa27df32b064e2fb888db2e8bc2296",
+    "p_link": "https://github.com/gensx-inc/gensx/pull/766/files#diff-309477728f90574b43622a637f788de0c8aa27df32b064e2fb888db2e8bc2296"
+   }
+  ],
+  "n_net_shared": 1,
+  "n_net_substantive": 1
+ },
+ {
+  "pair_id": 32,
+  "agent": "Cursor",
+  "day_gap": 2,
+  "q_type": "fix",
+  "q_references_p": false,
+  "p_url": "https://github.com/ryokun6/ryos/pull/151",
+  "p_title": "Extend auth token limits to 90 days",
+  "q_url": "https://github.com/ryokun6/ryos/pull/163",
+  "q_title": "Update auth token handling in API",
+  "n_shared_commitunion": 1,
+  "fetch_ok": true,
+  "shared": [
+   {
+    "name": "api/chat.ts",
+    "boilerplate": false,
+    "q_patch": "@@ -477,15 +477,26 @@ export default async function handler(req: Request) {\n \n     const {\n       messages,\n-      systemState: incomingSystemState, // Renamed to allow mutation\n+      systemState: incomingSystemState, // still passed for dynamic prompt generation but NOT for auth\n       model: bodyModel = DEFAULT_MODEL,\n     } = await req.json();\n \n     // Use query parameter if available, otherwise use body parameter\n     const model = queryModel || bodyModel;\n \n+    // ---------------------------\n+    // Extract auth headers FIRST so we can use username for logging\n+    // ---------------------------\n+\n+    const authHeaderInitial = req.headers.get(\"authorization\");\n+    const headerAuthTokenInitial =\n+      authHeaderInitial && authHeaderInitial.startsWith(\"Bearer \")\n+        ? authHeaderInitial.substring(7)\n+        : null;\n+    const headerUsernameInitial = req.headers.get(\"x-username\");\n+\n     // Helper: prefix log lines with username (for easier tracing)\n-    const usernameForLogs = incomingSystemState?.username ?? \"unknown\";\n+    const usernameForLogs = headerUsernameInitial ?? \"unknown\";\n     const log = (...args: unknown[]) =>\n       console.log(`[User: ${usernameForLogs}]`, ...args);\n     const logError = (...args: unknown[]) =>\n@@ -511,12 +522,29 @@ export default async function handler(req: Request) {\n \n     log(`Request origin: ${origin}, IP: ${ip}`);\n \n-    // Check rate limits\n-    const username = incomingSystemState?.username;\n-    const authToken = incomingSystemState?.authToken;\n+    // ---------------------------\n+    // Authentication extraction\n+    // ---------------------------\n+    // Prefer credentials in the incoming system state (back-compat),\n+    // but fall back to HTTP headers for multi-token support (Authorization & X-Username)\n+\n+    const headerAuthToken = headerAuthTokenInitial;\n+    const headerUsername = headerUsernameInitial;\n \n+    // Combine sources \u2013 body first (if provided), then headers\n+    const username = headerUsername || null;\n+    const authToken = headerAuthToken; // Only trust token from header\n+\n+    // ---------------------------\n+    // Rate-limit & auth checks\n+    // ---------------------------\n     // Validate authentication first\n-    const validationResult = await validateAuthToken(username, authToken);\n+    let validationResult;\n+    if (username && username.toLowerCase() === \"ryo\") {\n+      validationResult = { valid: true };\n+    } else {\n+      validationResult = await validateAuthToken(username, authToken);\n+    }\n \n     // If username is provided but auth is invalid, reject the request\n     if (username && !validationResult.valid) {\n@@ -538,17 +566,20 @@ export default async function handler(req: Request) {\n \n     // Use validated auth status for rate limiting\n     const isAuthenticated = validationResult.valid;\n-    const identifier = isAuthenticated ? username!.toLowerCase() : `anon:${ip}`;\n+    const identifier = isAuthenticated && username\n+      ? username.toLowerCase()\n+      : `anon:${ip}`;\n \n     // Only check rate limits for user messages (not system messages)\n     const userMessages = messages.filter(\n       (m: { role: string }) => m.role === \"user\"\n     );\n     if (userMessages.length > 0) {\n+      /* eslint-disable-next-line @typescript-eslint/no-explicit-any */\n       const rateLimitResult = await checkAndIncrementAIMessageCount(\n         identifier,\n         isAuthenticated,\n-        authToken\n+        authToken as any // cast to satisfy type checker \u2013 rate-limit util is JS\n       );\n \n       if (!rateLimitResult.allowed) {",
+    "q_link": "https://github.com/ryokun6/ryos/pull/163/files#diff-c1ae371b5ea30ba8dc157c13aab8284c9b3f98428316c1a1212bf178639902a5",
+    "p_link": "https://github.com/ryokun6/ryos/pull/151/files#diff-c1ae371b5ea30ba8dc157c13aab8284c9b3f98428316c1a1212bf178639902a5"
+   }
+  ],
+  "n_net_shared": 1,
+  "n_net_substantive": 1
+ },
+ {
+  "pair_id": 33,
+  "agent": "Copilot",
+  "day_gap": 14,
+  "q_type": "fix",
+  "q_references_p": false,
+  "p_url": "https://github.com/microsoft/vscode-pull-request-github/pull/7061",
+  "p_title": "Fix assignment event time inconsistency with GitHub.com",
+  "q_url": "https://github.com/microsoft/vscode-pull-request-github/pull/7217",
+  "q_title": "Fix commit links in PR description to open multi diff editor instead of browser",
+  "n_shared_commitunion": 1,
+  "fetch_ok": true,
+  "shared": [
+   {
+    "name": "webviews/components/timeline.tsx",
+    "boilerplate": false,
+    "q_patch": "@@ -105,28 +105,51 @@ export const Timeline = ({ events, isIssue }: { events: TimelineEvent[], isIssue\n \n export default Timeline;\n \n-const CommitEventView = (event: CommitEvent) => (\n-\t<div className=\"comment-container commit\">\n-\t\t<div className=\"commit-message\">\n-\t\t\t{commitIcon}\n-\t\t\t{nbsp}\n-\t\t\t<div className=\"avatar-container\">\n-\t\t\t\t<Avatar for={event.author} />\n+const CommitEventView = (event: CommitEvent) => {\n+\tconst context = useContext(PullRequestContext);\n+\tconst pr = context.pr;\n+\n+\tconst handleCommitClick = (e: React.MouseEvent) => {\n+\t\tif (pr.isCurrentlyCheckedOut) {\n+\t\t\te.preventDefault();\n+\t\t\tcontext.openCommitChanges(event.sha);\n+\t\t}\n+\t\t// If not checked out, let the default href behavior proceed\n+\t};\n+\n+\treturn (\n+\t\t<div className=\"comment-container commit\">\n+\t\t\t<div className=\"commit-message\">\n+\t\t\t\t{commitIcon}\n+\t\t\t\t{nbsp}\n+\t\t\t\t<div className=\"avatar-container\">\n+\t\t\t\t\t<Avatar for={event.author} />\n+\t\t\t\t</div>\n+\t\t\t\t<div className=\"message-container\">\n+\t\t\t\t\t<a\n+\t\t\t\t\t\tclassName=\"message\"\n+\t\t\t\t\t\tonClick={handleCommitClick}\n+\t\t\t\t\t\thref={pr.isCurrentlyCheckedOut ? undefined : event.htmlUrl}\n+\t\t\t\t\t\ttitle={event.htmlUrl}\n+\t\t\t\t\t>\n+\t\t\t\t\t\t{event.message.substr(0, event.message.indexOf('\\n') > -1 ? event.message.indexOf('\\n') : event.message.length)}\n+\t\t\t\t\t</a>\n+\t\t\t\t</div>\n \t\t\t</div>\n-\t\t\t<div className=\"message-container\">\n-\t\t\t\t<a className=\"message\" href={event.htmlUrl} title={event.htmlUrl}>\n-\t\t\t\t\t{event.message.substr(0, event.message.indexOf('\\n') > -1 ? event.message.indexOf('\\n') : event.message.length)}\n+\t\t\t<div className=\"timeline-detail\">\n+\t\t\t\t<a\n+\t\t\t\t\tclassName=\"sha\"\n+\t\t\t\t\tonClick={handleCommitClick}\n+\t\t\t\t\thref={pr.isCurrentlyCheckedOut ? undefined : event.htmlUrl}\n+\t\t\t\t\ttitle={event.htmlUrl}\n+\t\t\t\t>\n+\t\t\t\t\t{event.sha.slice(0, 7)}\n \t\t\t\t</a>\n+\t\t\t\t<Timestamp date={event.committedDate} />\n \t\t\t</div>\n \t\t</div>\n-\t\t<div className=\"timeline-detail\">\n-\t\t\t<a className=\"sha\" href={event.htmlUrl} title={event.htmlUrl}>\n-\t\t\t\t{event.sha.slice(0, 7)}\n-\t\t\t</a>\n-\t\t\t<Timestamp date={event.committedDate} />\n-\t\t</div>\n-\t</div>\n-);\n+\t);\n+};\n \n const NewCommitsSinceReviewEventView = () => {\n \tconst { gotoChangesSinceReview } = useContext(PullRequestContext);",
+    "q_link": "https://github.com/microsoft/vscode-pull-request-github/pull/7217/files#diff-cceabc511fcf8fcfed9b39bfd93f3a4623cf11a7a8673ff12c5bc9151b3fd062",
+    "p_link": "https://github.com/microsoft/vscode-pull-request-github/pull/7061/files#diff-cceabc511fcf8fcfed9b39bfd93f3a4623cf11a7a8673ff12c5bc9151b3fd062"
+   }
+  ],
+  "n_net_shared": 1,
+  "n_net_substantive": 1
+ },
+ {
+  "pair_id": 34,
+  "agent": "Copilot",
+  "day_gap": 17,
+  "q_type": "fix",
+  "q_references_p": false,
+  "p_url": "https://github.com/dotnet/aspire/pull/9491",
+  "p_title": "[WIP] Aspire CLI ctrl+c error message",
+  "q_url": "https://github.com/dotnet/aspire/pull/9875",
+  "q_title": "Improve compatibility error message to include Aspire.Hosting package version",
+  "n_shared_commitunion": 1,
+  "fetch_ok": true,
+  "shared": [
+   {
+    "name": "src/Aspire.Cli/Interaction/InteractionService.cs",
+    "boilerplate": false,
+    "q_patch": "@@ -72,13 +72,13 @@ public async Task<T> PromptForSelectionAsync<T>(string promptText, IEnumerable<T\n         return await _ansiConsole.PromptAsync(prompt, cancellationToken);\n     }\n \n-    public int DisplayIncompatibleVersionError(AppHostIncompatibleException ex, string appHostHostingSdkVersion)\n+    public int DisplayIncompatibleVersionError(AppHostIncompatibleException ex, string appHostHostingVersion)\n     {\n         var cliInformationalVersion = VersionHelper.GetDefaultTemplateVersion();\n \n         DisplayError(\"The app host is not compatible. Consider upgrading the app host or Aspire CLI.\");\n         Console.WriteLine();\n-        _ansiConsole.MarkupLine($\"\\t[bold]Aspire Hosting SDK Version[/]: {appHostHostingSdkVersion}\");\n+        _ansiConsole.MarkupLine($\"\\t[bold]Aspire.Hosting Version[/]: {appHostHostingVersion}\");\n         _ansiConsole.MarkupLine($\"\\t[bold]Aspire CLI Version[/]: {cliInformationalVersion}\");\n         _ansiConsole.MarkupLine($\"\\t[bold]Required Capability[/]: {ex.RequiredCapability}\");\n         Console.WriteLine();",
+    "q_link": "https://github.com/dotnet/aspire/pull/9875/files#diff-3b24b82401683cac282b506e59b84a946d6d26258091e727ac2002685ed9a6fd",
+    "p_link": "https://github.com/dotnet/aspire/pull/9491/files#diff-3b24b82401683cac282b506e59b84a946d6d26258091e727ac2002685ed9a6fd"
+   }
+  ],
+  "n_net_shared": 1,
+  "n_net_substantive": 1
+ },
+ {
+  "pair_id": 35,
+  "agent": "Copilot",
+  "day_gap": 2,
+  "q_type": "fix",
+  "q_references_p": false,
+  "p_url": "https://github.com/mlflow/mlflow/pull/15978",
+  "p_title": "Add rule to enforce GitHub Actions pinned by full commit SHA",
+  "q_url": "https://github.com/mlflow/mlflow/pull/15996",
+  "q_title": "Fix `deny_unpinned_actions` policy to work for composite actions",
+  "n_shared_commitunion": 1,
+  "fetch_ok": true,
+  "shared": [
+   {
+    "name": ".github/policy.rego",
+    "boilerplate": false,
+    "q_patch": "@@ -43,7 +43,7 @@ deny_jobs_without_timeout[msg] {\n }\n \n deny_unpinned_actions[msg] {\n-    unpinned_actions := get_unpinned_actions(input.jobs)\n+    unpinned_actions := get_unpinned_actions(input)\n     count(unpinned_actions) > 0\n     msg := sprintf(\"The following actions are not pinned by full commit SHA: %s. Use the full commit SHA instead (e.g., actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683).\",\n         [concat(\", \", unpinned_actions)])\n@@ -64,12 +64,28 @@ get_jobs_without_timeout(jobs) = jobs_without_timeout {\n     }\n }\n \n-get_unpinned_actions(jobs) = unpinned_actions {\n+is_step_unpinned(step) {\n+    step[\"uses\"]\n+    not startswith(step[\"uses\"], \"./\")\n+    not regex.match(\"^[^@]+@[0-9a-f]{40}$\", step[\"uses\"])\n+}\n+\n+get_unpinned_actions(inp) = unpinned_actions {\n+    # For workflow files with jobs\n+    inp.jobs\n+    all_steps := [ step | job := inp.jobs[_]; step := job.steps[_] ]\n+    unpinned_actions := { step[\"uses\"] |\n+        step := all_steps[_]\n+        is_step_unpinned(step)\n+    }\n+}\n+\n+get_unpinned_actions(inp) = unpinned_actions {\n+    # For composite action files with runs\n+    inp.runs.steps\n+    not inp.jobs\n     unpinned_actions := { step[\"uses\"] |\n-        job := jobs[_]\n-        step := job[\"steps\"][_]\n-        step[\"uses\"]\n-        not startswith(step[\"uses\"], \"./\")\n-        not regex.match(\"^[^@]+@[0-9a-f]{40}$\", step[\"uses\"])\n+        step := inp.runs.steps[_]\n+        is_step_unpinned(step)\n     }\n }",
+    "q_link": "https://github.com/mlflow/mlflow/pull/15996/files#diff-07ea3d142741db43f58d150e5c1b92d591385577264fdf76439bb5d2085ed10e",
+    "p_link": "https://github.com/mlflow/mlflow/pull/15978/files#diff-07ea3d142741db43f58d150e5c1b92d591385577264fdf76439bb5d2085ed10e"
+   }
+  ],
+  "n_net_shared": 1,
+  "n_net_substantive": 1
+ },
+ {
+  "pair_id": 36,
+  "agent": "Copilot",
+  "day_gap": 16,
+  "q_type": "fix",
+  "q_references_p": false,
+  "p_url": "https://github.com/mlflow/mlflow/pull/15881",
+  "p_title": "Migrate pytest.ini configuration to pyproject.toml",
+  "q_url": "https://github.com/mlflow/mlflow/pull/16191",
+  "q_title": "Remove `rc3` from `databricks-agents` requirement once 1.0.0 is released",
+  "n_shared_commitunion": 1,
+  "fetch_ok": true,
+  "shared": [
+   {
+    "name": "pyproject.toml",
+    "boilerplate": false,
+    "q_patch": "@@ -83,7 +83,7 @@ databricks = [\n   \"google-cloud-storage>=1.30.0\",\n   \"boto3>1\",\n   \"botocore\",\n-  \"databricks-agents>=1.0.0rc3,<2.0\",\n+  \"databricks-agents>=1.0.0,<2.0\",\n ]\n mlserver = [\"mlserver>=1.2.0,!=1.3.1\", \"mlserver-mlflow>=1.2.0,!=1.3.1\"]\n gateway = [",
+    "q_link": "https://github.com/mlflow/mlflow/pull/16191/files#diff-50c86b7ed8ac2cf95bd48334961bf0530cdc77b5a56f852c5c61b89d735fd711",
+    "p_link": "https://github.com/mlflow/mlflow/pull/15881/files#diff-50c86b7ed8ac2cf95bd48334961bf0530cdc77b5a56f852c5c61b89d735fd711"
+   }
+  ],
+  "n_net_shared": 1,
+  "n_net_substantive": 1
+ },
+ {
+  "pair_id": 37,
+  "agent": "Copilot",
+  "day_gap": 5,
+  "q_type": "fix",
+  "q_references_p": false,
+  "p_url": "https://github.com/dotnet/sdk/pull/49312",
+  "p_title": "Fix 15 misspellings of \"capabiltities\" to \"capabilities\"",
+  "q_url": "https://github.com/dotnet/sdk/pull/49239",
+  "q_title": "Fix 18 misspellings of 'instatiate' to 'instantiate'",
+  "n_shared_commitunion": 1,
+  "fetch_ok": true,
+  "shared": [
+   {
+    "name": "test/dotnet-new.IntegrationTests/MSBuildEvaluationTests.cs",
+    "boilerplate": false,
+    "q_patch": "@@ -160,7 +160,7 @@ public void MultipleProjects_BasicTest()\n                 .WithWorkingDirectory(projectPath)\n                 .Execute(\"TestAssets.ClassTemplate\", \"--name\", \"MyTestClass\");\n             cmd.Should().Fail()\n-                .And.HaveStdErrContaining(\"Failed to instatiate template 'ClassTemplate', the following constraints are not met:\")\n+                .And.HaveStdErrContaining(\"Failed to instantiate template 'ClassTemplate', the following constraints are not met:\")\n                 .And.HaveStdErrContaining(\"Project capabilities: Multiple projects found:\")\n                 .And.HaveStdErrContaining(\"Specify the project to use using --project option.\");\n \n@@ -200,7 +200,7 @@ public void NonSDKStyleProject_BasicTest()\n                 .WithWorkingDirectory(projectPath)\n                 .Execute(\"TestAssets.ClassTemplate\", \"--name\", \"MyTestClass\");\n             cmd.Should().Fail()\n-                .And.HaveStdErrContaining(\"Failed to instatiate template 'ClassTemplate', the following constraints are not met:\")\n+                .And.HaveStdErrContaining(\"Failed to instantiate template 'ClassTemplate', the following constraints are not met:\")\n                 .And.HaveStdErrContaining($\"Project capabilities: The project {Path.Combine(projectPath, \"ConsoleFullFramework.csproj\")} is not an SDK style project, and is not supported for evaluation.\");\n         }\n     }",
+    "q_link": "https://github.com/dotnet/sdk/pull/49239/files#diff-ca72122f686d073b08da0061cb03530e49ef85c23ace7615c5a36e573901f841",
+    "p_link": "https://github.com/dotnet/sdk/pull/49312/files#diff-ca72122f686d073b08da0061cb03530e49ef85c23ace7615c5a36e573901f841"
+   }
+  ],
+  "n_net_shared": 1,
+  "n_net_substantive": 1
+ },
+ {
+  "pair_id": 38,
+  "agent": "Copilot",
+  "day_gap": 16,
+  "q_type": "fix",
+  "q_references_p": false,
+  "p_url": "https://github.com/mlflow/mlflow/pull/16088",
+  "p_title": "Add custom lint rule to detect @pytest.mark.repeat decorator",
+  "q_url": "https://github.com/mlflow/mlflow/pull/16369",
+  "q_title": "Improve _is_abstract_method accuracy in clint linter using Resolver",
+  "n_shared_commitunion": 2,
+  "fetch_ok": true,
+  "shared": [
+   {
+    "name": "dev/clint/src/clint/linter.py",
+    "boilerplate": false,
+    "q_patch": "@@ -456,7 +456,7 @@ def _param_mismatch(self, node: ast.FunctionDef | ast.AsyncFunctionDef) -> None:\n                     self._check(Location.from_node(node), rules.DocstringParamOrder(params))\n \n     def _invalid_abstract_method(self, node: ast.FunctionDef | ast.AsyncFunctionDef) -> None:\n-        if rules.InvalidAbstractMethod.check(node):\n+        if rules.InvalidAbstractMethod.check(node, self.resolver):\n             self._check(Location.from_node(node), rules.InvalidAbstractMethod())\n \n     def visit_Name(self, node) -> None:",
+    "q_link": "https://github.com/mlflow/mlflow/pull/16369/files#diff-da7fc1304a792ae43c311f2f747162818e93d7ce1734a7949fb1ea7aee94e426",
+    "p_link": "https://github.com/mlflow/mlflow/pull/16088/files#diff-da7fc1304a792ae43c311f2f747162818e93d7ce1734a7949fb1ea7aee94e426"
+   },
+   {
+    "name": "dev/clint/src/clint/rules.py",
+    "boilerplate": false,
+    "q_patch": "@@ -215,19 +215,6 @@ def check(node: ast.Call, resolver: Resolver) -> bool:\n         return False\n \n \n-def _is_abstract_method(node: ast.FunctionDef | ast.AsyncFunctionDef) -> bool:\n-    return any(\n-        (isinstance(d, ast.Name) and d.id == \"abstractmethod\")\n-        or (\n-            isinstance(d, ast.Attribute)\n-            and isinstance(d.value, ast.Name)\n-            and d.value.id == \"abc\"\n-            and d.attr == \"abstractmethod\"\n-        )\n-        for d in node.decorator_list\n-    )\n-\n-\n class InvalidAbstractMethod(Rule):\n     def _message(self) -> str:\n         return (\n@@ -236,28 +223,43 @@ def _message(self) -> str:\n         )\n \n     @staticmethod\n-    def check(node: ast.FunctionDef | ast.AsyncFunctionDef) -> bool:\n-        return _is_abstract_method(node) and (\n-            # Does this abstract method have multiple statements/expressions?\n-            len(node.body) > 1\n-            # This abstract method has a single statement/expression.\n-            # Check if it's `pass`, `...`, or a docstring. If not, it's invalid.\n-            or not (\n-                # pass\n-                isinstance(node.body[0], ast.Pass)\n-                or (\n-                    isinstance(node.body[0], ast.Expr)\n-                    and isinstance(node.body[0].value, ast.Constant)\n-                    and (\n-                        # `...`\n-                        node.body[0].value.value is ...\n-                        # docstring\n-                        or isinstance(node.body[0].value.value, str)\n-                    )\n-                )\n-            )\n+    def _is_abstract_method(\n+        node: ast.FunctionDef | ast.AsyncFunctionDef, resolver: Resolver\n+    ) -> bool:\n+        return any(\n+            (resolved := resolver.resolve(d)) and resolved == [\"abc\", \"abstractmethod\"]\n+            for d in node.decorator_list\n         )\n \n+    @staticmethod\n+    def _has_invalid_body(node: ast.FunctionDef | ast.AsyncFunctionDef) -> bool:\n+        # Does this abstract method have multiple statements/expressions?\n+        if len(node.body) > 1:\n+            return True\n+\n+        # This abstract method has a single statement/expression.\n+        # Check if it's `pass`, `...`, or a docstring. If not, it's invalid.\n+        stmt = node.body[0]\n+\n+        # Check for `pass`\n+        if isinstance(stmt, ast.Pass):\n+            return False\n+\n+        # Check for `...` or docstring\n+        if isinstance(stmt, ast.Expr) and isinstance(stmt.value, ast.Constant):\n+            value = stmt.value.value\n+            # `...` literal or docstring\n+            return not (value is ... or isinstance(value, str))\n+\n+        # Any other statement is invalid\n+        return True\n+\n+    @staticmethod\n+    def check(node: ast.FunctionDef | ast.AsyncFunctionDef, resolver: Resolver) -> bool:\n+        return InvalidAbstractMethod._is_abstract_method(\n+            node, resolver\n+        ) and InvalidAbstractMethod._has_invalid_body(node)\n+\n \n class IncorrectTypeAnnotation(Rule):\n     MAPPING = {",
+    "q_link": "https://github.com/mlflow/mlflow/pull/16369/files#diff-da347dbb1abc9f65fe39f76b0b4a5b9baabbda62a3da35f1a27776c33b96d2d5",
+    "p_link": "https://github.com/mlflow/mlflow/pull/16088/files#diff-da347dbb1abc9f65fe39f76b0b4a5b9baabbda62a3da35f1a27776c33b96d2d5"
+   }
+  ],
+  "n_net_shared": 2,
+  "n_net_substantive": 2
+ },
+ {
+  "pair_id": 39,
+  "agent": "Copilot",
+  "day_gap": 0,
+  "q_type": "fix",
+  "q_references_p": false,
+  "p_url": "https://github.com/mlflow/mlflow/pull/15848",
+  "p_title": "Pin pyspark to < 4.0.0",
+  "q_url": "https://github.com/mlflow/mlflow/pull/15852",
+  "q_title": "Unpin OpenAI constraint",
+  "n_shared_commitunion": 1,
+  "fetch_ok": true,
+  "shared": [
+   {
+    "name": "requirements/constraints.txt",
+    "boilerplate": false,
+    "q_patch": "@@ -12,6 +12,3 @@ transformers!=4.52.2\n transformers!=4.52.1\n # TODO(https://github.com/mlflow/mlflow/issues/15847): Remove this constraint when MLflow is ready for pyspark 4.0.0\n pyspark<4.0.0\n-# TODO: Remove this when a new version of lama-index-llms-openai is released\n-# https://github.com/run-llama/llama_index/issues/18823\n-openai<1.82.0",
+    "q_link": "https://github.com/mlflow/mlflow/pull/15852/files#diff-86d5fe588ff2fc7dccb1f4cdd8019d4473146536e88d7a9ede946ea962a91acb",
+    "p_link": "https://github.com/mlflow/mlflow/pull/15848/files#diff-86d5fe588ff2fc7dccb1f4cdd8019d4473146536e88d7a9ede946ea962a91acb"
+   }
+  ],
+  "n_net_shared": 1,
+  "n_net_substantive": 1
+ },
+ {
+  "pair_id": 40,
+  "agent": "Copilot",
+  "day_gap": 0,
+  "q_type": "fix",
+  "q_references_p": false,
+  "p_url": "https://github.com/doggy8088/github-copilot-configs/pull/21",
+  "p_title": "Update chat.agent.maxRequests recommendation from 50 to 100",
+  "q_url": "https://github.com/doggy8088/github-copilot-configs/pull/23",
+  "q_title": "Update accessibility.voice.speechTimeout from 1.2s to 10s for better speech input experience",
+  "n_shared_commitunion": 2,
+  "fetch_ok": true,
+  "shared": [
+   {
+    "name": ".vscode/settings.json",
+    "boilerplate": false,
+    "q_patch": "@@ -136,7 +136,7 @@\n     \"accessibility.voice.autoSynthesize\": \"off\",\n     // accessibility.voice.keywordActivation \u9810\u8a2d\u70ba off\uff0c\u7fd2\u6163\u7528\u8a9e\u97f3\u8f38\u5165\u53ef\u4ee5\u6539\u70ba chatInContext\n     // \"accessibility.voice.keywordActivation\": \"chatInContext\",\n-    \"accessibility.voice.speechTimeout\": 1200,\n+    \"accessibility.voice.speechTimeout\": 10000,\n     \"accessibility.voice.ignoreCodeBlocks\": true,\n \n     // Live Preview",
+    "q_link": "https://github.com/doggy8088/github-copilot-configs/pull/23/files#diff-a5de3e5871ffcc383a2294845bd3df25d3eeff6c29ad46e3a396577c413bf357",
+    "p_link": "https://github.com/doggy8088/github-copilot-configs/pull/21/files#diff-a5de3e5871ffcc383a2294845bd3df25d3eeff6c29ad46e3a396577c413bf357"
+   },
+   {
+    "name": "README.md",
+    "boilerplate": false,
+    "q_patch": "@@ -388,11 +388,11 @@ GitHub Copilot \u7684\u529f\u80fd\u662f\u900f\u904e\u5b89\u88dd**\u64f4\u5145\u5957\u4ef6**\u4f86\u5be6\u73fe\u7684\uff0c\u4f60\u9700\u8981\n \n         \u4ee3\u8868\u4f60\u5728\u8aaa `Hey Code` \u6642\u6703\u5728 Copilot \u804a\u5929\u8996\u7a97\u4e92\u52d5\u3002\u53ef\u8a2d\u5b9a `off` \u95dc\u9589\u6b64\u529f\u80fd\u3002\n \n-      * `accessibility.voice.speechTimeout` \u8a2d\u5b9a\u70ba `1200`\n+      * `accessibility.voice.speechTimeout` \u8a2d\u5b9a\u70ba `10000`\n \n-        \u8a2d\u5b9a\u8a9e\u97f3\u8f38\u5165\u5f8c\u53ef\u505c\u9813\u7684\u6642\u9593\u70ba 1200 \u6beb\u79d2\u3002\n+        \u8a2d\u5b9a\u8a9e\u97f3\u8f38\u5165\u5f8c\u53ef\u505c\u9813\u7684\u6642\u9593\u70ba 10000 \u6beb\u79d2\u3002\n \n-        \u6709\u4e9b\u4eba\u8b1b\u8a71\u6bd4\u8f03\u6162\uff0c\u4e00\u53e5\u8a71\u8b1b\u5230\u4e00\u534a\u6703\u60f3\u5f88\u4e45\uff0c\u9019\u6642\u5c31\u8981\u8abf\u9ad8\u4e00\u9ede\uff0c\u4e0d\u7136\u53ea\u8981\u505c\u9813 1.2 \u79d2\u5c31\u9001\u51fa\u4e86\uff01\n+        \u6709\u4e9b\u4eba\u8b1b\u8a71\u6bd4\u8f03\u6162\uff0c\u4e00\u53e5\u8a71\u8b1b\u5230\u4e00\u534a\u6703\u60f3\u5f88\u4e45\uff0c\u9019\u6642\u5c31\u8981\u8abf\u9ad8\u4e00\u9ede\uff0c\u4e0d\u7136\u9810\u8a2d\u53ea\u8981\u505c\u9813 1.2 \u79d2\u5c31\u9001\u51fa\u4e86\uff01\u73fe\u5728\u8abf\u6574\u70ba 10 \u79d2\u8b93\u4f60\u60f3\u500b\u5920\uff0c\u8b1b\u8a71\u7d50\u5df4\u4e5f\u6c92\u554f\u984c\u3002\u91cd\u9ede\u662f\uff0c\u4f60\u8b1b\u5b8c\u8a71\u4e4b\u5f8c\uff0c\u76f4\u63a5\u6309\u500b Enter \u4e5f\u80fd\u9001\u51fa\uff01\n \n       * `accessibility.voice.ignoreCodeBlocks` \u8a2d\u5b9a\u70ba `true` (Insiders)\n ",
+    "q_link": "https://github.com/doggy8088/github-copilot-configs/pull/23/files#diff-b335630551682c19a781afebcf4d07bf978fb1f8ac04c6bf87428ed5106870f5",
+    "p_link": "https://github.com/doggy8088/github-copilot-configs/pull/21/files#diff-b335630551682c19a781afebcf4d07bf978fb1f8ac04c6bf87428ed5106870f5"
+   }
+  ],
+  "n_net_shared": 2,
+  "n_net_substantive": 2
+ },
+ {
+  "pair_id": 41,
+  "agent": "Devin",
+  "day_gap": 0,
+  "q_type": "fix",
+  "q_references_p": false,
+  "p_url": "https://github.com/novuhq/novu/pull/8496",
+  "p_title": "feat(root): add GitHub Action for AI-powered deployment summaries",
+  "q_url": "https://github.com/novuhq/novu/pull/8498",
+  "q_title": "fix(root): correct AI Inference action parameters for deployment summary workflow",
+  "n_shared_commitunion": 1,
+  "fetch_ok": true,
+  "shared": [
+   {
+    "name": ".github/workflows/deployment-summary.yml",
+    "boilerplate": false,
+    "q_patch": "@@ -8,15 +8,6 @@ on:\n         required: false\n         default: '7'\n         type: string\n-      ai_model:\n-        description: 'AI model to use for summarization'\n-        required: false\n-        default: 'gpt-4o'\n-        type: choice\n-        options:\n-          - gpt-4o\n-          - gpt-4o-mini\n-          - gpt-3.5-turbo\n \n env:\n   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}\n@@ -28,6 +19,7 @@ jobs:\n       contents: read\n       pull-requests: read\n       id-token: write\n+      models: read\n     timeout-minutes: 15\n     steps:\n       - name: Checkout repo\n@@ -48,18 +40,21 @@ jobs:\n           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}\n         run: |\n           echo \"Fetching PRs merged to prod in the last ${{ steps.output-variables.outputs.days_back }} days...\"\n-          \n+\n           prs_json=$(gh pr list \\\n             --base prod \\\n             --state merged \\\n-            --limit 50 \\\n+            --limit 10 \\\n             --json number,title,body,mergedAt,author,labels,files \\\n             --jq \"[.[] | select(.mergedAt >= \\\"${{ steps.output-variables.outputs.since_date }}\\\")]\")\n-          \n+\n           echo \"Found $(echo \"$prs_json\" | jq length) PRs\"\n-          \n+\n           echo \"$prs_json\" > /tmp/recent_prs.json\n-          \n+\n+          # Clear the output file\n+          > /tmp/pr_content.txt\n+\n           for pr in $(echo \"$prs_json\" | jq -r '.[] | @base64'); do\n             pr_data=$(echo \"$pr\" | base64 --decode)\n             pr_number=$(echo \"$pr_data\" | jq -r '.number')\n@@ -69,99 +64,413 @@ jobs:\n             pr_merged_at=$(echo \"$pr_data\" | jq -r '.mergedAt')\n             pr_labels=$(echo \"$pr_data\" | jq -r '.labels[].name' | tr '\\n' ', ' | sed 's/,$//')\n             \n-            files_changed=$(gh pr view $pr_number --json files --jq '.files[].path' | head -10 | tr '\\n' ', ' | sed 's/,$//')\n-            \n-            printf \"## PR #%s: %s\\nAuthor: @%s\\nMerged: %s\\nLabels: %s\\nFiles changed: %s\\n\\nDescription:\\n%s\\n\\n---\\n\\n\" \\\n-              \"$pr_number\" \"$pr_title\" \"$pr_author\" \"$pr_merged_at\" \"$pr_labels\" \"$files_changed\" \"$pr_body\" >> /tmp/pr_content.txt\n+            # Check if this is a release PR\n+            is_release_pr=false\n+            if [[ \"$pr_title\" =~ Release ]] || [[ \"$pr_author\" == \"github-actions[bot]\" ]]; then\n+              is_release_pr=true\n+              echo \"Detected release PR #$pr_number - fetching commit details...\"\n+            fi\n+\n+            if [[ \"$is_release_pr\" == \"true\" ]]; then\n+              # Fetch all commits in this PR\n+              commits_json=$(gh pr view $pr_number --json commits --jq '.commits')\n+              commit_count=$(echo \"$commits_json\" | jq length)\n+              \n+              echo \"## Release PR #$pr_number: $pr_title\" >> /tmp/pr_content.txt\n+              echo \"Author: @$pr_author | Merged: $pr_merged_at | Commits: $commit_count\" >> /tmp/pr_content.txt\n+              echo \"\" >> /tmp/pr_content.txt\n+              echo \"### Included Changes:\" >> /tmp/pr_content.txt\n+              echo \"\" >> /tmp/pr_content.txt\n+\n+              # Process each commit\n+              for commit in $(echo \"$commits_json\" | jq -r '.[] | @base64'); do\n+                commit_data=$(echo \"$commit\" | base64 --decode)\n+                commit_sha=$(echo \"$commit_data\" | jq -r '.oid')\n+                commit_message=$(echo \"$commit_data\" | jq -r '.messageHeadline')\n+                # Try different possible author structures in GitHub API\n+                commit_author=$(echo \"$commit_data\" | jq -r '\n+                  if .author.user.login then .author.user.login\n+                  elif .author.name then .author.name\n+                  elif .authors then (.authors[0].user.login // .authors[0].name)\n+                  else \"unknown\"\n+                  end')\n+                \n+                # Extract scope from conventional commit format using sed\n+                commit_scope=\"\"\n+                if echo \"$commit_message\" | grep -q '^[a-z]*([^)]*):'; then\n+                  commit_scope=$(echo \"$commit_message\" | sed -n 's/^[a-z]*(\\([^)]*\\)):.*/\\1/p')\n+                fi\n+                \n+                # Extract PR number from commit message using sed\n+                original_pr_number=\"\"\n+                if echo \"$commit_message\" | grep -q '(#[0-9]*)'; then\n+                  original_pr_number=$(echo \"$commit_message\" | sed -n 's/.*(#\\([0-9]*\\)).*/\\1/p')\n+                fi\n+                \n+                if [[ -n \"$original_pr_number\" ]]; then\n+                  # Try to fetch the original PR details\n+                  if original_pr=$(gh pr view $original_pr_number --json title,body,labels,author,state,files 2>/dev/null); then\n+                    original_pr_title=$(echo \"$original_pr\" | jq -r '.title')\n+                    original_pr_body=$(echo \"$original_pr\" | jq -r '.body // \"No description\"' | head -n 30 | sed 's/```[^`]*```//g' | tr '\\n' ' ' | sed 's/  */ /g' | cut -c1-500)\n+                    original_pr_author=$(echo \"$original_pr\" | jq -r '.author.login')\n+                    original_pr_labels=$(echo \"$original_pr\" | jq -r '.labels[].name' | tr '\\n' ', ' | sed 's/,$//')\n+                    original_pr_files=$(echo \"$original_pr\" | jq -r '.files[].path' | grep -E '\\.(ts|tsx|js|jsx)$' | head -5 | tr '\\n' ', ' | sed 's/,$//')\n+                    \n+                    echo \"- **$commit_message**\" >> /tmp/pr_content.txt\n+                    echo \"  - Original PR: #$original_pr_number by @$original_pr_author\" >> /tmp/pr_content.txt\n+                    if [[ -n \"$commit_scope\" ]]; then\n+                      echo \"  - Scope: $commit_scope\" >> /tmp/pr_content.txt\n+                    fi\n+                    if [[ -n \"$original_pr_labels\" ]]; then\n+                      echo \"  - Labels: $original_pr_labels\" >> /tmp/pr_content.txt\n+                    fi\n+                    if [[ -n \"$original_pr_files\" ]]; then\n+                      echo \"  - Key files: $original_pr_files\" >> /tmp/pr_content.txt\n+         ",
+    "q_link": "https://github.com/novuhq/novu/pull/8498/files#diff-9e6e191f855b18124a2b2c7b0807609411653fa4e369d7976558dfd704b0c224",
+    "p_link": "https://github.com/novuhq/novu/pull/8496/files#diff-9e6e191f855b18124a2b2c7b0807609411653fa4e369d7976558dfd704b0c224"
+   }
+  ],
+  "n_net_shared": 1,
+  "n_net_substantive": 1
+ },
+ {
+  "pair_id": 42,
+  "agent": "Devin",
+  "day_gap": 1,
+  "q_type": "fix",
+  "q_references_p": false,
+  "p_url": "https://github.com/liam-hq/liam/pull/1652",
+  "p_title": "Remove cli, ui, docs package ignores from knip.jsonc and fix related issues",
+  "q_url": "https://github.com/liam-hq/liam/pull/1656",
+  "q_title": "Fix: Migrate Sentry client config to instrumentation-client.ts",
+  "n_shared_commitunion": 1,
+  "fetch_ok": true,
+  "shared": [
+   {
+    "name": "knip.jsonc",
+    "boilerplate": false,
+    "q_patch": "@@ -3,7 +3,9 @@\n \n   // Entry files are the starting point for Knip to find more source files and external dependencies\n   \"entry\": [\n-    \"frontend/packages/cli/bin/cli.ts\"\n+    \"frontend/packages/cli/bin/cli.ts\",\n+    \"frontend/apps/app/instrumentation-client.ts\",\n+    \"frontend/apps/docs/instrumentation-client.ts\"\n   ],\n \n   // Files to ignore when analyzing",
+    "q_link": "https://github.com/liam-hq/liam/pull/1656/files#diff-48d5ba4681726b42e98dae10c08bd94f7f9836644c8f183c6475d10dcf67ebf1",
+    "p_link": "https://github.com/liam-hq/liam/pull/1652/files#diff-48d5ba4681726b42e98dae10c08bd94f7f9836644c8f183c6475d10dcf67ebf1"
+   }
+  ],
+  "n_net_shared": 1,
+  "n_net_substantive": 1
+ },
+ {
+  "pair_id": 43,
+  "agent": "Devin",
+  "day_gap": 2,
+  "q_type": "fix",
+  "q_references_p": false,
+  "p_url": "https://github.com/liam-hq/liam/pull/1871",
+  "p_title": "feat: move @liam-hq/github package to internal-packages",
+  "q_url": "https://github.com/liam-hq/liam/pull/1899",
+  "q_title": "Fix pagination in getRepositoryBranches for repositories with 100+ branches",
+  "n_shared_commitunion": 1,
+  "fetch_ok": true,
+  "shared": [
+   {
+    "name": "frontend/internal-packages/github/src/api.server.ts",
+    "boilerplate": false,
+    "q_patch": "@@ -219,7 +219,7 @@ export const getRepositoryBranches = async (\n ) => {\n   const octokit = await createOctokit(installationId)\n \n-  const { data: branches } = await octokit.repos.listBranches({\n+  const branches = await octokit.paginate(octokit.repos.listBranches, {\n     owner,\n     repo,\n     per_page: 100,",
+    "q_link": "https://github.com/liam-hq/liam/pull/1899/files#diff-188e72632f3db4904a315b5cd751b43cf1eef5f0592c8f01545c88bdb781582b",
+    "p_link": "https://github.com/liam-hq/liam/pull/1871/files#diff-188e72632f3db4904a315b5cd751b43cf1eef5f0592c8f01545c88bdb781582b"
+   }
+  ],
+  "n_net_shared": 1,
+  "n_net_substantive": 1
+ },
+ {
+  "pair_id": 44,
+  "agent": "Devin",
+  "day_gap": 3,
+  "q_type": "fix",
+  "q_references_p": false,
+  "p_url": "https://github.com/jina-ai/node-DeepResearch/pull/8",
+  "p_title": "feat: add action tracker and reset token tracker",
+  "q_url": "https://github.com/jina-ai/node-DeepResearch/pull/14",
+  "q_title": "fix: modify tracker type path #13",
+  "n_shared_commitunion": 1,
+  "fetch_ok": true,
+  "shared": [
+   {
+    "name": "src/server.ts",
+    "boilerplate": false,
+    "q_patch": "@@ -2,8 +2,7 @@ import express, {Request, Response, RequestHandler} from 'express';\n import cors from 'cors';\n import {EventEmitter} from 'events';\n import {getResponse} from './agent';\n-import {StepAction, StreamMessage} from './types';\n-import {TrackerContext} from './types/tracker';\n+import {StepAction, StreamMessage, TrackerContext} from './types';\n import fs from 'fs/promises';\n import path from 'path';\n import {TokenTracker} from \"./utils/token-tracker\";",
+    "q_link": "https://github.com/jina-ai/node-DeepResearch/pull/14/files#diff-8a8ae07582c9d433ec8c2e5c4310ff8901e604f4965c5b90a49117ad46c47595",
+    "p_link": "https://github.com/jina-ai/node-DeepResearch/pull/8/files#diff-8a8ae07582c9d433ec8c2e5c4310ff8901e604f4965c5b90a49117ad46c47595"
+   }
+  ],
+  "n_net_shared": 1,
+  "n_net_substantive": 1
+ },
+ {
+  "pair_id": 45,
+  "agent": "Devin",
+  "day_gap": 27,
+  "q_type": "fix",
+  "q_references_p": false,
+  "p_url": "https://github.com/novuhq/novu/pull/8313",
+  "p_title": "feat(api-service): Webhook management",
+  "q_url": "https://github.com/novuhq/novu/pull/8497",
+  "q_title": "fix(api): prevent duplicate Novu branding when switching from block to HTML editor",
+  "n_shared_commitunion": 1,
+  "fetch_ok": true,
+  "shared": [
+   {
+    "name": "apps/api/src/app/workflows-v2/usecases/upsert-workflow/upsert-workflow.usecase.ts",
+    "boilerplate": false,
+    "q_patch": "@@ -355,7 +355,9 @@ export class UpsertWorkflowUseCase {\n             },\n           })\n         );\n-        emailControlValues.body = (result.preview as EmailRenderOutput).body;\n+        let htmlBody = (result.preview as EmailRenderOutput).body;\n+        htmlBody = this.removeBrandingFromHtml(htmlBody);\n+        emailControlValues.body = htmlBody;\n       } else if (emailControlValues.editorType === 'block' && !isMaily) {\n         emailControlValues.body = '';\n       }\n@@ -395,6 +397,14 @@ export class UpsertWorkflowUseCase {\n     return commandStep.controlValues;\n   }\n \n+  private removeBrandingFromHtml(html: string): string {\n+    try {\n+      return html.replace(/<table[^>]*data-novu-branding[^>]*>[\\s\\S]*?<\\/table>(\\s*)/gi, '');\n+    } catch (error) {\n+      return html;\n+    }\n+  }\n+\n   private mixpanelTrack(command: UpsertWorkflowCommand, eventName: string) {\n     this.analyticsService.mixpanelTrack(eventName, command.user?._id, {\n       _organization: command.user.organizationId,",
+    "q_link": "https://github.com/novuhq/novu/pull/8497/files#diff-f2bf90fc708a4a056c5e7a4822a30906cba633fa00e06211c3fff6e3a2e013b6",
+    "p_link": "https://github.com/novuhq/novu/pull/8313/files#diff-f2bf90fc708a4a056c5e7a4822a30906cba633fa00e06211c3fff6e3a2e013b6"
+   }
+  ],
+  "n_net_shared": 1,
+  "n_net_substantive": 1
+ },
+ {
+  "pair_id": 46,
+  "agent": "Devin",
+  "day_gap": 1,
+  "q_type": "fix",
+  "q_references_p": false,
+  "p_url": "https://github.com/stack-auth/stack-auth/pull/469",
+  "p_title": "Add hello.txt with Hello World message",
+  "q_url": "https://github.com/stack-auth/stack-auth/pull/471",
+  "q_title": "revert",
+  "n_shared_commitunion": 2,
+  "fetch_ok": true,
+  "shared": [
+   {
+    "name": "hello.txt",
+    "boilerplate": false,
+    "q_patch": "@@ -1 +0,0 @@\n-Hello World",
+    "q_link": "https://github.com/stack-auth/stack-auth/pull/471/files#diff-734cad14909bedfafb5b273b6b0eb01fbfa639587d217f78ce9639bba41f4415",
+    "p_link": "https://github.com/stack-auth/stack-auth/pull/469/files#diff-734cad14909bedfafb5b273b6b0eb01fbfa639587d217f78ce9639bba41f4415"
+   },
+   {
+    "name": "hellostack.txt",
+    "boilerplate": false,
+    "q_patch": "@@ -1 +0,0 @@\n-hello, stack auth - you have been hacked",
+    "q_link": "https://github.com/stack-auth/stack-auth/pull/471/files#diff-32bef0db1b7dd173a5f2b477722a80d1332845b869a51908fab8e1898837aad1",
+    "p_link": "https://github.com/stack-auth/stack-auth/pull/469/files#diff-32bef0db1b7dd173a5f2b477722a80d1332845b869a51908fab8e1898837aad1"
+   }
+  ],
+  "n_net_shared": 2,
+  "n_net_substantive": 2
+ },
+ {
+  "pair_id": 47,
+  "agent": "Devin",
+  "day_gap": 16,
+  "q_type": "fix",
+  "q_references_p": false,
+  "p_url": "https://github.com/antiwork/shortest/pull/323",
+  "p_title": "fix: accumulate tokens from all AI responses",
+  "q_url": "https://github.com/antiwork/shortest/pull/363",
+  "q_title": "fix: improve test cache execution with fallback to normal mode",
+  "n_shared_commitunion": 1,
+  "fetch_ok": true,
+  "shared": [
+   {
+    "name": "packages/shortest/src/ai/client.ts",
+    "boilerplate": false,
+    "q_patch": "@@ -18,7 +18,7 @@ import { BrowserTool } from \"@/browser/core/browser-tool\";\n import { TestCache } from \"@/cache/test-cache\";\n import { getConfig } from \"@/index\";\n import { getLogger, Log } from \"@/log\";\n-import { TestFunction, ToolResult } from \"@/types\";\n+import { ToolResult } from \"@/types\";\n import { TokenUsage, TokenUsageSchema } from \"@/types/ai\";\n import { getErrorDetails, AIError, AIErrorType } from \"@/utils/errors\";\n import { sleep } from \"@/utils/sleep\";\n@@ -57,7 +57,7 @@ export type AIClientResponse = {\n  * ```typescript\n  * const client = new AIClient({\n  *   browserTool: new BrowserTool(),\n- *   cache: new TestCache()\n+ *   testCache: new TestCache()\n  * });\n  *\n  * const response = await client.runAction(\n@@ -86,17 +86,16 @@ export class AIClient {\n \n   constructor({\n     browserTool,\n-    test,\n+    testCache,\n   }: {\n     browserTool: BrowserTool;\n-    test: TestFunction;\n+    testCache: TestCache;\n   }) {\n     this.log = getLogger();\n     this.log.trace(\"Initializing AIClient\");\n     this.client = createProvider(getConfig().ai);\n     this.browserTool = browserTool;\n-    this.testCache = new TestCache(test);\n-    this.testCache.initialize();\n+    this.testCache = testCache;\n     this.usage = TokenUsageSchema.parse({});\n     this.log.trace(\n       \"Available tools\",\n@@ -267,7 +266,7 @@ export class AIClient {\n           this.log.trace(\"Response\", { ...json });\n \n           if (json.status === \"passed\") {\n-            this.testCache.set();\n+            await this.testCache.set();\n           }\n           return { response: json, metadata: { usage: this.usage } };\n         } catch {",
+    "q_link": "https://github.com/antiwork/shortest/pull/363/files#diff-47356838aea902608b0827075ec3baac5f007d453c5a950477609987eb350a0f",
+    "p_link": "https://github.com/antiwork/shortest/pull/323/files#diff-47356838aea902608b0827075ec3baac5f007d453c5a950477609987eb350a0f"
+   }
+  ],
+  "n_net_shared": 1,
+  "n_net_substantive": 1
+ },
+ {
+  "pair_id": 48,
+  "agent": "Devin",
+  "day_gap": 5,
+  "q_type": "fix",
+  "q_references_p": false,
+  "p_url": "https://github.com/different-ai/note-companion/pull/326",
+  "p_title": "refactor: unify inbox pipeline with organizer's override formatting flow",
+  "q_url": "https://github.com/different-ai/note-companion/pull/332",
+  "q_title": "fix: preserve frontmatter and tag arrays during inbox processing",
+  "n_shared_commitunion": 1,
+  "fetch_ok": true,
+  "shared": [
+   {
+    "name": "packages/plugin/inbox/index.ts",
+    "boilerplate": false,
+    "q_patch": "@@ -24,6 +24,7 @@ import {\n   safeMove,\n   safeModifyContent as safeModify,\n } from \"../fileUtils\";\n+import { sanitizeContent } from \"../fileUtils\";\n import { extractYouTubeVideoId, getYouTubeContent, getOriginalContent, YouTubeError } from \"./services/youtube-service\";\n \n // Move constants to the top level and ensure they're used consistently\n@@ -616,21 +617,21 @@ async function cleanupStep(\n       await handleBypass(context, \"No content available\");\n     }\n \n-    // Strip front matter and trim\n     if (!context.content) {\n       throw new Error(\"Content is required for cleanup step\");\n     }\n-    const contentWithoutFrontMatter = context.content\n-      .replace(/^---\\n[\\s\\S]*?\\n---\\n/, \"\")\n-      .trim();\n \n-    // Bypass if content is too short\n-    if (contentWithoutFrontMatter.length < 5) {\n+    // Use the sanitizeContent utility which properly preserves frontmatter\n+    const sanitizedContent = await sanitizeContent(context.content);\n+\n+    // Bypass if content is too short (excluding frontmatter)\n+    const contentWithoutFrontmatter = sanitizedContent.replace(/^---\\n[\\s\\S]*?\\n---\\n/, \"\").trim();\n+    if (contentWithoutFrontmatter.length < 5) {\n       await handleBypass(context, \"Content too short (less than 5 characters)\");\n     }\n \n-    // Set the cleaned content back\n-    context.content = contentWithoutFrontMatter;\n+    // Set the sanitized content back\n+    context.content = sanitizedContent;\n     return context;\n   } catch (error) {\n     logger.error(\"Error in preprocessContentStep:\", error);",
+    "q_link": "https://github.com/different-ai/note-companion/pull/332/files#diff-68820ad177ecd02829bb81f56ac81643c84fda6b4e486e1c7c1e0fa654ec36f6",
+    "p_link": "https://github.com/different-ai/note-companion/pull/326/files#diff-68820ad177ecd02829bb81f56ac81643c84fda6b4e486e1c7c1e0fa654ec36f6"
+   }
+  ],
+  "n_net_shared": 1,
+  "n_net_substantive": 1
+ },
+ {
+  "pair_id": 49,
+  "agent": "Devin",
+  "day_gap": 0,
+  "q_type": "fix",
+  "q_references_p": false,
+  "p_url": "https://github.com/pdfme/pdfme/pull/758",
+  "p_title": "Fix failing tests in Dependabot PRs",
+  "q_url": "https://github.com/pdfme/pdfme/pull/766",
+  "q_title": "Fix: Update fast-xml-parser import to work with both CommonJS and ESM",
+  "n_shared_commitunion": 6,
+  "fetch_ok": true,
+  "shared": [
+   {
+    "name": "package.json",
+    "boilerplate": false,
+    "q_patch": "@@ -53,17 +53,17 @@\n     \"@babel/core\": \"^7.16.7\",\n     \"@types/jest\": \"^29.5.14\",\n     \"@types/jest-image-snapshot\": \"^6.4.0\",\n-    \"@typescript-eslint/eslint-plugin\": \"^5.9.1\",\n-    \"@typescript-eslint/parser\": \"^5.9.1\",\n+    \"@typescript-eslint/eslint-plugin\": \"^8.25.0\",\n+    \"@typescript-eslint/parser\": \"^8.25.0\",\n     \"babel-loader\": \"^8.2.2\",\n     \"eslint\": \"^8.6.0\",\n-    \"eslint-config-prettier\": \"^8.3.0\",\n+    \"eslint-config-prettier\": \"^10.0.2\",\n     \"eslint-plugin-prettier\": \"^4.0.0\",\n     \"jest\": \"^29.7.0\",\n     \"jest-image-snapshot\": \"^6.4.0\",\n     \"npm-run-all\": \"^4.1.5\",\n     \"prettier\": \"^2.8.8\",\n-    \"rimraf\": \"^3.0.2\",\n+    \"rimraf\": \"^6.0.1\",\n     \"ts-jest\": \"^29.2.5\",\n     \"ts-jest-resolver\": \"^2.0.1\",\n     \"ts-loader\": \"^9.2.5\",",
+    "q_link": "https://github.com/pdfme/pdfme/pull/766/files#diff-7ae45ad102eab3b6d7e7896acd08c427a9b25b346470d7bc6507b6481575d519",
+    "p_link": "https://github.com/pdfme/pdfme/pull/758/files#diff-7ae45ad102eab3b6d7e7896acd08c427a9b25b346470d7bc6507b6481575d519"
+   },
+   {
+    "name": "packages/schemas/src/utils.ts",
+    "boilerplate": false,
+    "q_patch": "@@ -213,20 +213,26 @@ export const createErrorElm = () => {\n \n export const createSvgStr = (icon: IconNode, attrs?: Record<string, string>): string => {\n   const createElementString = (node: IconNode): string => {\n-    const [tag, attributes, children = []] = node;\n+    if (!Array.isArray(node)) {\n+      return String(node);\n+    }\n+\n+    const [tag, attributes = {}, children = []] = node;\n \n-    const mergedAttributes = tag === 'svg' ? { ...attributes, ...attrs } : attributes;\n+    // Use type assertion to handle the comparison\n+    const isSvg = String(tag) === 'svg';\n+    const mergedAttributes = isSvg ? { ...attributes, ...(attrs || {}) } : attributes;\n \n-    const attrString = Object.entries(mergedAttributes)\n+    const attrString = Object.entries(mergedAttributes || {})\n       .map(([key, value]) => `${key}=\"${value}\"`)\n       .join(' ');\n \n-    const childrenString = children\n-      .map((child) => createElementString(child))\n+    const childrenString = (children as (IconNode | string)[])\n+      .map((child) => createElementString(child as IconNode))\n       .join('');\n \n     return `<${tag} ${attrString}>${childrenString}</${tag}>`;\n   };\n \n   return createElementString(icon);\n-};\n\\ No newline at end of file\n+};",
+    "q_link": "https://github.com/pdfme/pdfme/pull/766/files#diff-ee5ca079c4b98dcc05476e063ebe7262bebb52b6b42916f7b0e9f4c7b1bf4a65",
+    "p_link": "https://github.com/pdfme/pdfme/pull/758/files#diff-ee5ca079c4b98dcc05476e063ebe7262bebb52b6b42916f7b0e9f4c7b1bf4a65"
+   },
+   {
+    "name": "packages/ui/__mocks__/lucide-react.js",
+    "boilerplate": false,
+    "q_patch": "@@ -0,0 +1,19 @@\n+// Mock for lucide-react\n+module.exports = {\n+  Plus: () => 'Plus',\n+  Minus: () => 'Minus',\n+  ChevronLeft: () => 'ChevronLeft',\n+  ChevronRight: () => 'ChevronRight',\n+  ChevronsLeft: () => 'ChevronsLeft',\n+  ChevronsRight: () => 'ChevronsRight',\n+  Ellipsis: () => 'Ellipsis',\n+  X: () => 'X',\n+  Menu: () => 'Menu',\n+  GripVertical: () => 'GripVertical',\n+  CircleAlert: () => 'CircleAlert',\n+  Lock: () => 'Lock',\n+  ArrowLeft: () => 'ArrowLeft',\n+  ArrowRight: () => 'ArrowRight',\n+  LoaderCircle: () => 'LoaderCircle',\n+  // Add any other icons used in the codebase\n+};",
+    "q_link": "https://github.com/pdfme/pdfme/pull/766/files#diff-948c7ab1c61e551dd73f7c9f4b7fdc20ab77a377e4d1e9450d731919dcd224a6",
+    "p_link": "https://github.com/pdfme/pdfme/pull/758/files#diff-948c7ab1c61e551dd73f7c9f4b7fdc20ab77a377e4d1e9450d731919dcd224a6"
+   },
+   {
+    "name": "packages/ui/__tests__/components/__snapshots__/Designer.test.tsx.snap",
+    "boilerplate": true,
+    "q_patch": "@@ -21,7 +21,7 @@ exports[`Designer snapshot 1`] = `\n           style=\"visibility: visible;\"\n         >\n           <button\n-            class=\"ant-btn css-dev-only-do-not-override-1yacf91 ant-btn-default ant-btn-color-default ant-btn-variant-outlined\"\n+            class=\"ant-btn css-dev-only-do-not-override-1v613y0 ant-btn-default ant-btn-color-default ant-btn-variant-outlined\"\n             style=\"width: 35px; height: 35px; margin-top: 0.25rem; padding: 0.25rem;\"\n             type=\"button\"\n           >\n@@ -72,7 +72,7 @@ exports[`Designer snapshot 1`] = `\n           style=\"visibility: visible;\"\n         >\n           <button\n-            class=\"ant-btn css-dev-only-do-not-override-1yacf91 ant-btn-default ant-btn-color-default ant-btn-variant-outlined\"\n+            class=\"ant-btn css-dev-only-do-not-override-1v613y0 ant-btn-default ant-btn-color-default ant-btn-variant-outlined\"\n             style=\"width: 35px; height: 35px; margin-top: 0.25rem; padding: 0.25rem;\"\n             type=\"button\"\n           >\n@@ -127,33 +127,18 @@ exports[`Designer snapshot 1`] = `\n             style=\"display: flex; align-items: center;\"\n           >\n             <button\n-              class=\"ant-btn css-dev-only-do-not-override-1yacf91 ant-btn-text ant-btn-color-default ant-btn-variant-text ant-btn-icon-only\"\n+              class=\"ant-btn css-dev-only-do-not-override-1v613y0 ant-btn-text ant-btn-color-default ant-btn-variant-text ant-btn-icon-only\"\n               type=\"button\"\n             >\n               <span\n                 class=\"ant-btn-icon\"\n               >\n-                <svg\n-                  class=\"lucide lucide-minus\"\n-                  fill=\"none\"\n-                  height=\"16\"\n-                  stroke=\"#fff\"\n-                  stroke-linecap=\"round\"\n-                  stroke-linejoin=\"round\"\n-                  stroke-width=\"2\"\n-                  viewBox=\"0 0 24 24\"\n-                  width=\"16\"\n-                  xmlns=\"http://www.w3.org/2000/svg\"\n-                >\n-                  <path\n-                    d=\"M5 12h14\"\n-                  />\n-                </svg>\n+                Minus\n               </span>\n               \n             </button>\n             <span\n-              class=\"ant-typography css-dev-only-do-not-override-1yacf91\"\n+              class=\"ant-typography css-dev-only-do-not-override-1v613y0\"\n               style=\"color: rgb(255, 255, 255); font-size: 14px; margin: 8px;\"\n             >\n               <strong>\n@@ -162,31 +147,13 @@ exports[`Designer snapshot 1`] = `\n               </strong>\n             </span>\n             <button\n-              class=\"ant-btn css-dev-only-do-not-override-1yacf91 ant-btn-text ant-btn-color-default ant-btn-variant-text ant-btn-icon-only\"\n+              class=\"ant-btn css-dev-only-do-not-override-1v613y0 ant-btn-text ant-btn-color-default ant-btn-variant-text ant-btn-icon-only\"\n               type=\"button\"\n             >\n               <span\n                 class=\"ant-btn-icon\"\n               >\n-                <svg\n-                  class=\"lucide lucide-plus\"\n-                  fill=\"none\"\n-                  height=\"16\"\n-                  stroke=\"#fff\"\n-                  stroke-linecap=\"round\"\n-                  stroke-linejoin=\"round\"\n-                  stroke-width=\"2\"\n-                  viewBox=\"0 0 24 24\"\n-                  width=\"16\"\n-                  xmlns=\"http://www.w3.org/2000/svg\"\n-                >\n-                  <path\n-                    d=\"M5 12h14\"\n-                  />\n-                  <path\n-                    d=\"M12 5v14\"\n-                  />\n-                </svg>\n+                Plus\n               </span>\n               \n             </button>\n@@ -198,32 +165,14 @@ exports[`Designer snapshot 1`] = `\n       >\n         <div>\n           <button\n-            class=\"ant-btn css-dev-only-do-not-override-1yacf91 ant-btn-default ant-btn-color-default ant-btn-variant-outlined ant-btn-icon-only\"\n+            class=\"ant-btn css-dev-only-do-not-override-1v613y0 ant-btn-default ant-btn-color-default ant-btn-variant-outlined ant-btn-icon-only\"\n             style=\"position: absolute; display: flex; align-items: center; justify-content: center; top: 1rem; right: 1rem; z-index: 100;\"\n             type=\"button\"\n           >\n             <span\n               class=\"ant-btn-icon\"\n             >\n-              <svg\n-                class=\"lucide lucide-arrow-right\"\n-                fill=\"none\"\n-                height=\"20\"\n-                stroke=\"currentColor\"\n-                stroke-linecap=\"round\"\n-                stroke-linejoin=\"round\"\n-                stroke-width=\"1.5\"\n-                viewBox=\"0 0 24 24\"\n-                width=\"20\"\n-                xmlns=\"http://www.w3.org/2000/svg\"\n-              >\n-                <path\n-                  d=\"M5 12h14\"\n-                />\n-                <path\n-                  d=\"m12 5 7 7-7 7\"\n-                />\n-              </svg>\n+              ArrowRight\n             </span>\n             \n           </button>\n@@ -236,7 +185,7 @@ exports[`Designer snapshot 1`] = `\n                   style=\"height: 40px; display: flex; align-items: center;\"\n                 >\n                   <span\n-                    class=\"ant-typography css-dev-only-do-not-override-1yacf91\"\n+                    class=\"ant-typography css-dev-only-do-not-override-1v613y0\"\n                     style=\"text-align: center; width: 100%;\"\n                   >\n                     <strong>\n@@ -245,7 +194,7 @@ exports[`Designer snapshot 1`] = `\n                   </span>\n                 </div>\n                 <div\n-                  class=\"ant-divider css-dev-only-do-not-override-1yacf91 ant-divider-horizontal\"\n+                  class=\"ant-divider css-dev-only-do-not-override-1v613y0 ant-divider-horizontal\"\n                   role=\"separator\"\n                   style=\"margin-top: 8px; margin-bottom: 8px;\"\n                 />\n@@ -265,57 +214,14 @@ exports[`Designer snapshot 1`] = `\n                           ",
+    "q_link": "https://github.com/pdfme/pdfme/pull/766/files#diff-59f93235e1906c1589eab8944a7ada6c741c9287b92f8db766f2918bc57963f4",
+    "p_link": "https://github.com/pdfme/pdfme/pull/758/files#diff-59f93235e1906c1589eab8944a7ada6c741c9287b92f8db766f2918bc57963f4"
+   },
+   {
+    "name": "packages/ui/__tests__/components/__snapshots__/Preview.test.tsx.snap",
+    "boilerplate": true,
+    "q_patch": "@@ -17,33 +17,18 @@ exports[`Preview(as Form) snapshot 1`] = `\n           style=\"display: flex; align-items: center;\"\n         >\n           <button\n-            class=\"ant-btn css-dev-only-do-not-override-1yacf91 ant-btn-text ant-btn-color-default ant-btn-variant-text ant-btn-icon-only\"\n+            class=\"ant-btn css-dev-only-do-not-override-1v613y0 ant-btn-text ant-btn-color-default ant-btn-variant-text ant-btn-icon-only\"\n             type=\"button\"\n           >\n             <span\n               class=\"ant-btn-icon\"\n             >\n-              <svg\n-                class=\"lucide lucide-minus\"\n-                fill=\"none\"\n-                height=\"16\"\n-                stroke=\"#fff\"\n-                stroke-linecap=\"round\"\n-                stroke-linejoin=\"round\"\n-                stroke-width=\"2\"\n-                viewBox=\"0 0 24 24\"\n-                width=\"16\"\n-                xmlns=\"http://www.w3.org/2000/svg\"\n-              >\n-                <path\n-                  d=\"M5 12h14\"\n-                />\n-              </svg>\n+              Minus\n             </span>\n             \n           </button>\n           <span\n-            class=\"ant-typography css-dev-only-do-not-override-1yacf91\"\n+            class=\"ant-typography css-dev-only-do-not-override-1v613y0\"\n             style=\"color: rgb(255, 255, 255); font-size: 14px; margin: 8px;\"\n           >\n             <strong>\n@@ -52,31 +37,13 @@ exports[`Preview(as Form) snapshot 1`] = `\n             </strong>\n           </span>\n           <button\n-            class=\"ant-btn css-dev-only-do-not-override-1yacf91 ant-btn-text ant-btn-color-default ant-btn-variant-text ant-btn-icon-only\"\n+            class=\"ant-btn css-dev-only-do-not-override-1v613y0 ant-btn-text ant-btn-color-default ant-btn-variant-text ant-btn-icon-only\"\n             type=\"button\"\n           >\n             <span\n               class=\"ant-btn-icon\"\n             >\n-              <svg\n-                class=\"lucide lucide-plus\"\n-                fill=\"none\"\n-                height=\"16\"\n-                stroke=\"#fff\"\n-                stroke-linecap=\"round\"\n-                stroke-linejoin=\"round\"\n-                stroke-width=\"2\"\n-                viewBox=\"0 0 24 24\"\n-                width=\"16\"\n-                xmlns=\"http://www.w3.org/2000/svg\"\n-              >\n-                <path\n-                  d=\"M5 12h14\"\n-                />\n-                <path\n-                  d=\"M12 5v14\"\n-                />\n-              </svg>\n+              Plus\n             </span>\n             \n           </button>\n@@ -164,33 +131,18 @@ exports[`Preview(as Viewer) snapshot 1`] = `\n           style=\"display: flex; align-items: center;\"\n         >\n           <button\n-            class=\"ant-btn css-dev-only-do-not-override-1yacf91 ant-btn-text ant-btn-color-default ant-btn-variant-text ant-btn-icon-only\"\n+            class=\"ant-btn css-dev-only-do-not-override-1v613y0 ant-btn-text ant-btn-color-default ant-btn-variant-text ant-btn-icon-only\"\n             type=\"button\"\n           >\n             <span\n               class=\"ant-btn-icon\"\n             >\n-              <svg\n-                class=\"lucide lucide-minus\"\n-                fill=\"none\"\n-                height=\"16\"\n-                stroke=\"#fff\"\n-                stroke-linecap=\"round\"\n-                stroke-linejoin=\"round\"\n-                stroke-width=\"2\"\n-                viewBox=\"0 0 24 24\"\n-                width=\"16\"\n-                xmlns=\"http://www.w3.org/2000/svg\"\n-              >\n-                <path\n-                  d=\"M5 12h14\"\n-                />\n-              </svg>\n+              Minus\n             </span>\n             \n           </button>\n           <span\n-            class=\"ant-typography css-dev-only-do-not-override-1yacf91\"\n+            class=\"ant-typography css-dev-only-do-not-override-1v613y0\"\n             style=\"color: rgb(255, 255, 255); font-size: 14px; margin: 8px;\"\n           >\n             <strong>\n@@ -199,31 +151,13 @@ exports[`Preview(as Viewer) snapshot 1`] = `\n             </strong>\n           </span>\n           <button\n-            class=\"ant-btn css-dev-only-do-not-override-1yacf91 ant-btn-text ant-btn-color-default ant-btn-variant-text ant-btn-icon-only\"\n+            class=\"ant-btn css-dev-only-do-not-override-1v613y0 ant-btn-text ant-btn-color-default ant-btn-variant-text ant-btn-icon-only\"\n             type=\"button\"\n           >\n             <span\n               class=\"ant-btn-icon\"\n             >\n-              <svg\n-                class=\"lucide lucide-plus\"\n-                fill=\"none\"\n-                height=\"16\"\n-                stroke=\"#fff\"\n-                stroke-linecap=\"round\"\n-                stroke-linejoin=\"round\"\n-                stroke-width=\"2\"\n-                viewBox=\"0 0 24 24\"\n-                width=\"16\"\n-                xmlns=\"http://www.w3.org/2000/svg\"\n-              >\n-                <path\n-                  d=\"M5 12h14\"\n-                />\n-                <path\n-                  d=\"M12 5v14\"\n-                />\n-              </svg>\n+              Plus\n             </span>\n             \n           </button>",
+    "q_link": "https://github.com/pdfme/pdfme/pull/766/files#diff-87908f0548d70fdba6d73b5c879acacf100c10a038c772d6d10b3bcdec53fc64",
+    "p_link": "https://github.com/pdfme/pdfme/pull/758/files#diff-87908f0548d70fdba6d73b5c879acacf100c10a038c772d6d10b3bcdec53fc64"
+   },
+   {
+    "name": "packages/ui/package.json",
+    "boilerplate": false,
+    "q_patch": "@@ -36,11 +36,11 @@\n     \"prettier\": \"prettier --write 'src/**/*.{ts,tsx}'\"\n   },\n   \"dependencies\": {\n-    \"@pdfme/converter\": \"*\",\n     \"@dnd-kit/core\": \"^6.0.8\",\n-    \"@dnd-kit/sortable\": \"^7.0.2\",\n+    \"@dnd-kit/sortable\": \"^10.0.0\",\n+    \"@pdfme/converter\": \"*\",\n     \"@scena/react-guides\": \"^0.16.0\",\n-    \"antd\": \"^5.9.4\",\n+    \"antd\": \"^5.24.2\",\n     \"form-render\": \"^2.2.16\",\n     \"hotkeys-js\": \"^3.8.7\",\n     \"lucide-react\": \"^0.460.0\",\n@@ -57,9 +57,8 @@\n     \"@types/react\": \"^17.0.52\",\n     \"@types/react-dom\": \"^17.0.18\",\n     \"@vitejs/plugin-react\": \"^4.2.0\",\n-    \"css-loader\": \"^6.8.1\",\n     \"csstype\": \"^3.1.2\",\n-    \"esbuild\": \"^0.19.5\",\n+    \"esbuild\": \"^0.25.0\",\n     \"eslint-plugin-react\": \"^7.28.0\",\n     \"eslint-plugin-react-hooks\": \"^4.3.0\",\n     \"jest-canvas-mock\": \"^2.3.1\",\n@@ -88,7 +87,8 @@\n       \"^antd/es/\": \"antd/lib/\",\n       \"^form-render/es/\": \"form-render/lib/\",\n       \"^rc-picker/es/\": \"rc-picker/lib/\",\n-      \"^lodash-es$\": \"lodash\"\n+      \"^lodash-es$\": \"lodash\",\n+      \"\\\\^lucide-react$\": \"<rootDir>/__mocks__/lucide-react.js\"\n     },\n     \"resolver\": \"ts-jest-resolver\",\n     \"moduleFileExtensions\": [\n@@ -107,9 +107,12 @@\n     \"testMatch\": [\n       \"**/*.test.ts\",\n       \"**/*.test.tsx\"\n+    ],\n+    \"transformIgnorePatterns\": [\n+      \"/node_modules/(?!lucide-react)\"\n     ]\n   },\n   \"publishConfig\": {\n     \"access\": \"public\"\n   }\n-}\n\\ No newline at end of file\n+}",
+    "q_link": "https://github.com/pdfme/pdfme/pull/766/files#diff-1ae5a5e8c23bd3bc31ea590a9cbe48eb9ad3bbddc0fb5732d08c04a53c8ad51d",
+    "p_link": "https://github.com/pdfme/pdfme/pull/758/files#diff-1ae5a5e8c23bd3bc31ea590a9cbe48eb9ad3bbddc0fb5732d08c04a53c8ad51d"
+   },
+   {
+    "name": "packages/ui/src/components/CtlBar.tsx",
+    "boilerplate": false,
+    "q_patch": "@@ -1,5 +1,7 @@\n import React, { useContext } from 'react';\n import { Size } from '@pdfme/common';\n+// Import icons from lucide-react\n+// Note: In tests, these will be mocked by the mock file in __mocks__/lucide-react.js\n import { Plus, Minus, ChevronLeft, ChevronRight, Ellipsis } from 'lucide-react';\n \n import type { MenuProps } from 'antd';",
+    "q_link": "https://github.com/pdfme/pdfme/pull/766/files#diff-f22b63c98f1272e6cf2dfc101477af3296e14f29906d5f5793e28d20ba9a198e",
+    "p_link": "https://github.com/pdfme/pdfme/pull/758/files#diff-f22b63c98f1272e6cf2dfc101477af3296e14f29906d5f5793e28d20ba9a198e"
+   },
+   {
+    "name": "packages/ui/tsconfig.json",
+    "boilerplate": false,
+    "q_patch": "@@ -14,7 +14,7 @@\n       \"DOM.Iterable\",\n       \"ESNext\"\n     ],\n-    \"moduleResolution\": \"node16\",\n+    \"moduleResolution\": \"nodenext\",\n     \"allowSyntheticDefaultImports\": true,\n     \"strict\": true,\n     \"types\": [\n@@ -45,6 +45,6 @@\n     \"node_modules\",\n     \"dist\",\n     \"**/*.test.ts\",\n-    \"**/*.spec.ts\",\n+    \"**/*.spec.ts\"\n   ]\n }",
+    "q_link": "https://github.com/pdfme/pdfme/pull/766/files#diff-23d1c00ada88e4f7db71f0cd8959db1ec2a1442b48e818ec83f33d6d8f221845",
+    "p_link": "https://github.com/pdfme/pdfme/pull/758/files#diff-23d1c00ada88e4f7db71f0cd8959db1ec2a1442b48e818ec83f33d6d8f221845"
+   }
+  ],
+  "n_net_shared": 8,
+  "n_net_substantive": 6
+ },
+ {
+  "pair_id": 50,
+  "agent": "Devin",
+  "day_gap": 2,
+  "q_type": "fix",
+  "q_references_p": false,
+  "p_url": "https://github.com/crewAIInc/crewAI/pull/1809",
+  "p_title": "docs: update README to highlight Flows",
+  "q_url": "https://github.com/crewAIInc/crewAI/pull/1826",
+  "q_title": "fix: add tiktoken as explicit dependency and document Rust requirement",
+  "n_shared_commitunion": 1,
+  "fetch_ok": true,
+  "shared": [
+   {
+    "name": "README.md",
+    "boilerplate": false,
+    "q_patch": "@@ -85,14 +85,29 @@ First, install CrewAI:\n ```shell\n pip install crewai\n ```\n-\n If you want to install the 'crewai' package along with its optional features that include additional tools for agents, you can do so by using the following command:\n \n ```shell\n pip install 'crewai[tools]'\n ```\n The command above installs the basic package and also adds extra components which require more dependencies to function.\n \n+### Troubleshooting Dependencies\n+\n+If you encounter issues during installation or usage, here are some common solutions:\n+\n+#### Common Issues\n+\n+1. **ModuleNotFoundError: No module named 'tiktoken'**\n+   - Install tiktoken explicitly: `pip install 'crewai[embeddings]'`\n+   - If using embedchain or other tools: `pip install 'crewai[tools]'`\n+\n+2. **Failed building wheel for tiktoken**\n+   - Ensure Rust compiler is installed (see installation steps above)\n+   - For Windows: Verify Visual C++ Build Tools are installed\n+   - Try upgrading pip: `pip install --upgrade pip`\n+   - If issues persist, use a pre-built wheel: `pip install tiktoken --prefer-binary`\n+\n ### 2. Setting Up Your Crew with the YAML Configuration\n \n To create a new CrewAI project, run the following CLI (Command Line Interface) command:",
+    "q_link": "https://github.com/crewAIInc/crewAI/pull/1826/files#diff-b335630551682c19a781afebcf4d07bf978fb1f8ac04c6bf87428ed5106870f5",
+    "p_link": "https://github.com/crewAIInc/crewAI/pull/1809/files#diff-b335630551682c19a781afebcf4d07bf978fb1f8ac04c6bf87428ed5106870f5"
+   }
+  ],
+  "n_net_shared": 1,
+  "n_net_substantive": 1
+ }
+]

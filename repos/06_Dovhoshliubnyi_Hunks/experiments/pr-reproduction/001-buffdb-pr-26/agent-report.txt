@@ -1,0 +1,50 @@
+Implemented the controlled reproduction in `/tmp/buffdb-pr26-sol.ef1p9l`.
+
+Diagnosis:
+
+- `IndexManager::update_indexes` recreated the old value, new value, and key inside every index iteration.
+- `remove_from_indexes` similarly recreated the lookup value for every index.
+- B-tree range bounds also cloned both `IndexValue`s.
+
+Changes:
+
+- Added private owned/shared representations for indexed values and keys.
+- Direct `SecondaryIndex::insert` remains owned and keeps its public API unchanged.
+- Multi-index manager operations share immutable key/value storage using `Arc`.
+- Added a single-index fast path to avoid reference-counting overhead when sharing provides no benefit.
+- Moved removal lookup allocation outside the loop.
+- Removed B-tree range-bound clones.
+- Added a behavioral test covering insert, update, exact lookup, and removal across hash and B-tree indexes.
+
+Static allocation result, excluding collection growth:
+
+| Operation | Before | After |
+|---|---:|---:|
+| Insert into one index | 2 | 2 |
+| Insert into N > 1 indexes | 2N | 3 |
+| Update in one index | 3 | 3 |
+| Update in N > 1 indexes | 3N | 4 |
+| Remove from N indexes | N | 1 |
+
+Examples:
+
+- Two-index update: 6 -> 4 hot-path allocations, 33.3% reduction.
+- Ten-index update: 30 -> 4, 86.7% reduction.
+- Ten-index insert: 20 -> 3, 85% reduction.
+
+Validation:
+
+- `git diff --check`: passed with no whitespace errors.
+- Added `test_manager_updates_and_removes_multiple_indexes`.
+- Executable formatting, tests, and benchmarks were blocked because `cargo`, `rustc`, and `rustfmt` are absent. Attempting `cargo test --lib index:: --no-default-features` returned `cargo: command not found`.
+- Remaining risk: the patch has received static but not compiler/runtime validation.
+
+Final diff stat:
+
+```text
+src/index.rs | 239 +++++++++++++++++++++++++++++++++++++++++++++++++++++------
+1 file changed, 217 insertions(+), 22 deletions(-)
+```
+
+All changes remain uncommitted in the working tree.
+

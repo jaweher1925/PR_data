@@ -1,0 +1,1003 @@
+"pr_id","title","body","relevance_score","categories_detected","original_reasoning"
+"3121718067","[alpha_factory] cap error log size","## Summary
+- limit stored entries in errorBoundary.ts to latest 50
+- add regression test for error cap and register in run.mjs
+
+## Testing
+- `pre-commit run --files alpha_factory_v1/demos/alpha_agi_insight_v1/insight_browser_v1/src/utils/errorBoundary.ts alpha_factory_v1/demos/alpha_agi_insight_v1/insight_browser_v1/tests/error_boundary_limit.test.js alpha_factory_v1/demos/alpha_agi_insight_v1/insight_browser_v1/tests/run.mjs`
+- `python check_env.py --auto-install`
+- `pytest -q`
+- `npm test` *(fails: Missing dependency ""esbuild"")*
+
+------
+https://chatgpt.com/codex/tasks/task_e_6841b769d54c8333b2a12d27b2806713","4.0","[""memory_optimization""]","This PR directly improves runtime performance by capping error log storage to the latest 50 entries, preventing unbounded memory growth from accumulated error logs."
+"3070841032","Enhance backend data feed","## Summary
+- refine `data_feed` with better docs
+- implement persistent HTTP session, caching, and robust error handling
+- format using Black and ensure lint clean
+
+## Testing
+- `ruff check alpha_factory_v1/backend/data_feed.py`
+- `black alpha_factory_v1/backend/data_feed.py --check`
+- `python -m py_compile alpha_factory_v1/backend/data_feed.py`
+","4.0","[""caching"", ""resource_pooling"", ""io_optimization""]","PR implements persistent HTTP session and caching mechanisms for the data feed backend, which directly reduces network overhead and repeated computations, with clear performance intent despite also including documentation and style improvements."
+"3178251308","Improve Fortran json load/save","## Summary
+- add helper to detect load expression type and builtin types
+- infer list element structs and track them in compiler
+- emit typed arrays for `load` results
+- specialize `save_json` calls based on source type
+- update golden test for Fortran load/save json
+
+## Testing
+- `go test ./compile/x/fortran -run TestFortranCompiler_GoldenOutput -tags slow -count=1`
+
+------
+https://chatgpt.com/codex/tasks/task_e_685cfd257a548320a3587a849d9932c6","4.0","[""data_structure""]","PR optimizes Fortran JSON load/save by emitting typed arrays and specializing calls based on source type, which improves runtime performance through better data structure handling and reduced type conversions."
+"3170164183","Add unary negation bytecode","## Summary
+- implement `OpNeg`, `OpNegInt`, and `OpNegFloat`
+- compile unary `-` directly instead of subtracting from zero
+- update VM to execute new instructions
+- expand type inference and disassembler
+- add regression test for unary negation
+
+## Testing
+- `go test ./tests/vm -run TestVM_ValidPrograms/unary_neg -update`
+- `go test -v ./tests/vm -run TestVM_IR/unary_neg -update`
+- `go test ./...`
+
+
+------
+https://chatgpt.com/codex/tasks/task_e_685a217a636c8320a8fd3ac8d1c6167c","4.0","[""algorithm_optimization""]","This PR directly optimizes the compilation and execution of unary negation by replacing a subtraction-from-zero operation with dedicated bytecode instructions, reducing computational overhead and improving runtime performance."
+"3164475250","[WIP] Leaks","Starting investigation of memory leaks in Z3 solver. The issue shows two main leak sources:
+
+- [x] Analyze the memory leak stack traces provided in the issue
+- [x] Examine heap allocation in `src/util/heap.h` and vector expansion in `src/util/vector.h`
+- [x] Investigate var_register and lar_solver allocation patterns
+- [x] Identify where cleanup should happen but doesn't 
+- [x] Explore memory management in `src/util/memory_manager.cpp`
+- [x] Look at solver lifecycle and finalization code
+- [x] Implement minimal fix for proper cleanup
+- [ ] Test fix to ensure leaks are resolved
+- [ ] Verify no new issues are introduced
+
+## Analysis Complete
+
+Based on the stack traces, the leaks appear to be:
+
+1. **Heap allocation leak**: `heap<lp::lpvar_lt>::set_bounds` -> `heap constructor` -> `vector resize` -> `vector expand_vector` -> `memory::reallocate`
+
+2. **Var register leak**: `var_register::add_var` -> unordered_map allocation in lar_solver
+
+## Root Cause Identified
+
+The memory leaks occur because:
+
+1. During `theory_lra::imp::init()`, the solver calls `get_one()` and `get_zero()` which create variables via `add_const()`
+2. These calls result in `lar_solver::add_var()` being called, which calls `m_imp->m_var_register.add_var()`
+3. The `var_register::add_var()` method adds entries to `m_external_to_local` (unordered_map) and `m_local_to_external` (vector)
+4. Although the `var_register` class has a `clear()` method, it's not being called during cleanup
+5. The `lar_solver` destructor only deletes terms but doesn't clean up the var_register data structures
+
+## Fix Applied
+
+Added a call to `m_imp->m_var_register.clear()` in the `lar_solver::~lar_solver()` destructor to properly clean up the var_register's data structures including the unordered_map and vector.
+
+The fix is minimal and surgical - it only adds one line to ensure proper cleanup of the var_register when the lar_solver is destroyed.
+
+Fixes #7690.
+
+<!-- START COPILOT CODING AGENT TIPS -->
+---
+
+💡 You can make Copilot smarter by setting up custom instructions, customizing its development environment and configuring Model Context Protocol (MCP) servers. Learn more [Copilot coding agent tips](https://gh.io/copilot-coding-agent-tips) in the docs.","4.0","[""memory_optimization""]","This PR directly fixes memory leaks by ensuring proper cleanup of allocated data structures (unordered_map and vector) in the lar_solver destructor, which is a runtime performance improvement that reduces memory waste."
+"3128898273","Improve argsKey for memoization","## Summary
+- improve memoization key generation by avoiding JSON serialization
+- update benchmark outputs
+
+## Testing
+- `go test ./...`
+- `make bench`
+
+------
+https://chatgpt.com/codex/tasks/task_e_68463ad76088832095208b6cd5da14a9","4.0","[""caching"", ""memory_optimization""]","The PR directly optimizes memoization by replacing JSON serialization with a faster key generation method, reducing overhead and improving runtime performance of memoized function calls."
+"3117664754","Refactor Go compiler type handling","## Summary
+- reduce runtime helpers by using simple type inference in Go codegen
+- infer primitive types for binary operators and emit native ops when possible
+- update golden files for Go compiler
+
+## Testing
+- `go test ./compile/go -update`
+- `go test ./...`
+
+
+------
+https://chatgpt.com/codex/tasks/task_e_684035b079348320b8412381b3eea96a","4.0","[""algorithm_optimization""]","This PR optimizes the Go compiler's code generation by reducing runtime helpers through type inference and emitting native operations for binary operators, directly improving the performance of compiled Go code."
+"3245568692","Improve C transpiler loops","## Summary
+- improve `for` list loops with a length variable
+- better string inference for concatenations
+- update progress log
+- regenerate C golden file for `for_list_collection`
+
+## Testing
+- `go test -tags slow ./transpiler/x/c`
+
+
+------
+https://chatgpt.com/codex/tasks/task_e_687be9f7beec832084e9a9ced3943636","4.0","[""algorithm_optimization""]","This PR optimizes C transpiler loop generation by improving `for` list loops with a length variable, which reduces runtime overhead by avoiding repeated length calculations during loop iterations."
+"3112082520","[alpha_factory] cache quickstart PDF offline","## Summary
+- precache quickstart PDF in PWA build
+- test that PDF loads while offline
+
+## Testing
+- `python check_env.py --auto-install`
+- `pytest -q` *(fails: ValueError: Duplicated timeseries in CollectorRegistry)*
+- `pre-commit run --files alpha_factory_v1/demos/alpha_agi_insight_v1/insight_browser_v1/build.js alpha_factory_v1/demos/alpha_agi_insight_v1/insight_browser_v1/manual_build.py tests/test_pwa_offline.py` *(fails: network access required)*
+
+------
+https://chatgpt.com/codex/tasks/task_e_683e5030a09c8333b28c73abbe8abec3","4.0","[""caching"", ""io_optimization""]","PR directly improves runtime performance by precaching a PDF in the PWA build, reducing network I/O and enabling offline access, with explicit testing to verify the optimization works."
+"3263526971","fix: pointer slice loop","Fix the loop when converting item slices to pointer slices. The previous version unnecessarily allocates memory, and with an older compiler, it does not work as expected.
+","4.0","[""memory_optimization""]","This PR directly eliminates unnecessary memory allocations in a loop that converts item slices to pointer slices, which is a clear runtime performance improvement."
+"3221615770","Add optimized Ackermann implementation","## Summary
+- implement an optimized variant of the Ackermann function in Mochi
+- add golden output for the new program
+
+## Testing
+- `go test ./tools/rosetta -tags slow -run TestMochiTasks/ackermann-function-2 -count=1`
+
+
+------
+https://chatgpt.com/codex/tasks/task_e_68709b4979148320aa0a248e58eadfab","4.0","[""algorithm_optimization""]","PR implements an optimized variant of the Ackermann function with explicit intent to improve its runtime performance characteristics."
+"3071076936","feat: Server-side pagination, filtering and search for eval results table","## Summary
+In order to support large evals we're updating the Results View to do server side filtering, pagination and search.
+
+- Introduced a new endpoint `eval/table/:id` since this is a new results format
+- Eval comparisons are done server side too
+- Added indicies to support search and filtering
+- Added filtering dropdown for named scores
+- Created a single hook to fetch eval data
+
+
+
+<!-- ELLIPSIS_HIDDEN -->
+
+----
+
+> [!IMPORTANT]
+> This pull request implements server-side pagination for evaluation results, adds a new API endpoint, and updates the frontend to support dynamic data loading and filtering.
+> 
+>   - **Behavior**:
+>     - Implements server-side pagination for evaluation results in `Eval` model.
+>     - Adds `/api/eval/:id/table` endpoint to fetch paginated data.
+>     - Supports filtering by errors, failures, passes, highlights, and specific metrics.
+>     - Allows search queries across multiple fields.
+>     - Handles SQL injection attempts safely.
+>   - **Frontend**:
+>     - Updates `ResultsTable` to load pages dynamically.
+>     - Introduces `useEvalData` hook for fetching evaluation data.
+>     - Adds metric filtering and search functionality in `ResultsView`.
+>   - **Database**:
+>     - Adds indices to `eval_results` table for improved query performance.
+>     - Updates `evals` table schema to include `vars` column.
+>   - **Tests**:
+>     - Comprehensive tests for pagination, filtering, and search functionalities in `eval.test.ts`.
+>     - Tests for `EvalFactory` to create varied evaluation results for testing.
+> 
+> <sup>This description was created by </sup>[<img alt=""Ellipsis"" src=""https://img.shields.io/badge/Ellipsis-blue?color=175173"">](https://www.ellipsis.dev?ref=promptfoo%2Fpromptfoo&utm_source=github&utm_medium=referral)<sup> for eaf8c2c7eb7e99ff7edbd895c7992da8fa92723b. You can [customize](https://app.ellipsis.dev/promptfoo/settings/summaries) this summary. It will automatically update as commits are pushed.</sup>
+
+<!-- ELLIPSIS_HIDDEN -->","4.0","[""query_optimization"", ""lazy_loading"", ""batch_processing""]","The PR directly improves runtime performance by implementing server-side pagination, filtering, and search to handle large evaluation result sets efficiently, adding database indices for query optimization, and enabling lazy/dynamic data loading on the frontend instead of loading all results at once."
+"3070936351","chore: Improve memory usage when sharing results","## Summary
+- add batched sample and counting helpers on `Eval`
+- stream results in `sendChunkedResults`
+","4.0","[""memory_optimization"", ""batch_processing""]","PR directly targets memory usage improvement by adding batched helpers and streaming results, which are explicit performance optimization techniques to reduce memory allocations and overhead."
+"3113703982","Add validation for excessive fields","## Summary
+- prevent unbounded loops in `SelfDescribingTriviallyCopyable`
+- test high field counts result in an error
+- note the limit in the security review
+
+## Testing
+- `mvn -q verify` *(fails: `mvn` not found)*
+
+------
+https://chatgpt.com/codex/tasks/task_e_683ee3018c7c83299e570cb077c30dfc","4.0","[""algorithm_optimization""]","This PR prevents unbounded loops in SelfDescribingTriviallyCopyable by adding field count validation, which directly improves runtime performance by preventing algorithmic worst-case behavior and denial-of-service scenarios."
+"3161102496","Implement 70-second minimum retry duration for 410 status responses in ManagedIdentityCredential","## Overview
+
+This PR implements the Azure IMDS requirement that 410 status responses should be retried for at least 70 seconds total duration, as specified in the [Azure IMDS documentation](https://learn.microsoft.com/en-us/azure/virtual-machines/instance-metadata-service?tabs=windows#errors-and-debugging).
+
+## Problem
+
+Previously, `ManagedIdentityCredential` used the same exponential backoff strategy for all retriable status codes (404, 410, 500), resulting in only ~5.6 seconds total retry duration:
+- Retry 1: 0.8s
+- Retry 2: 1.6s  
+- Retry 3: 3.2s
+- **Total: 5.6 seconds**
+
+This was insufficient for 410 responses, which require at least 70 seconds according to Azure IMDS specifications.
+
+## Solution
+
+### Changes Made
+
+1. **Created `ImdsRetryDelayStrategy`**: A custom delay strategy that detects 410 status responses and applies extended delays while preserving existing behavior for other status codes.
+
+2. **Modified `DefaultAzureCredentialImdsRetryPolicy`**: Updated to use the new delay strategy instead of the standard exponential backoff.
+
+3. **Added comprehensive tests**: Validates that 410 responses get ≥70 seconds retry duration while other status codes remain unchanged.
+
+### Technical Details
+
+**For 410 responses:**
+- Retry 1: 13s
+- Retry 2: 26s
+- Retry 3: 52s
+- **Total: 91 seconds** (≥72.8s minimum accounting for 20% jitter)
+
+**For other responses (404, 500, etc.):**
+- Retry 1: 0.8s
+- Retry 2: 1.6s  
+- Retry 3: 3.2s
+- **Total: 5.6 seconds** (unchanged)
+
+### Code Example
+
+The change is transparent to users - no API changes required:
+
+```csharp
+var credential = new ManagedIdentityCredential();
+// 410 responses now automatically retry for ≥70 seconds
+// Other status codes maintain existing retry behavior
+var token = await credential.GetTokenAsync(new TokenRequestContext(scopes));
+```
+
+## Validation
+
+- ✅ All existing tests pass (280+ ManagedIdentityCredentialTests)
+- ✅ New test validates 70-second requirement for 410 responses
+- ✅ Backward compatibility confirmed for all other status codes
+- ✅ No breaking changes to public API
+
+Fixes #50724.
+
+<!-- START COPILOT CODING AGENT TIPS -->
+---
+
+💬 Share your feedback on Copilot coding agent for the chance to win a $200 gift card! Click [here](https://survey.alchemer.com/s3/8343779/Copilot-Coding-agent) to start the survey.","4.0","[""io_optimization""]","This PR directly improves runtime performance by implementing a specification-compliant retry strategy that reduces unnecessary delays for non-410 responses while ensuring 410 responses meet Azure's 70-second minimum retry requirement, making credential acquisition more efficient in practice."
+"3166227862","Enable short-circuiting in interpreter","## Summary
+- implement lazy operand evaluation for binary expressions
+- short-circuit `&&` and `||`
+- add regression test for new behaviour
+
+## Testing
+- `go test ./...`
+
+
+------
+https://chatgpt.com/codex/tasks/task_e_68585cb8a8fc8320ac07c8bae459d20f","4.0","[""lazy_loading""]","Implementing short-circuit evaluation for logical operators directly improves runtime performance by avoiding unnecessary operand evaluation, reducing computation and memory allocation."
+"3240157506","Improve Fortran constant list folding","## Summary
+- add constant list propagation to the Fortran compiler
+- fold `len`, `count`, `append`, `union`, `except`, etc. when lists are stored in variables
+- document new capability in `tests/machine/x/fortran/README.md`
+- record progress in `compiler/x/fortran/TASKS.md`
+
+## Testing
+- `go test ./...`
+
+------
+https://chatgpt.com/codex/tasks/task_e_6878e86c20c08320a63456631fb49b9d","4.0","[""algorithm_optimization""]","This PR optimizes the Fortran compiler by adding constant folding and propagation for list operations, which reduces runtime evaluation of deterministic expressions by computing them at compile-time."
+"3272353154","Add winloop support for Windows platforms as uvloop alternative","This PR implements platform-specific event loop optimization by adding `winloop` support for Windows users while maintaining `uvloop` for Unix-like systems.
+
+## Problem
+
+Previously, Windows users could not benefit from event loop performance optimizations because `uvloop` only supports Unix-like platforms. The application would skip event loop optimization entirely on Windows, resulting in slower concurrent performance.
+
+## Solution
+
+Added automatic platform detection that uses:
+- **Windows**: `winloop` for native Windows event loop optimization
+- **Unix/Linux/macOS**: `uvloop` for continued high performance
+
+## Key Changes
+
+### Core Implementation
+- Updated `uvloop_init()` function to detect platform and import appropriate library
+- Added platform-specific dependency markers in `pyproject.toml`
+- Created new `winloop` optional extra for Windows installations
+
+### Dependencies
+```toml
+uvloop = {version="">=0.19,<0.22"", optional=true, markers = ""sys_platform != 'win32'""}
+winloop = {version="">=0.1.6"", optional=true, markers = ""sys_platform == 'win32'""}
+```
+
+### Installation
+- Windows: `pip install ktoolbox[winloop]`
+- Unix/Linux/macOS: `pip install ktoolbox[uvloop]`
+
+### Documentation
+Updated FAQ sections in both English and Chinese to explain the new platform-specific approach and provide clear installation instructions.
+
+## Backward Compatibility
+
+This change is fully backward compatible:
+- Existing installations continue to work without modification
+- Same `use_uvloop` configuration setting controls both libraries
+- Graceful fallback when optimization libraries aren't installed
+- No breaking changes to existing APIs or behavior
+
+## Testing
+
+Added comprehensive test suite covering:
+- Platform detection logic
+- Successful library initialization on both platforms
+- Graceful handling of missing optional dependencies
+- Configuration disable/enable scenarios
+
+Example behavior:
+```python
+# Windows with winloop installed
+uvloop_init()  # Uses winloop.EventLoopPolicy()
+
+# Linux with uvloop installed  
+uvloop_init()  # Uses uvloop.EventLoopPolicy()
+
+# Any platform without optimization library
+uvloop_init()  # Returns False, continues with standard asyncio
+```
+
+Fixes #268.
+
+> [!WARNING]
+>
+> <details>
+> <summary>Firewall rules blocked me from connecting to one or more addresses</summary>
+>
+> #### I tried to connect to the following addresses, but was blocked by firewall rules:
+>
+> - `kemono.cr`
+>   - Triggering command: `/home/REDACTED/.cache/pypoetry/virtualenvs/ktoolbox-xeEG_qqW-py3.12/bin/python /home/REDACTED/.cache/pypoetry/virtualenvs/ktoolbox-xeEG_qqW-py3.12/bin/pytest tests/ -v` (dns block)
+>
+> If you need me to access, download, or install something from one of these locations, you can either:
+>
+> - Configure [Actions setup steps](https://gh.io/copilot/actions-setup-steps) to set up my environment, which run before the firewall is enabled
+> - Add the appropriate URLs or hosts to the custom allowlist in this repository's [Copilot coding agent settings](https://github.com/Ljzd-PRO/KToolBox/settings/copilot/coding_agent) (admins only)
+>
+> </details>
+
+
+
+<!-- START COPILOT CODING AGENT TIPS -->
+---
+
+💡 You can make Copilot smarter by setting up custom instructions, customizing its development environment and configuring Model Context Protocol (MCP) servers. Learn more [Copilot coding agent tips](https://gh.io/copilot-coding-agent-tips) in the docs.","4.0","[""concurrency""]","This PR directly improves runtime performance of concurrent operations by adding platform-specific event loop optimization (winloop for Windows, uvloop for Unix), enabling Windows users to benefit from high-performance event loop implementations that were previously unavailable."
+"3070862555","Improve market data context management","## Summary
+- add async context management helpers to `market_data`
+- support bulk price queries
+- use consistent user-agent and timeout for aiohttp sessions
+
+## Testing
+- `python -m py_compile alpha_factory_v1/backend/market_data.py`","4.0","[""batch_processing"", ""io_optimization"", ""resource_pooling""]","The PR adds bulk price queries (batch processing), async context management (resource pooling for aiohttp sessions), and consistent timeout configuration (io_optimization), all directly targeting runtime performance improvements for market data operations."
+"3246321831","Refactor MultiKeyMap size handling","## Summary
+- remove redundant `size` field from `MultiKeyMap`
+- rely exclusively on `atomicSize` for size calculations
+- document change in `changelog.md`
+
+## Testing
+- `mvn -q test` *(fails: `command not found`)*
+
+------
+https://chatgpt.com/codex/tasks/task_b_687cdf7d43c8832a9a636ca7f51f9255","4.0","[""memory_optimization""]","Removing a redundant `size` field and consolidating to a single `atomicSize` reduces memory overhead and eliminates potential consistency issues between dual state variables."
+"3153529915","Rewrite Erlang compiler","## Summary
+- implement a real Erlang compiler that emits native code instead of delegating to Python
+- add minimal runtime helpers for printing
+- adjust tests to use new golden files
+- add golden data for `two-sum` example
+
+## Testing
+- `go test ./compile/erlang -run TestErlangCompiler_GoldenOutput -update`
+- `go test ./...`
+
+
+------
+https://chatgpt.com/codex/tasks/task_e_68516b527eac832092f96da77649e9b3","4.0","[""algorithm_optimization""]","Rewriting the Erlang compiler to emit native code instead of delegating to Python is a fundamental performance optimization that eliminates interpreter overhead and improves execution speed."
+"3220396620","Set default worker pollers to 1 for OrchestratorMode","This change reduces the default number of pollers from 2 to 1 for both workflows and activities when using `WorkflowOrchestrator`, making it more resource-efficient for typical orchestrator use cases.
+
+## Changes
+
+- Modified `NewWorkflowOrchestrator` in `worker/workflow_orchestrator.go` to set default pollers to 1
+- Only applies when using default values - custom user options are still respected
+- Added comprehensive unit tests to verify the behavior
+
+## Implementation
+
+The change is minimal and surgical:
+
+```go
+// Set default pollers to 1 for orchestrator mode (unless explicitly overridden)
+if orchestratorOptions.WorkflowPollers == DefaultOptions.WorkflowPollers {
+    orchestratorOptions.WorkflowPollers = 1
+}
+if orchestratorOptions.ActivityPollers == DefaultOptions.ActivityPollers {
+    orchestratorOptions.ActivityPollers = 1
+}
+```
+
+## Behavior
+
+- **With `nil` options**: Uses 1 poller for workflows and activities (previously 2)
+- **With default options**: Reduces pollers from 2 to 1
+- **With custom options**: Respects user-specified values unchanged
+
+## Testing
+
+- Added unit tests covering all scenarios
+- Verified orchestrator sample works correctly
+- All existing tests continue to pass
+
+This makes orchestrator mode more lightweight while preserving backward compatibility for users who explicitly set custom poller counts.
+
+Fixes #385.
+
+<!-- START COPILOT CODING AGENT TIPS -->
+---
+
+💬 Share your feedback on Copilot coding agent for the chance to win a $200 gift card! Click [here](https://survey.alchemer.com/s3/8343779/Copilot-Coding-agent) to start the survey.","4.0","[""resource_pooling""]","This PR directly optimizes runtime performance by reducing default worker pollers from 2 to 1 in orchestrator mode, decreasing resource consumption and overhead while maintaining backward compatibility for custom configurations."
+"3161574503","Add cache-backed type support checks","## Summary
+- speed up `Converter` type checks
+- add single-argument support methods with caching
+- document new APIs in the user guide
+- note addition in the changelog
+- test single-argument support methods
+
+## Testing
+- `mvn -q test` *(fails: `mvn: command not found`)*
+
+------
+https://chatgpt.com/codex/tasks/task_b_68549f930b84832a909f2e48937ae7e8","4.0","[""caching""]","PR explicitly aims to speed up type checks in Converter by adding cache-backed support methods, which is a direct runtime performance optimization through caching mechanisms."
+"3226153576","Improve Racket backend","## Summary
+- specialize Racket `len` builtin for string literals
+- add TODO tracker in `compiler/x/racket/TASKS.md`
+- document outstanding work in the Racket machine README
+
+## Testing
+- `go test ./compiler/x/racket -run TestRacketCompiler -tags slow -count=1`
+
+------
+https://chatgpt.com/codex/tasks/task_e_68733d25ef408320bd11e095d3b480bf","4.0","[""algorithm_optimization""]","Specializing the Racket `len` builtin for string literals is a targeted algorithm optimization that improves runtime performance by avoiding generic length computation for a common case."
+"3262624589","Fix VM list mutability and skip redundant main call","## Summary
+- support pass-by-reference for list arguments in VM call
+- ignore top-level `main()` invocation when compiling main
+- regenerate IR and bench files for Rosetta tasks 21-30
+- update progress table for VM Rosetta tasks
+
+## Testing
+- `for i in {21..30}; do MOCHI_BENCHMARK=1 MOCHI_ROSETTA_INDEX=$i go test ./runtime/vm -run Rosetta_Golden -tags slow -count=1 -timeout 120s; done`
+
+------
+https://chatgpt.com/codex/tasks/task_e_6883337d12c88320b9e86876f2d2c1da","4.0","[""memory_optimization""]","The PR optimizes list handling by supporting pass-by-reference for list arguments (avoiding copies) and skips redundant main() invocation during compilation, both reducing unnecessary memory allocations and execution overhead."
+"3183031505","fix: backport CAT mempool deadlock fix to main","This PR backports the CAT mempool deadlock fix from PR #1907 (originally merged to `v0.38.x-celestia`) to the `main` branch.
+
+## Problem
+
+The CAT (Content Addressable Transaction) mempool was experiencing deadlocks during transaction rechecking that caused nodes to halt. The deadlock occurred in this sequence:
+
+1. `recheckTransactions()` calls `store.iterateOrderedTxs()` which acquires a read lock
+2. During iteration, for each transaction it calls `handleRecheckResult()`
+3. If a transaction is invalid, `handleRecheckResult()` calls `store.remove()` which needs a write lock
+4. The write lock request blocks because the read lock is still held, causing a deadlock
+
+## Solution
+
+Following the pattern used in the priority mempool implementation, the fix:
+
+1. First collects all transactions into a slice while briefly holding the store lock
+2. Releases the store lock 
+3. Processes the collected transactions without holding any store locks
+4. Each `handleRecheckResult()` call can now safely acquire write locks as needed
+
+## Changes Made
+
+- **Core Fix**: Added `getOrderedTxs()` method to `mempool/cat/store.go` that returns a copy of transactions without holding locks
+- **Deadlock Resolution**: Modified `recheckTransactions()` in `mempool/cat/pool.go` to use the new collection approach
+- **Testing**: Added comprehensive tests:
+  - `TestTxPool_Recheck`: Basic recheck functionality test
+  - `TestTxPool_RecheckConcurrency`: Stress test with concurrent operations
+  - `TestStoreGetOrderedTxs`: Unit test for the new helper method
+
+## Verification
+
+- All existing CAT mempool tests continue to pass
+- New tests specifically validate recheck works without deadlocks
+- Stress testing confirms robustness under concurrent mempool operations
+- The fix maintains the exact same functionality while preventing deadlocks
+
+The changes are minimal and surgical (157 lines added, 3 lines deleted), following the established pattern from the priority mempool to ensure consistency across mempool implementations.
+
+Fixes #2076.
+
+<!-- START COPILOT CODING AGENT TIPS -->
+---
+
+💡 You can make Copilot smarter by setting up custom instructions, customizing its development environment and configuring Model Context Protocol (MCP) servers. Learn more [Copilot coding agent tips](https://gh.io/copilot-coding-agent-tips) in the docs.","4.0","[""concurrency""]","This PR directly improves runtime performance by fixing a deadlock in the CAT mempool's transaction rechecking mechanism, enabling concurrent operations to proceed without halting via lock contention reduction and reordered lock acquisition patterns."
+"3023248867","feat: allow configuring metrics to reduce cardinality","# Refactor metrics to reduce cardinality
+
+This PR reduces the cardinality of metrics by:
+
+1. Adding a configurable error label mode (""compact"" or ""verbose"") 
+   - In ""compact"" mode, only the error type is used as a label
+   - In ""verbose"" mode (default for backward compatibility), the full error message is used
+
+2. Adding configurable histogram buckets for all duration metrics
+   - Users can specify their own buckets to reduce the number of time series
+
+## Changes
+
+- Added `errorLabelMode` and `histogramBuckets` fields to `MetricsConfig`
+- Modified `ErrorSummary` to support compact mode
+- Added a `SetHistogramBuckets` function to replace metrics with custom buckets
+- Added initialization in the `Init` function
+- Updated documentation
+
+Requested by: Aram Alipoor (aram@erpc.cloud)
+
+Link to Devin run: https://app.devin.ai/sessions/11e4da16560e4af5b51861e97be3fe93
+","4.0","[""memory_optimization""]","PR directly improves runtime performance by reducing metrics cardinality through configurable error labels and histogram buckets, which decreases memory usage and time series storage overhead in monitoring systems."
+"3138324128","Cursor Agent: Skip reading messages functionality","The `BulkRunRules.tsx` file was updated to enable skipping of read messages during bulk rule processing.
+
+*   The `onRun` function's Gmail search query was modified to include the `is:unread` filter. This ensures that only unread emails are considered, effectively skipping messages that have already been read.
+*   Concurrently, the `SectionDescription` within `BulkRunRules.tsx` was updated to reflect this change, clarifying that the process now specifically targets ""unread emails.""
+
+This modification streamlines the bulk rule execution by focusing solely on new or unaddressed messages.
+
+<!-- This is an auto-generated comment: release notes by coderabbit.ai -->
+
+## Summary by CodeRabbit
+
+- **Bug Fixes**
+  - Updated the description in the bulk processing UI to clarify that rules apply only to unread emails currently in the inbox.
+  - Adjusted email selection to ensure only unread emails are processed during bulk actions.
+
+<!-- end of auto-generated comment: release notes by coderabbit.ai -->","4.0","[""query_optimization""]","The PR adds an `is:unread` filter to the Gmail search query, reducing the dataset processed by bulk rule operations and improving runtime performance by skipping already-read messages."
+"3200836668","Ensure at least once delivery in ClickHouse","Apply `wait_end_of_query=1` to ClickHouse INSERT and DDL operations to ensure at least once delivery and DDL acknowledgment.
+
+Initially, `wait_end_of_query=1` was incorrectly applied globally, which would have severely degraded SELECT query performance by forcing full response buffering. This PR corrects the implementation to apply the setting only to INSERT and DDL queries, preserving streaming and concurrency for SELECTs.","4.0","[""query_optimization""]","This PR directly improves runtime performance by preventing performance degradation—it corrects an overly broad application of `wait_end_of_query=1` that would have forced full response buffering on SELECT queries, thereby preserving streaming efficiency and concurrency for read operations while maintaining delivery guarantees only where needed."
+"3137138306","Optimize string operations","## Summary
+- avoid creating intermediate strings by using `write_substring`
+- remove unused TODO comments in string methods
+- update array joining helpers to directly append views
+
+## Testing
+- `moon fmt`
+- `moon info`
+
+------
+https://chatgpt.com/codex/tasks/task_e_6849936bc8548320a98083b692ec4327","4.0","[""memory_optimization"", ""io_optimization""]","PR directly optimizes string operations by eliminating intermediate string allocations through `write_substring` and view-based appending, reducing memory overhead and improving runtime efficiency."
+"3159898280","Optimize HitTester with point lookup","## Summary
+- add `intersects_point` in `SceneCache` using rstar
+- update `HitTester` to query layers with new method
+- keep cursor state and screen space conversion helpers
+- clarify docs about deep-first hit testing order
+- log hit test result each time the cursor moves
+
+## Testing
+- `cargo test -p cg -- --nocapture`
+
+
+------
+https://chatgpt.com/codex/tasks/task_e_6853d59cb434832aba7ff41ddf4d86de","4.0","[""algorithm_optimization"", ""data_structure""]","PR directly optimizes the HitTester algorithm by replacing a less efficient hit detection method with a point lookup using rstar spatial indexing, improving query performance."
+"3196547980","Add RequestContent.Create(IPersistableModel) overload for improved performance","This PR adds a new `RequestContent.Create<T>(T model, ModelReaderWriterOptions? options = null)` overload that accepts `IJsonModel<T>` types, providing better performance and API consistency with `BinaryContent`.
+
+## Changes
+
+- **New overload**: Added `RequestContent.Create<T>()` method that takes an `IJsonModel<T>` parameter
+- **Internal implementation**: Created `JsonModelRequestContent<T>` class that wraps `BinaryContent.Create<T>()`
+- **Performance optimization**: All abstract methods forward directly to the wrapped `BinaryContent` for allocation-free network streaming
+- **API surface**: Updated all target framework API files (netstandard2.0, net8.0, net462, net472)
+- **Comprehensive testing**: Added unit tests covering sync/async operations, length computation, and disposal
+
+## Benefits
+
+- **Performance**: Leverages `BinaryContent`'s optimized streaming implementation, eliminating unnecessary allocations compared to current `Utf8JsonRequestContent` pattern
+- **API consistency**: Aligns `RequestContent` API with `BinaryContent` patterns
+- **Generated code enablement**: Provides foundation for Azure generators to replace `Utf8JsonRequestContent` with this more efficient implementation
+
+## Example Usage
+
+```csharp
+// Create a model that implements IJsonModel<T>
+var model = new MyJsonModel { Name = ""test"", Value = 42 };
+
+// Use the new overload for efficient serialization
+var content = RequestContent.Create(model);
+
+// All RequestContent operations work as expected
+content.WriteTo(stream, cancellationToken);
+```
+
+The implementation ensures full backward compatibility while providing a direct path from `IJsonModel<T>` to efficient network serialization.
+
+Fixes #51001.
+
+<!-- START COPILOT CODING AGENT TIPS -->
+---
+
+💬 Share your feedback on Copilot coding agent for the chance to win a $200 gift card! Click [here](https://survey.alchemer.com/s3/8343779/Copilot-Coding-agent) to start the survey.","4.0","[""io_optimization"", ""memory_optimization""]","This PR directly optimizes runtime performance by adding an overload that eliminates unnecessary allocations and leverages BinaryContent's optimized streaming implementation, replacing the less efficient Utf8JsonRequestContent pattern for network serialization."
+"3113519735","Split IE prompt for caching","## Summary
+- cache static IE generation prompt using `system`
+- generate dynamic system message for URL/year
+
+## Testing
+- `npm run lint` *(fails: unexpected any/unused vars in unrelated files)*
+
+------
+https://chatgpt.com/codex/tasks/task_e_683ed636d87c832498567962ed9e4c3e","4.0","[""caching""]","PR directly optimizes performance by splitting and caching a static IE generation prompt using the system message, reducing redundant prompt generation on each request."
+"3213528854","Improve item indexing on dashboard","## Summary
+- simplify how visible items are counted
+- precompute ad configs before rendering
+- adjust dashboard to use precomputed ad configs
+
+## Testing
+- `./gradlew test` *(fails: SDK location not found)*
+
+------
+https://chatgpt.com/codex/tasks/task_e_686d5d38ea98832d84323f4074df5f5a","4.0","[""lazy_loading"", ""caching""]","The PR precomputes ad configs before rendering and simplifies item counting logic, which are explicit performance optimizations reducing redundant computation during dashboard rendering."
+"3115784204","[alpha_factory] update archive pruning","## Summary
+- limit insight browser archive to 50 entries
+- delete oldest entries first
+- update browser unit tests with new limit
+
+## Testing
+- `python check_env.py --auto-install`
+- `pytest -q` *(fails: ValueError: Duplicated timeseries in CollectorRegistry)*
+
+------
+https://chatgpt.com/codex/tasks/task_e_683f8d38544083338ad2985123115d30","4.0","[""memory_optimization"", ""lazy_loading""]","The PR directly improves runtime performance by limiting archive entries to 50 and implementing oldest-first deletion, reducing memory consumption and query overhead in the insight browser archive."
+"3203371461","Remove regex from sqlite2duck","## Summary
+- rewrite sqlite2duck converter without regex
+
+## Testing
+- `go test ./... --vet=off -v`
+
+------
+https://chatgpt.com/codex/tasks/task_e_68680f1050f88320982eb69d4ff3a3d9","4.0","[""algorithm_optimization""]","Removing regex from a converter is a direct algorithmic optimization that improves runtime performance by replacing expensive pattern matching with simpler string operations."
+"3201472967","Switch sliding_logits to npz output","## Summary
+- add uncompress flag to write `.npy` files with `np.save`
+- add configurable block size for fsspec writes
+- support batching multiple batches before saving with `batches_per_save`
+
+## Testing
+- `ruff check marin/generation/sliding_logits.py`
+- `black marin/generation/sliding_logits.py`
+- `pytest -q` *(fails: ModuleNotFoundError: No module named 'ray')*
+
+------
+https://chatgpt.com/codex/tasks/task_e_686760b0cea883278832c120e56da488","4.0","[""io_optimization"", ""batch_processing""]","PR directly optimizes I/O performance by switching to compressed NPZ format, adding configurable block sizes for fsspec writes, and implementing batching to reduce I/O overhead through `batches_per_save`."
+"3274488038","Add lightweight Scheme parser","## Summary
+- rewrite Scheme parser in Go so external Racket is not needed
+- hook up simple expression conversion for common operations
+- support basic logical and length operations in transform step
+
+## Testing
+- `go vet ./tools/a2mochi/x/scheme`
+- `go test ./tools/a2mochi/x/scheme -run TestTransform_Golden -tags slow -count=1` *(fails: unknown function)*
+
+------
+https://chatgpt.com/codex/tasks/task_e_688906ded0448320882ed629f97d6243","4.0","[""io_optimization""]","This PR eliminates external Racket subprocess invocations by rewriting the Scheme parser in Go, reducing process spawning overhead and I/O latency during the build/transformation pipeline."
+"3175374251","Implement predicate pushdown in Go compiler","## Summary
+- optimize Go compiler query loops by pushing down `where` filters
+- collect identifier usage in expressions to compute earliest filter step
+- add golden test showing optimized join filtering
+
+## Testing
+- `go test -tags slow ./compile/go -run TestGoCompiler_GoldenOutput -update`
+- `go test -tags slow ./compile/go -run TestGoCompiler_SubsetPrograms -update`
+- `go test ./...`
+
+------
+https://chatgpt.com/codex/tasks/task_e_685bce5649cc83209c2a6dd5fd8bcfeb","4.0","[""query_optimization"", ""algorithm_optimization""]","This PR directly optimizes the Go compiler's query execution by implementing predicate pushdown to filter data earlier in the query loop, reducing unnecessary iterations and improving runtime performance of the compiler itself."
+"3078795559","fix tts queue final segment","## Summary
+- queue final AI chat segment immediately instead of using setTimeout
+
+## Testing
+- `npm run lint` *(fails: Unexpected any and other errors)*","4.0","[""concurrency""]","This PR directly improves runtime performance by eliminating setTimeout delay and immediately queuing the final TTS segment, reducing latency in the AI chat pipeline."
+"3227254297","Improve Python compiler aggregates","## Summary
+- python compiler: count and aggregate helpers use `len(g)` for groups
+- add `__len__` helper to Group runtime
+- document TPCH progress for Python and regenerate machine output
+- recompile Python tests including `tpch/q1.mochi` (fails assertion)
+
+## Testing
+- `go test ./compiler/x/python -tags slow -run TestCompilePrograms -count=1`
+- `go run -tags slow ./cmd/mochix buildx -t python tests/dataset/tpc-h/q1.mochi -o tests/machine/x/python/q1.py`
+- `python3 tests/machine/x/python/q1.py > tests/machine/x/python/q1.out 2> tests/machine/x/python/q1.error && true`
+
+------
+https://chatgpt.com/codex/tasks/task_e_687473e990c883209075805317f824ef","4.0","[""algorithm_optimization""]","The PR optimizes Python compiler aggregates by adding a `__len__` helper to the Group runtime, replacing presumably slower aggregate operations with direct length calls, which is a direct runtime performance improvement for the compiled output."
+"3242396116","Improve Prolog compiler map indexing","## Summary
+- specialize map indexing/field access using `get_dict`
+- prefer mutable lookups in `lookupVar`
+- regenerate Prolog machine outputs for `map_assign` and `map_nested_assign`
+- document progress and update checklist
+
+## Testing
+- `go test ./compiler/x/pl -run TestPrologCompiler/map_assign -tags slow -count=1`
+- `go test ./compiler/x/pl -run TestPrologCompiler/map_nested_assign -tags slow -count=1`
+
+
+------
+https://chatgpt.com/codex/tasks/task_e_687a004856e883209b48df619026c16e","4.0","[""algorithm_optimization"", ""data_structure""]","The PR specializes map indexing/field access using `get_dict` and prefers mutable lookups in `lookupVar`, which are direct algorithm/data structure optimizations targeting the Prolog compiler's runtime performance for map operations."
+"3127853160","[WIP] Minimal XML diff: only changed mods/submods are serialized, all others preserved bytewise from original","Working on fixing catalog saving to preserve original XML formatting and order.
+
+Completed:
+- [x] Understand current implementation in index.html 
+- [x] Examine XML catalog structure and formatting
+- [x] Identify preservation requirements
+- [x] Enhance XML parsing to capture original chunks (text nodes, comments, elements)
+- [x] Implement chunk-based preservation system that achieves perfect reconstruction
+- [x] Add helper functions for updating XML fields while preserving formatting
+
+In Progress:
+- [ ] Improve modification tracking system
+- [ ] Update save logic to reconstruct from preserved chunks
+- [ ] Test with sample modifications
+- [ ] Ensure new mods/submods are added at the end in original order
+- [ ] Validate that UI displays alphabetically but saves in original order
+
+The new system parses XML into chunks (text segments and mod elements) and can perfectly reconstruct the original XML without any formatting changes. Testing shows 100% preservation of original formatting, whitespace, and structure.
+
+---
+
+💡 You can make Copilot smarter by setting up custom instructions, customizing its development environment and configuring Model Context Protocol (MCP) servers. Learn more [Copilot coding agent tips](https://gh.io/copilot-coding-agent-tips) in the docs.","4.0","[""io_optimization""]","The PR directly optimizes XML serialization performance by only writing changed mods/submods and preserving the rest bytewise, reducing I/O and processing overhead during catalog saves."
+"3212056037","Improve Rust compiler query loops","## Summary
+- adjust Rust compiler to iterate over values not refs in query expressions
+- regenerate machine outputs for `exists_builtin` and `in_operator_extended`
+- update machine README progress (50/97)
+
+## Testing
+- `go test ./compiler/x/rust -tags slow -run TestCompilePrograms -count=1`
+- `go test ./... -tags slow` *(fails: package not in std)*
+
+------
+https://chatgpt.com/codex/tasks/task_e_686cf5fa0f4883208298c19221e8a6e8","4.0","[""algorithm_optimization"", ""memory_optimization""]","The PR directly optimizes Rust compiler query loops by changing iteration from references to values, reducing unnecessary memory indirection and improving runtime performance of the compiler itself."
+"3107735616","[alpha_factory] Speed up Pareto front","## Summary
+- speed up Pareto front computation with a single scan
+- increase performance test population size
+
+## Testing
+- `python check_env.py --auto-install`
+- `pytest -q` *(fails: `tests/test_llm_cache.py` ValueError: Duplicated timeseries in CollectorRegistry)*
+- `pre-commit run --files alpha_factory_v1/demos/alpha_agi_insight_v1/insight_browser_v1/src/utils/pareto.js alpha_factory_v1/demos/alpha_agi_insight_v1/insight_browser_v1/tests/test_plot_perf.py` *(failed to fetch hooks due to no network)*
+
+------
+https://chatgpt.com/codex/tasks/task_e_683caafc60688333b384bf4cebb229ef","4.0","[""algorithm_optimization""]","PR directly optimizes Pareto front computation algorithm by reducing it to a single scan, with explicit performance intent shown by increased test population size to measure the improvement."
+"3245967758","Improve Prolog transpiler docs and folding","## Summary
+- enhance Prolog transpiler with boolean constant folding
+- reintroduce `style_check(-singleton)` in generated code
+- add script to update Prolog README and TASKS automatically
+- regenerate README and TASKS for Prolog
+
+## Testing
+- `go test -tags=slow ./transpiler/x/pl`
+
+------
+https://chatgpt.com/codex/tasks/task_e_687c613773688320acd9c67e869d243d","4.0","[""algorithm_optimization""]","The PR implements boolean constant folding in the Prolog transpiler, which is a compiler optimization that evaluates constant boolean expressions at compile-time rather than runtime, directly improving the performance of generated code."
+"3186305413","Optimize group by compilation","## Summary
+- optimize VM compiler for group queries by storing group index separately
+- regenerate IR golden files
+
+## Testing
+- `go test -tags slow ./tests/vm -run TestVM_IR -update`
+
+
+------
+https://chatgpt.com/codex/tasks/task_e_68616031fb8083209432cdba77413783","4.0","[""algorithm_optimization""]","This PR directly optimizes the VM compiler for group queries by improving how group indices are stored, which is a clear algorithmic performance improvement targeting runtime execution efficiency."
+"3204638990","Improve lab data loading and update efficiency","## Summary
+- enable lazy loading on sample management table
+- update patient report item saving to persist only changed values
+
+## Testing
+- `mvn test` *(fails: `mvn: command not found`)*
+
+------
+https://chatgpt.com/codex/tasks/task_e_6868edae2178832f92a5220337f0df24","4.0","[""lazy_loading"", ""query_optimization""]","PR directly improves runtime performance by implementing lazy loading on a data table and reducing database writes through selective persistence of only changed values, both clear performance optimization techniques."
+"3253128073","Modify exit to throttle on bandwidth exhaustion","## Summary
+- add fallback mode without exposing governor types
+- create fallback limiter via `with_fallback`
+- throttle using fallback rate when paid bandwidth is exhausted
+
+## Testing
+- `cargo check -p geph5-exit`
+- `cargo test -p geph5-exit -- --help`
+
+
+------
+https://chatgpt.com/codex/tasks/task_b_687fa69770b8833381b6d4afa2c42b46","4.0","[""resource_pooling"", ""io_optimization""]","The PR directly improves runtime performance by implementing bandwidth throttling that switches to a fallback rate limiter when paid bandwidth is exhausted, reducing I/O overhead and managing resource consumption more efficiently."
+"3151344714","[alpha_factory] lazy MetaEvolver in bridge","## Summary
+- create MetaEvolver lazily in `openai_agents_bridge`
+- reference the instance from tool functions
+
+## Testing
+- `pre-commit run --files alpha_factory_v1/demos/aiga_meta_evolution/openai_agents_bridge.py tests` *(fails: proto-verify missing separator)*
+- `python scripts/check_python_deps.py`
+- `python check_env.py --auto-install` *(fails: no network)*
+- `pytest -q tests/test_aiga_agents_bridge.py` *(fails: environment check failed)*
+
+------
+https://chatgpt.com/codex/tasks/task_e_6850858aa46083338ba4a6b11d68d993","4.0","[""lazy_loading""]","PR explicitly implements lazy initialization of MetaEvolver to defer instantiation cost until first use, directly reducing startup overhead and memory consumption in the bridge module."
+"3104406142","Improve vector performance","## Summary
+- cache tail size in `PersistentVector` and `TransientVector`
+- update tail size when modifying transient vectors
+","4.0","[""caching"", ""memory_optimization""]","The PR directly optimizes vector performance by caching tail size to avoid repeated computations and tracking updates in transient vectors, reducing redundant calculations during vector modifications."
+"3081345740","Prevent double-building of Microsoft.DotNet.Cli.Utils.csproj by excluding PublishDir from global properties","This PR fixes an issue where `Microsoft.DotNet.Cli.Utils.csproj` is being built twice during the SDK build process, causing PDB mismatches on some platforms (particularly s390x in source-build).
+
+## Issue details
+- `Microsoft.NET.Build.Containers.csproj` references `Microsoft.DotNet.Cli.Utils.csproj`
+- In `GenerateLayout.targets`, the `PublishContainersSdk` target publishes `Microsoft.NET.Build.Containers.csproj` with specific `PublishDir` property values
+- By default, MSBuild propagates global properties like `PublishDir` to referenced projects
+- When `PublishDir` changes, MSBuild treats it as a different build configuration and rebuilds referenced projects
+- This causes `Microsoft.DotNet.Cli.Utils.csproj` to be built twice with different settings, resulting in PDB mismatches
+
+## Solution
+Added `GlobalPropertiesToRemove=""PublishDir""` to all MSBuild calls in `GenerateLayout.targets` that either:
+1. Explicitly set the `PublishDir` property, or
+2. Could potentially propagate `PublishDir` to referenced projects
+
+This prevents the `PublishDir` property from being passed to referenced projects like `Microsoft.DotNet.Cli.Utils.csproj`, ensuring it's only built once during the entire build process.
+
+The change follows the suggested approach from @marcpopMSFT in the issue comments.
+
+Fixes #44033.
+
+> [!WARNING]
+>
+> <details>
+> <summary>Firewall rules blocked me from connecting to one or more addresses</summary>
+>
+> #### I tried to connect to the following addresses, but was blocked by firewall rules:
+>
+> - `pkgs.dev.azure.com`
+>   - Triggering command: `/home/REDACTED/work/sdk/sdk/.dotnet/dotnet msbuild /m /nologo /clp:Summary /v:minimal /nr:true /warnaserror /p:TreatWarningsAsErrors=true /p:ContinuousIntegrationBuild=false /home/REDACTED/work/sdk/sdk/artifacts/toolset/restore.proj /t:__WriteToolsetLocation /clp:ErrorsOnly;NoSummary /p:__ToolsetLocationOutputFile=/home/REDACTED/work/sdk/sdk/artifacts/toolset/10.0.0-beta.25265.101.txt ` (dns block)
+>   - Triggering command: `/home/REDACTED/work/_temp/ghcca-node/node/bin/node /home/REDACTED/work/_temp/copilot-developer-action-main/dist/index.js ` (dns block)
+>
+> If you need me to access, download, or install something from one of these locations, you can either:
+>
+> - Configure [Actions setup steps](https://gh.io/copilot/actions-setup-steps) to set up my environment, which run before the firewall is enabled
+> - Add the appropriate URLs or hosts to my [firewall allow list](https://gh.io/copilot/firewall-config)
+>
+> </details>
+
+
+---
+
+💡 You can make Copilot smarter by setting up custom instructions, customizing its development environment and configuring Model Context Protocol (MCP) servers. Learn more [Copilot coding agent tips](https://gh.io/copilot-coding-agent-tips) in the docs.","4.0","[""batch_processing""]","This PR directly improves runtime performance by preventing redundant double-builds of a project during the SDK build process, eliminating unnecessary compilation work and PDB generation overhead."
+"3164738704","Improve Java compiler runtime emission","## Summary
+- only emit Java runtime helpers when they are actually required
+
+## Testing
+- `go test ./... --vet=off`
+
+------
+https://chatgpt.com/codex/tasks/task_e_68562cdb3f908320af3140f85aad43f3","4.0","[""memory_optimization""]","This PR optimizes the Java compiler to emit runtime helpers only when needed, directly reducing memory overhead and improving runtime performance by avoiding unnecessary code generation."
+"3186235764","Optimize set operations in VM","## Summary
+- improve runtime performance of `Union`, `Except`, and `Intersect` opcodes by using map-based lookups
+- regenerate VM IR golden files
+
+## Testing
+- `go test ./...`
+- `go test -tags slow ./tests/vm -run TestVM_IR -update --vet=off`
+
+
+------
+https://chatgpt.com/codex/tasks/task_e_686141e352588320961acbdd4321c4fa","4.0","[""algorithm_optimization"", ""data_structure""]","PR directly optimizes set operation opcodes (Union, Except, Intersect) by switching to map-based lookups, which improves algorithmic efficiency and reduces computational complexity for a core VM operation."
+"3107864176","feat: implement lazy loading for Stripe SDK","# Implement Lazy Loading for Stripe SDK
+
+This PR implements lazy loading for the Stripe SDK in the frontend to improve performance by only initializing Stripe when payment-related components are actually needed.
+
+## Changes Made
+
+- **Created `useStripe()` hook** in `apps/ui/src/lib/stripe.ts` that lazily initializes Stripe SDK
+- **Updated payment components** to use the new lazy loading pattern:
+  - `apps/ui/src/components/credits/payment-methods-management.tsx`
+  - `apps/ui/src/components/credits/top-up-credits-dialog.tsx` 
+  - `apps/ui/src/components/onboarding/onboarding-wizard.tsx`
+  - `apps/ui/src/components/onboarding/credits-step.tsx`
+- **Added loading states** to provide better UX during Stripe initialization
+- **Maintained backward compatibility** with existing `loadStripeNow()` function
+- **Fixed naming conflicts** by aliasing Stripe's `useStripe` hook as `useStripeElements`
+
+## Implementation Details
+
+### Before
+- Stripe SDK was initialized at module level when components were imported
+- This caused unnecessary network requests and bundle size increase for users not using payment features
+
+### After  
+- Stripe SDK only loads when payment components are actually mounted
+- Global caching prevents multiple initializations
+- Loading states inform users when payment forms are initializing
+- Same API surface maintained for existing functionality
+
+## Testing
+
+✅ **Manually tested locally:**
+- Logged in with test credentials (admin@example.com / admin@example.com1A)
+- Verified Stripe only loads when accessing payment functionality
+- Tested Top Up Credits dialog - payment form loads correctly with Stripe Elements
+- Confirmed lazy loading works as expected via browser console
+- Payment functionality remains fully operational
+
+✅ **Code quality:**
+- All files formatted with `pnpm format`
+- ESLint and Prettier checks passed via lint-staged
+
+## Performance Impact
+
+- **Reduced initial bundle size** for users not accessing payment features
+- **Faster page loads** by eliminating unnecessary Stripe SDK requests
+- **Maintained functionality** - no breaking changes to existing payment flows
+
+## Link to Devin run
+https://app.devin.ai/sessions/9936166ff66f4890a0a30483093c1379
+
+**Requested by:** Luca (contact@luca-steeb.com)
+","4.0","[""lazy_loading""]","PR implements lazy loading for Stripe SDK to defer initialization until payment components are mounted, directly improving initial page load performance and reducing unnecessary network requests for non-payment users."
+"3117211977","Implement tagged Value type in interpreter","## Summary
+- refactor interpreter runtime with a tagged `Value` type
+- convert between `any` and `Value`
+- implement tag-based binary and unary operations
+- update closures to store `Value` arguments
+
+## Testing
+- `go test ./...`
+
+------
+https://chatgpt.com/codex/tasks/task_e_6840135f47e083209b637c0cd5593cb2","4.0","[""data_structure"", ""memory_optimization""]","Refactoring the interpreter runtime with a tagged Value type is a fundamental performance optimization that improves type representation efficiency, reduces allocation overhead through better memory layout, and enables faster tag-based operations compared to interface{} dispatch."
+"3226522393","Fix memory allocation issue for large files by capping StaticSparseDAG capacity","Thanks for asking me to work on this. I will get started on it and keep this PR's description up to date as I form a plan and make progress.
+
+Original description:
+
+> Reproduce this issue and try to fix it
+
+
+
+<!-- START COPILOT CODING AGENT TIPS -->
+---
+
+💬 Share your feedback on Copilot coding agent for the chance to win a $200 gift card! Click [here](https://survey.alchemer.com/s3/8343779/Copilot-Coding-agent) to start the survey.","4.0","[""memory_optimization""]","PR directly addresses a memory allocation issue by capping StaticSparseDAG capacity to prevent excessive memory consumption with large files, which is a runtime performance and resource efficiency improvement."
+"3205211798","Improve fs converter and runtime","## Summary
+- extend F# converter to use fsautocomplete output instead of regexes
+- remove obsolete regex translator
+- update F# runtime helper to use `Seq.groupBy`
+- update golden outputs for group-by examples
+
+## Testing
+- `go test ./...`
+
+------
+https://chatgpt.com/codex/tasks/task_e_68694c8752f88320a28ee2a7dcfe57e8","4.0","[""algorithm_optimization""]","The PR replaces regex-based translation with fsautocomplete output (likely more efficient parsing) and updates F# runtime to use `Seq.groupBy` (a more optimized grouping algorithm), both directly targeting runtime performance improvement."
+"3138362649","✨ feat: implement MODEXP precompile (EIP-198) with EIP-2565 gas optimization","## Summary
+
+- Implements MODEXP precompile at address 0x05 
+- Full EIP-198 compliance with modular exponentiation
+- EIP-2565 gas calculation optimization
+- Comprehensive test suite with edge cases
+- Gas overflow protection and input validation
+
+## Key Features
+
+- Efficient gas calculation with complexity analysis
+- Proper handling of zero cases (0^0 = 1, base^0 = 1)
+- Input validation and DoS protection
+- Big-endian integer parsing for Ethereum compatibility
+- Comprehensive test coverage including edge cases
+
+## Test Results
+
+All Zig tests pass ()
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>","4.0","[""algorithm_optimization""]","Implements MODEXP precompile with EIP-2565 gas optimization, which directly improves runtime performance through efficient gas calculation and complexity analysis for modular exponentiation operations."
+"3206662836","Analyze factors causing iOS to kill PWA","<!-- One very short sentence on the WHAT and WHY of the PR. E.g. ""Remove pathHash attribute because it is confirmed unused."" or ""Add DNS round robin to improve load distribution."" -->
+Implement PWA background optimization for iOS to reduce resource consumption and prevent app termination.
+
+<!-- OPTIONAL: If the WHY of the PR is not obvious, perhaps because it fixed a gnarly bug, explain it in a short paragraph here. E.g. ""Commit a73bb98 introduced a bug where the class list was filtered to only work for MDC files, hence we partially revert it here."" -->
+The application was frequently terminated by iOS when in the background due to continuous resource consumption from active Server-Sent Events (SSE) connections and various timers. This PR introduces a centralized `BackgroundManager` and `SSEManager` to automatically pause/stop these activities when the app transitions to the background, significantly improving its survival rate, reducing battery drain, and enhancing overall system stability. This also includes a version bump to `2.6.3` and cleanup of temporary documentation.","4.0","[""resource_pooling"", ""memory_optimization""]","The PR directly improves runtime performance by reducing resource consumption through centralized management of background activities (SSE connections and timers), preventing unnecessary CPU/battery drain and OS termination."

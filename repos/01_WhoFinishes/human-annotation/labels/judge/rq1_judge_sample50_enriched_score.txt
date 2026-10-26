@@ -1,0 +1,26 @@
+# Human-vs-judge score for the enriched-50 sample (blind labels vs model key).
+# Regenerate: uv run python human-annotation/score.py judge
+# Recorded: 2026-07-06, branch nhat/labelling.
+
+
+########## rq1_judge_sample50_enriched ##########
+model key: rq1_judge_sample50_enriched_model_key.csv   annotators: anon_NHATDUONG
+
+=== anon_NHATDUONG ===
+  pairs labelled: 50  (AGREED 40 / DISAGREED 10)
+  raw sample  : agreement 80.0%   Cohen's kappa 0.649   (enriched draw, not population rate)
+  population   : agreement 68.3%   Cohen's kappa 0.456   (reweighted via sample_meta strata)
+  raw binary  : Cohen's kappa 0.836   (Direct fix vs not, enriched draw)
+  judge Direct-fix precision: 27/30 = 90.0%  [95% CI 74-97%]
+  disagreeing pairs:
+       pair  YOU said              LLM said
+    #84     Unrelated/mislabeled  Direct fix
+    #330    Unrelated/mislabeled  Related touch
+    #474    Unrelated/mislabeled  Related touch
+    #651    Related touch         Direct fix
+    #1903   Related touch         Unrelated/mislabeled
+    #2471   Related touch         Direct fix
+    #4148   Related touch         Unrelated/mislabeled
+    #10732  Direct fix            Related touch
+    #11306  Related touch         Unrelated/mislabeled
+    #12318  Related touch         Unrelated/mislabeled

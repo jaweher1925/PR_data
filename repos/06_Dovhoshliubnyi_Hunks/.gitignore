@@ -1,0 +1,18 @@
+__pycache__
+.venv
+aidev.db
+aidev (old).db
+aidev(old 2).db
+data/msr_paper/Agent_PRs.csv
+validation/validation_results.csv
+validation/sampled_prs.csv
+aidev(old 3).db
+paper/main.bbl
+paper/main.aux
+paper/main.blg
+paper/main.fdb_latexmk
+paper/main.log
+paper/main.out
+paper/main.fls
+paper/texput.log
+tables/.~lock.*.csv#

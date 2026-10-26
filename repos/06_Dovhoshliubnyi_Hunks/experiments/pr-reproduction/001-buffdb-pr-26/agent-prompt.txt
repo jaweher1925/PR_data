@@ -1,0 +1,22 @@
+Conduct one controlled reproduction pilot in /tmp/buffdb-pr26-sol.ef1p9l. You are the newer model being evaluated. The checkout is the exact repository snapshot before a historical AI-agent PR.
+
+Task visible to you: Improve the performance of BuffDB's secondary indexing system by reducing unnecessary string allocations during index insert/update operations, while preserving observable behaviour and correctness. Independently inspect the code, identify the allocation problem, implement your best production-quality fix, and validate it.
+
+Strict leakage controls:
+- Do NOT browse/search GitHub, the web, PR #26, commit hashes, branches, remotes, or any historical/future version of BuffDB.
+- Do NOT inspect the parent research repository or its datasets.
+- Work only from files currently present in /tmp/buffdb-pr26-sol.ef1p9l.
+- Do not ask the parent for the historical solution.
+
+Execution requirements:
+1. Inspect repository instructions and relevant code.
+2. Establish a baseline if practical.
+3. Implement the optimisation in the working tree. Do not commit.
+4. Run formatting, targeted/full tests, and existing or focused benchmarks as feasible. If dependency/system limitations prevent execution, document the exact blocker and still perform static validation.
+5. Summarize the diagnosis, files changed, tests/benchmarks and exact numerical results, remaining risks, and `git diff --stat`. Leave all changes in the working tree for independent comparison.
+
+Spawn configuration:
+- model: gpt-5.6-sol
+- reasoning_effort: xhigh
+- fork_turns: "3"
+

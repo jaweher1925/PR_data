@@ -1,0 +1,17 @@
+category,Batch API Requests (N+1),Buffering,Cache Eviction Policy,Caching,Combining branches,Compiler Optimization Hints/Directives,Concurrency Control / Rate Limiting,Darwinian Data Structure Selection,Enable Build-Time Optimizations,Enable Lazy loading for resource,Enable Multi-threading,Event-Driven Throttling,Improve cache locality - temporal locality,Lazy Loading / Deferred Initialization,Loop Invariant Branches,Minimize Payload Size / Pass Reference Instead of Value,Non-Blocking I/O,Optimize Object Use,Performance-Optimized Dependency Selection,Polling,Rearranging for early return,Reduce rebuilding size,Relational Query Consolidation (N+1),Remove Unnecessary Method Calls,Remove branches by doing extra work,Remove code bloat by removing optional features,Remove duplicate code,Replace Reflection with Direct Method Calls,Select Algorithm Based on Instruction Speed,Select Computationally Efficient Algorithms,Selection I/O size,Streaming Implementation Or Optimization,Use Smaller Data Types
+comment_modification,4,1,16,32,1,0,4,9,8,1,0,0,2,2,1,0,2,19,7,1,3,7,0,2,0,0,3,0,8,29,1,1,3
+control_flow,10,3,7,41,2,1,7,6,0,1,6,1,2,3,1,1,5,32,3,0,17,5,2,10,1,4,5,4,7,69,1,2,3
+object_creation,4,4,7,48,1,4,3,103,7,1,7,0,2,1,0,1,9,35,23,0,1,21,3,2,0,2,3,4,1,32,0,1,0
+statement_splitting,7,4,5,57,0,1,3,9,1,0,6,1,2,1,1,0,1,41,2,0,1,3,2,7,0,2,5,2,10,53,0,2,3
+name_modification,0,2,2,31,0,1,0,34,0,0,1,0,0,0,1,0,0,13,343,0,0,1,2,7,0,1,1,2,6,15,0,0,0
+deleted_blocks,2,1,4,6,2,1,0,1,2,0,2,0,1,2,1,1,0,19,1,0,0,5,0,8,0,1,2,0,3,23,0,2,0
+arithmetic_manipulation,2,0,1,12,0,1,8,0,1,0,0,1,2,0,0,0,0,6,0,0,3,2,0,1,1,0,3,0,9,23,0,0,4
+type_change,1,0,1,3,0,0,0,253,0,0,1,0,0,1,0,0,0,15,0,0,0,2,0,1,0,0,0,0,0,4,0,1,1
+return_statement_mods,1,1,1,13,1,0,1,2,0,0,0,0,0,0,0,0,0,12,0,0,5,2,1,1,0,0,0,0,1,13,0,1,0
+method_name_change,0,0,0,3,1,0,1,2,0,0,2,0,0,0,0,0,0,5,2,0,0,3,0,0,0,0,0,0,0,5,0,0,0
+added_code_from_github,0,0,0,4,0,0,0,1,4,0,3,0,0,0,0,0,0,0,2,0,0,2,0,0,0,0,0,0,0,0,0,0,0
+exception_handling,0,0,0,3,0,0,2,0,0,0,2,0,0,0,0,0,3,1,1,0,0,0,0,0,0,0,0,0,0,5,0,0,0
+synchronization,0,0,0,1,0,0,1,0,1,0,1,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,4,0,0,0
+inlining,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0
+duplicate_code,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0
+dead_code,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0

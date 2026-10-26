@@ -1,0 +1,58 @@
+# One config for the whole RQ1 LLM-judge pipeline: it defines BOTH the net-diff
+# set to build AND how to judge it, so build + judge can never drift.
+#
+#   # build the net-diff cases this config describes (build_cases has no --config;
+#   # pass the same knobs as flags -- patch_cap 12000 -> ..._population_12k.json):
+#   uv run python -m prfix.rq1_fix_rates.judge.build_cases --mode population --judgeable-only --patch-cap 12000
+#   # judge them (this file pins auto_build: false, so a missing cases file errors
+#   # rather than silently rebuilding; --rebuild forces a rebuild first):
+#   uv run python -m prfix.rq1_fix_rates.judge.run_judge --config src/prfix/rq1_fix_rates/judge/judge.yaml
+#
+# Any key may be omitted (the built-in default is used). Explicit CLI flags
+# override values set here, e.g. add `--limit 50` to cap a configured run.
+# Equivalent .json / .toml files also work (chosen by file extension).
+# Unknown keys are rejected, so a typo fails loudly instead of being ignored.
+
+# ---- net-diff set definition (the "population" build) ----------------------
+# The cases file is DERIVED from these two knobs
+# (patch_cap=12000, judgeable_only=true -> rq1_judge_cases_population_12k.json),
+# so the builder and the judge resolve the same file with no hard-coded path.
+patch_cap: 12000 # chars per file patch (truncated beyond this)
+judgeable_only: true # keep only pairs with a real net-diff overlap (n_shared>0)
+
+# Build the derived cases file automatically if it is missing before judging.
+# (true = rebuild from DuckDB/gh on a miss -- convenient, but on a fresh clone it
+# silently regenerates the committed pinned cases instead of reproducing them.
+# Kept false so a reproduction run fails loudly rather than drifting off the pins;
+# set true when you are deliberately (re)building.)
+auto_build: false
+
+# ---- raters ----------------------------------------------------------------
+# Format: provider[:model[:effort]].
+#   effort = OpenAI reasoning_effort (none|minimal|low|medium|high|xhigh)
+#            or Anthropic output_config.effort (Sonnet 4.6 accepts low/medium/high/max).
+# Each (provider, model, effort) writes its own checkpoint + CSV, so listing the
+# same model at several efforts A/B-tests them on the same pairs.
+#
+# With no effort suffix the runner sends NO effort param and the server applies
+# its own default. (Anthropic has no "none" tier, so the lowest you can REQUEST
+# is `:low`; OpenAI does accept `:none`/`:minimal`.)
+#
+# NOTE: the effort suffix is also part of the checkpoint/CSV FILENAME. Keeping
+# `:low` below resumes/reuses the published `judge_pop_anthropic_claude-opus-4-8_low.*`
+# files; changing or removing it resolves a DIFFERENT checkpoint + CSV and
+# re-judges the whole population from scratch.
+raters:
+  - anthropic:claude-opus-4-8:low # the published production rater (Opus 4.8 at effort low)
+  # - openai:gpt-5.4:medium      # uncomment to compare reasoning efforts
+  # - openai:gpt-5.4:high
+
+# ---- judge run -------------------------------------------------------------
+concurrency: 10 # parallel judge requests per rater
+limit: null # judge only the first N cases (smoke test); null = all
+rebuild: false # force-rebuild the population cases file first (picks up new build-time
+# signals like intervening-PR counts). NOTE: refreshes the cases/prompt, but to actually
+# RE-JUDGE you also need restart: true (else the existing checkpoint is resumed, no calls).
+restart: false # ignore + delete existing checkpoints and judge from scratch
+consolidate_only: false # rebuild CSVs + agreement report from checkpoints; no API calls
+dry_run: false # print prompt sizes + a sample case and exit, without any API

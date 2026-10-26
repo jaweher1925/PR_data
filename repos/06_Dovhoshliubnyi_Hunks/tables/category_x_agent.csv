@@ -1,0 +1,17 @@
+category,Claude_Code,Copilot,Cursor,Devin,OpenAI_Codex
+comment_modification,3,64,41,22,37
+control_flow,3,48,24,51,136
+object_creation,3,116,29,81,101
+statement_splitting,2,49,21,65,95
+name_modification,0,30,11,361,61
+deleted_blocks,2,17,15,13,43
+arithmetic_manipulation,2,16,17,16,29
+type_change,1,224,2,35,22
+return_statement_mods,0,13,3,12,28
+method_name_change,0,5,6,5,8
+added_code_from_github,0,1,6,4,5
+exception_handling,0,3,6,3,5
+synchronization,0,4,2,2,2
+inlining,0,0,0,0,2
+duplicate_code,0,1,0,0,0
+dead_code,0,0,1,0,0

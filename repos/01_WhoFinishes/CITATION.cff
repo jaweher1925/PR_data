@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: "If you use this replication package, please cite the paper below."
+title: "Replication package: Who Finishes the Job? A Study of Follow-Up Fixes and Commit Authorship on AI Coding Agent Pull Requests"
+authors:
+  - family-names: Takerngsaksiri
+    given-names: Wannita
+  - family-names: Duong
+    given-names: Nhat
+  - family-names: Barnett
+    given-names: Scott
+license: MIT
+preferred-citation:
+  type: article
+  title: "Who Finishes the Job? A Study of Follow-Up Fixes and Commit Authorship on AI Coding Agent Pull Requests"
+  authors:
+    - family-names: Takerngsaksiri
+      given-names: Wannita
+    - family-names: Duong
+      given-names: Nhat
+    - family-names: Barnett
+      given-names: Scott
+  year: 2026
+  journal: "Under submission to Empirical Software Engineering"

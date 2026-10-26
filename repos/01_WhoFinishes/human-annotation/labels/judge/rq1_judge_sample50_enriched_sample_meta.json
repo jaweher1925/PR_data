@@ -1,0 +1,26 @@
+{
+  "mode": "enriched",
+  "n": 50,
+  "seed": 42,
+  "pos_frac": 0.6,
+  "pop_csv": "data/judge/rq1_llm_judge_pop_anthropic_claude-opus-4-8_low.csv",
+  "population_total_nonerror": 2510,
+  "population_label_counts": {
+    "Unrelated/mislabeled": 1523,
+    "Related touch": 653,
+    "Direct fix": 334
+  },
+  "strata": {
+    "positive": {
+      "population": 334,
+      "sampled": 30,
+      "weight": 11.133333333333333
+    },
+    "decoy": {
+      "population": 2176,
+      "sampled": 20,
+      "weight": 108.8
+    }
+  },
+  "note": "3 agreed pairs (162,2371,2862) swapped for non-agreed replacements from the opus-4-8_low run; 47 human labels preserved, 3 new pairs blank."
+}

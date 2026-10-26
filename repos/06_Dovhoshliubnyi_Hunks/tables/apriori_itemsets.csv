@@ -1,0 +1,49 @@
+itemset,support,size
+"comment_modification, control_flow, object_creation, statement_splitting",0.1111111111111111,4
+"control_flow, object_creation, statement_splitting",0.2175925925925926,3
+"comment_modification, control_flow, object_creation",0.18055555555555555,3
+"comment_modification, control_flow, statement_splitting",0.16203703703703703,3
+"comment_modification, object_creation, statement_splitting",0.1527777777777778,3
+"control_flow, deleted_blocks, object_creation",0.12037037037037036,3
+"control_flow, name_modification, statement_splitting",0.11574074074074074,3
+"control_flow, deleted_blocks, statement_splitting",0.11574074074074074,3
+"comment_modification, deleted_blocks, object_creation",0.11574074074074074,3
+"arithmetic_manipulation, control_flow, statement_splitting",0.11574074074074074,3
+"arithmetic_manipulation, comment_modification, control_flow",0.11574074074074074,3
+"control_flow, name_modification, object_creation",0.1111111111111111,3
+"deleted_blocks, object_creation, statement_splitting",0.1111111111111111,3
+"arithmetic_manipulation, control_flow, object_creation",0.1111111111111111,3
+"name_modification, object_creation, statement_splitting",0.10648148148148148,3
+"arithmetic_manipulation, comment_modification, statement_splitting",0.10648148148148148,3
+"control_flow, object_creation",0.36574074074074076,2
+"control_flow, statement_splitting",0.3472222222222222,2
+"object_creation, statement_splitting",0.28703703703703703,2
+"comment_modification, object_creation",0.25,2
+"comment_modification, control_flow",0.25,2
+"comment_modification, statement_splitting",0.21296296296296297,2
+"name_modification, statement_splitting",0.18518518518518517,2
+"arithmetic_manipulation, control_flow",0.18055555555555555,2
+"control_flow, deleted_blocks",0.17592592592592593,2
+"deleted_blocks, statement_splitting",0.1712962962962963,2
+"deleted_blocks, object_creation",0.1712962962962963,2
+"name_modification, object_creation",0.16666666666666666,2
+"control_flow, name_modification",0.16666666666666666,2
+"control_flow, return_statement_mods",0.16203703703703703,2
+"comment_modification, deleted_blocks",0.1388888888888889,2
+"arithmetic_manipulation, statement_splitting",0.1388888888888889,2
+"arithmetic_manipulation, comment_modification",0.12962962962962962,2
+"arithmetic_manipulation, object_creation",0.125,2
+"deleted_blocks, name_modification",0.1111111111111111,2
+"object_creation, type_change",0.1111111111111111,2
+"return_statement_mods, statement_splitting",0.1111111111111111,2
+"comment_modification, name_modification",0.10648148148148148,2
+"object_creation, return_statement_mods",0.10648148148148148,2
+control_flow,0.6666666666666666,1
+object_creation,0.5324074074074074,1
+statement_splitting,0.5046296296296297,1
+comment_modification,0.3611111111111111,1
+name_modification,0.2916666666666667,1
+deleted_blocks,0.27314814814814814,1
+arithmetic_manipulation,0.2222222222222222,1
+return_statement_mods,0.19444444444444445,1
+type_change,0.14814814814814814,1

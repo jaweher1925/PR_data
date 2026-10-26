@@ -1,0 +1,1265 @@
+part_id,pr_id,pr_url,final_sub_pattern,commit_sha,filename,hunk_index,hunk_content,categories
+15,3042979666,https://github.com/calcom/cal.com/pull/21137,Batch API Requests (N+1),,packages/trpc/server/routers/viewer/slots/util.ts,3,"@@ -834,6 +838,116 @@ export function getAllDatesWithBookabilityStatus(availableDates: string[]) {
+   return allDates;
+ }
+ 
++/**
++ * Gets busy times from team booking limits for multiple users
++ */
++const getBusyTimesFromTeamLimitsForUsers = async (
++  users: { id: number; email: string }[],
++  bookingLimits: IntervalLimit,
++  dateFrom: Dayjs,
++  dateTo: Dayjs,
++  teamId: number,
++  includeManagedEvents: boolean,
++  timeZone: string,
++  rescheduleUid?: string
++) => {
++  const { limitDateFrom, limitDateTo } = getStartEndDateforLimitCheck(
++    dateFrom.toISOString(),
++    dateTo.toISOString(),
++    bookingLimits
++  );
++
++  const bookings = await BookingRepo.getAllAcceptedTeamBookingsOfUsers({
++    users,
++    teamId,
++    startDate: limitDateFrom.toDate(),
++    endDate: limitDateTo.toDate(),
++    excludedUid: rescheduleUid,
++    includeManagedEvents,
++  });
++
++  const busyTimes = bookings.map(({ id, startTime, endTime, eventTypeId, title, userId }) => ({
++    start: dayjs(startTime).toDate(),
++    end: dayjs(endTime).toDate(),
++    title,
++    source: `eventType-${eventTypeId}-booking-${id}`,
++    userId,
++  }));
++
++  const userBusyTimesMap = new Map();
++
++  for (const user of users) {
++    const userBusyTimes = busyTimes.filter((busyTime) => busyTime.userId === user.id);
++    const limitManager = new LimitManager();
++
++    await monitorCallbackAsync(async () => {
++      const bookingLimitsParams = {
++        bookings: userBusyTimes,
++        bookingLimits,
++        dateFrom,
++        dateTo,
++        limitManager,
++        rescheduleUid,
++        teamId,
++        user,
++        includeManagedEvents,
++        timeZone,
++      };
++
++      for (const key of descendingLimitKeys) {
++        const limit = bookingLimits?.[key];
++        if (!limit) continue;
++
++        const unit = intervalLimitKeyToUnit(key);
++        const periodStartDates = getPeriodStartDatesBetween(dateFrom, dateTo, unit);
++
++        for (const periodStart of periodStartDates) {
++          if (limitManager.isAlreadyBusy(periodStart, unit)) continue;
++
++          if (unit === ""year"") {
++            try {
++              await checkBookingLimit({
++                eventStartDate: periodStart.toDate(),
++                limitingNumber: limit,
++                key,
++                teamId,
++                user,
++                rescheduleUid,
++                includeManagedEvents,
++                timeZone,
++              });
++            } catch (_) {
++              limitManager.addBusyTime(periodStart, unit);
++              if (periodStartDates.every((start: Dayjs) => limitManager.isAlreadyBusy(start, unit))) {
++                return;
++              }
++            }
++            continue;
++          }
++
++          const periodEnd = periodStart.endOf(unit);
++          let totalBookings = 0;
++
++          for (const booking of userBusyTimes) {
++            if (!dayjs(booking.start).isBetween(periodStart, periodEnd)) {
++              continue;
++            }
++            totalBookings++;
++            if (totalBookings >= limit) {
++              limitManager.addBusyTime(periodStart, unit);
++              break;
++            }
++          }
++        }
++      }
++    });
++
++    userBusyTimesMap.set(user.id, limitManager.getBusyTimes());
++  }
++
++  return userBusyTimesMap;
++};
++
+ const calculateHostsAndAvailabilities = async ({
+   input,
+   eventType,
+",
+54,3006445782,https://github.com/saturday06/VRM-Addon-for-Blender/pull/795,Caching,,src/io_scene_vrm/editor/extension.py,1,"@@ -504,10 +504,22 @@ def get_scene_extension(scene: Scene) -> VrmAddonSceneExtensionPropertyGroup:
+     return extension
+ 
+ 
++_bone_extension_cache: dict[tuple[str, str], VrmAddonBoneExtensionPropertyGroup] = {}
++
++
+ def get_bone_extension(bone: Bone) -> VrmAddonBoneExtensionPropertyGroup:
++    if bone.id_data and hasattr(bone.id_data, ""name"") and bone.name:
++        cache_key = (bone.id_data.name, bone.name)
++        cached_extension = _bone_extension_cache.get(cache_key)
++        if cached_extension is not None:
++            return cached_extension
++
+     extension = getattr(bone, ""vrm_addon_extension"", None)
+     if not isinstance(extension, VrmAddonBoneExtensionPropertyGroup):
+         raise TypeError
++
++    if bone.id_data and hasattr(bone.id_data, ""name"") and bone.name:
++        _bone_extension_cache[(bone.id_data.name, bone.name)] = extension
+     return extension
+ 
+ ",
+58,3006445782,https://github.com/saturday06/VRM-Addon-for-Blender/pull/795,Caching,,src/io_scene_vrm/editor/spring_bone1/handler.py,4,"@@ -592,13 +601,18 @@ def calculate_joint_pair_head_pose_bone_rotations(
+         1.0 - head_joint.drag_force
+     )
+ 
++    current_head_rest_object_matrix_inverted = current_head_rest_object_matrix.inverted_safe()
+     next_head_rotation_start_target_local_translation = (
+-        current_head_rest_object_matrix.inverted_safe()
++        current_head_rest_object_matrix_inverted
+         @ current_tail_rest_object_matrix.to_translation()
+     )
++    
++    obj_matrix_world_quaternion = obj_matrix_world.to_quaternion()
++    next_head_pose_bone_before_rotation_matrix_quaternion = next_head_pose_bone_before_rotation_matrix.to_quaternion()
++    
+     stiffness_direction = (
+-        obj.matrix_world.to_quaternion()
+-        @ next_head_pose_bone_before_rotation_matrix.to_quaternion()
++        obj_matrix_world_quaternion
++        @ next_head_pose_bone_before_rotation_matrix_quaternion
+         @ next_head_rotation_start_target_local_translation
+     ).normalized()
+     stiffness = stiffness_direction * delta_time * head_joint.stiffness
+",
+65,3006534682,https://github.com/saturday06/VRM-Addon-for-Blender/pull/797,Caching,,src/io_scene_vrm/editor/spring_bone1/handler.py,4,"@@ -608,17 +630,27 @@ def calculate_joint_pair_head_pose_bone_rotations(
+         current_tail_world_translation + inertia + stiffness + external
+     )
+ 
++    current_head_pose_bone_world_translation = (
++        obj_matrix_world @ current_head_pose_bone_matrix.to_translation()
++    )
++    current_tail_pose_bone_world_translation = (
++        obj_matrix_world @ current_tail_pose_bone_matrix.to_translation()
++    )
++
+     head_to_tail_world_distance = (
+-        obj.matrix_world @ current_head_pose_bone_matrix.to_translation()
+-        - (obj.matrix_world @ current_tail_pose_bone_matrix.to_translation())
++        current_head_pose_bone_world_translation
++        - current_tail_pose_bone_world_translation
+     ).length
+ 
++    next_tail_to_head_vec = next_tail_world_translation - next_head_world_translation
++    next_tail_to_head_normalized = next_tail_to_head_vec.normalized()
++
+     # 次のTailに距離の制約を適用
+     next_tail_world_translation = (
+         next_head_world_translation
+-        + (next_tail_world_translation - next_head_world_translation).normalized()
+-        * head_to_tail_world_distance
++        + next_tail_to_head_normalized * head_to_tail_world_distance
+     )
++
+     # コライダーの衝突を計算
+     for world_collider in world_colliders:
+         direction, distance = world_collider.calculate_collision(
+",
+71,3006562482,https://github.com/saturday06/VRM-Addon-for-Blender/pull/800,Caching,,src/io_scene_vrm/editor/spring_bone1/handler.py,2,"@@ -457,13 +467,9 @@ def calculate_spring_pose_bone_rotations(
+         tail_pose_bone,
+         tail_rest_object_matrix,
+     ) in zip(joints, joints[1:]):
+-        head_tail_parented = False
+-        searching_tail_parent = tail_pose_bone.parent
+-        while searching_tail_parent:
+-            if searching_tail_parent.name == head_pose_bone.name:
+-                head_tail_parented = True
+-                break
+-            searching_tail_parent = searching_tail_parent.parent
++        head_tail_parented = head_pose_bone.name in bone_parent_cache.get(
++            tail_pose_bone.name, set()
++        )
+         if not head_tail_parented:
+             break
+ ",
+94,3033886992,https://github.com/calcom/cal.com/pull/21052,Caching,,packages/app-store/_appRegistry.ts,4,"@@ -137,5 +148,6 @@ export async function getAppRegistryWithCredentials(userId: number, userAdminTea
+     });
+   }
+ 
++  setCache(cacheKey, apps, 5 * 60); // Cache for 5 minutes
+   return apps;
+ }",
+99,3033886992,https://github.com/calcom/cal.com/pull/21052,Caching,,packages/lib/cache.ts,1,"@@ -0,0 +1,49 @@
++type CacheEntry<T> = {
++  value: T;
++  expiry: number;
++};
++
++const cache = new Map<string, CacheEntry<any>>();
++
++/**
++ * Set a value in the cache with an expiration time
++ * @param key - Cache key
++ * @param value - Value to cache
++ * @param ttlSeconds - Time to live in seconds
++ */
++export function setCache<T>(key: string, value: T, ttlSeconds: number): void {
++  const expiry = Date.now() + ttlSeconds * 1000;
++  cache.set(key, { value, expiry });
++}
++
++/**
++ * Get a value from the cache
++ * @param key - Cache key
++ * @returns The cached value or null if not found or expired
++ */
++export function getCache<T>(key: string): T | null {
++  const entry = cache.get(key);
++  if (!entry) return null;
++
++  if (Date.now() > entry.expiry) {
++    cache.delete(key);
++    return null;
++  }
++
++  return entry.value as T;
++}
++
++/**
++ * Delete a value from the cache
++ * @param key - Cache key
++ */
++export function deleteCache(key: string): void {
++  cache.delete(key);
++}
++
++/**
++ * Clear all cached values
++ */
++export function clearCache(): void {
++  cache.clear();
++}",
+151,3206379276,https://github.com/jxxghp/MoviePilot-Frontend/pull/359,Caching,,src/main.ts,1,"@@ -46,6 +46,32 @@ import '@/styles/main.scss'
+ // 8. PWA状态管理
+ import { PWAStateController } from '@/utils/pwaStateManager'
+ 
++// PWA状态管理器初始化函数
++const initializePWABeforeMount = async () => {
++  // 检查是否在PWA模式下运行
++  const isPWA = window.matchMedia('(display-mode: standalone)').matches || 
++                (window.navigator as any).standalone || 
++                document.referrer.includes('android-app://')
++  
++  if (isPWA) {
++    console.log('检测到PWA模式，预初始化状态管理器')
++    const pwaStateController = new PWAStateController()
++    
++    // 等待状态恢复完成
++    await pwaStateController.waitForStateRestore()
++    
++    // 将状态管理器绑定到全局对象
++    ;(window as any).pwaStateController = pwaStateController
++    
++    return pwaStateController
++  }
++  
++  return null
++}
++
++// 在创建Vue应用前初始化PWA状态管理器
++const pwaStateController = await initializePWABeforeMount()
++
+ // 创建Vue实例
+ const app = createApp(App)
+ 
+",
+171,3226144762,https://github.com/epicweb-dev/epicshop/pull/268,Caching,,packages/workshop-utils/src/apps.server.ts,3,"@@ -316,6 +323,12 @@ export function getForceFreshForDir(
+ 		}
+ 	}
+ 	if (!cacheEntry) return true
++	
++	// Add minimum cache time to prevent thrashing (5 minutes)
++	const minCacheTime = 1000 * 60 * 5
++	const cacheAge = Date.now() - cacheEntry.metadata.createdTime
++	if (cacheAge < minCacheTime) return false
++	
+ 	const latestModifiedTime = truthyDirs.reduce((latest, dir) => {
+ 		const modifiedTime = modifiedTimes.get(dir)
+ 		return modifiedTime && modifiedTime > latest ? modifiedTime : latest
+",
+173,3226144762,https://github.com/epicweb-dev/epicshop/pull/268,Caching,,packages/workshop-app/app/routes/_app+/exercise+/$exerciseNumber_.$stepNumber.$type+/index.tsx,2,"@@ -155,14 +156,21 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
+ 		}
+ 	}
+ 
++	// Parallelize the expensive operations
++	const [playgroundState, problemState, solutionState] = await Promise.all([
++		playgroundApp ? getAppRunningState(playgroundApp) : Promise.resolve(null),
++		problemApp ? getAppRunningState(problemApp) : Promise.resolve(null),
++		solutionApp ? getAppRunningState(solutionApp) : Promise.resolve(null),
++	])
++
+ 	return data(
+ 		{
+ 			type: params.type as 'problem' | 'solution',
+ 			exerciseStepApp,
+ 			allApps,
+ 			// defer this promise so that we don't block the response from being sent
+ 			discordPostsPromise: fetchDiscordPosts({ request }),
+-			playground: playgroundApp
++			playground: playgroundApp && playgroundState
+ 				? ({
+ 						type: 'playground',
+ 						fullPath: playgroundApp.fullPath,
+",
+189,3241523087,https://github.com/doodlum/skyrim-community-shaders/pull/1281,Caching,,src/Globals.cpp,1,"@@ -121,6 +121,7 @@ namespace globals
+ 		void* cachedRendererRuntimeData = nullptr;
+ 		void* cachedShadowStateRuntimeData = nullptr;
+ 		void* cachedGraphicsStateRuntimeData = nullptr;
++		void* cachedDepthStencilData = nullptr;
+ 	}
+ 
+ 	State* state = nullptr;
+",
+201,3210728631,https://github.com/mochilang/mochi/pull/6256,Combining branches,,compiler/x/zig/compiler.go,2,"@@ -1888,11 +1887,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
+ func (c *Compiler) compileLiteral(l *parser.Literal, hint types.Type) (string, error) {
+ 	switch {
+ 	case l.Int != nil:
+-		val := *l.Int
+-		if isInt64(hint) || val > math.MaxInt32 || val < math.MinInt32 {
+-			return fmt.Sprintf(""@as(i64,@intCast(%d))"", val), nil
+-		}
+-		return fmt.Sprintf(""@as(i32,@intCast(%d))"", val), nil
++		return strconv.Itoa(*l.Int), nil
+ 	case l.Float != nil:
+ 		return strconv.FormatFloat(*l.Float, 'f', -1, 64), nil
+ 	case l.Str != nil:",
+208,3213747226,https://github.com/jscarle/LightResults/pull/70,Compiler Optimization Hints/Directives,,src/LightResults/Result.cs,7,"@@ -401,6 +408,7 @@ public Result AsFailure()
+     /// <summary>Converts the current <see cref=""Result{TValue}""/> to a failure <see cref=""Result{TDestination}""/>.</summary>
+     /// <returns>A new instance of <see cref=""Result{TDestination}""/> containing the same error as the <see cref=""Result{TValue}""/>, if any.</returns>
+     /// <typeparam name=""TDestination"">The type of the value of the failure result.</typeparam>
++    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+     public Result<TDestination> AsFailure<TDestination>()
+     {
+         if (_errors is not null)",
+225,3213876116,https://github.com/jscarle/LightResults/pull/76,Compiler Optimization Hints/Directives,,src/LightResults/Common/SingleItemMetadataDictionary.cs,9,"@@ -122,11 +136,13 @@ private struct ValueEnumerable(object? value) : IEnumerable<object?>, IEnumerato
+     {
+         private bool _moved;
+ 
++        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+         IEnumerator<object?> IEnumerable<object?>.GetEnumerator()
+         {
+             return this;
+         }
+ 
++        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+         IEnumerator IEnumerable.GetEnumerator()
+         {
+             return this;
+",
+250,3226180108,https://github.com/stanford-crfm/levanter/pull/1056,Compiler Optimization Hints/Directives,,src/levanter/main/sample_lm.py,2,"@@ -87,6 +86,31 @@ def do_prefill(model, cache, page_table, tokens, sampler, seq_id, temps, key):
+     return next_tok, page_table, cache
+ 
+ 
++@haliax.named_jit(donate_args=(False, True, True, False, False, False, False, True))
++def do_generate_multi(model, cache, page_table, prev_token, sampler, seq_id, start, temps, key, num_tokens):
++    """"""Generate ``num_tokens`` tokens starting from ``prev_token`` inside ``jax.jit``.""""""
++
++    def loop_fn(carry, i):
++        cache, page_table, prev_tok, key = carry
++        key, subkey = jrandom.split(key)
++
++        prev_tok_named = hax.named(jnp.array([prev_tok], dtype=jnp.int32), ""position"")
++        page_table, binfo = page_table.allocate_for_seqs(
++            updated_seqs=seq_id,
++            new_counts=hax.named([1], ""seq""),
++            tokens=seq_id.rename({""seq"": ""position""}),
++        )
++        pos_id = hax.arange(Axis(""position"", 1), start=start + i)
++        logits, cache = model.decode(prev_tok_named, cache, binfo, pos_id)
++        logits = logits[""position"", 0]
++        tok, _ = sampler(logits, temps, key=subkey)
++        return (cache, page_table, tok.array[0], key), tok
++
++    Loop = Axis(""position"", num_tokens)
++    (cache, page_table, _last_tok, _), toks = hax.scan(loop_fn, Loop)((cache, page_table, prev_token, key), hax.arange(Loop))
++    return toks, page_table, cache
++
++
+ def tree_byte_size(tree):
+     """"""Calculate the total byte size of a JAX tree.""""""
+     # TODO: take into account sharding
+",
+253,3070322024,https://github.com/calcom/cal.com/pull/21374,Concurrency Control / Rate Limiting,,packages/lib/getUserAvailability.ts,2,"@@ -699,22 +700,26 @@ type GetUsersAvailabilityProps = {
+ };
+ 
+ const _getUsersAvailability = async ({ users, query, initialData }: GetUsersAvailabilityProps) => {
++  const limit = pLimit(10);
++
+   return await Promise.all(
+     users.map((user) =>
+-      _getUserAvailability(
+-        {
+-          ...query,
+-          userId: user.id,
+-          username: user.username || """",
+-        },
+-        initialData
+-          ? {
+-              ...initialData,
+-              user,
+-              currentBookings: user.currentBookings,
+-              outOfOfficeDays: user.outOfOfficeDays,
+-            }
+-          : undefined
++      limit(() =>
++        _getUserAvailability(
++          {
++            ...query,
++            userId: user.id,
++            username: user.username || """",
++          },
++          initialData
++            ? {
++                ...initialData,
++                user,
++                currentBookings: user.currentBookings,
++                outOfOfficeDays: user.outOfOfficeDays,
++              }
++            : undefined
++        )
+       )
+     )
+   );",
+272,3071827885,https://github.com/mangiucugna/json_repair/pull/120,Darwinian Data Structure Selection,,src/json_repair/json_parser.py,6,"@@ -633,15 +638,15 @@ def parse_string(self) -> str | bool | None:
+                                 ""While parsing a string in Array context, we detected a quoted section that would have closed the string but has a different meaning here, ignoring it"",
+                             )
+                             unmatched_delimiter = not unmatched_delimiter
+-                            string_acc += str(char)
++                            string_parts.append(str(char))
+                             self.index += 1
+                             char = self.get_char_at()
+                         elif self.context.current == ContextValues.OBJECT_KEY:
+                             # In this case we just ignore this and move on
+                             self.log(
+                                 ""While parsing a string in Object Key context, we detected a quoted section that would have closed the string but has a different meaning here, ignoring it"",
+                             )
+-                            string_acc += str(char)
++                            string_parts.append(str(char))
+                             self.index += 1
+                             char = self.get_char_at()
+         if (
+",
+306,3147340923,https://github.com/web-infra-dev/rspack/pull/10677,Darwinian Data Structure Selection,,crates/rspack_core/src/build_chunk_graph/incremental.rs,1,"@@ -1,4 +1,5 @@
+-use std::{collections::HashSet, hash::BuildHasherDefault};
++use std::hash::BuildHasherDefault;
++use rustc_hash::FxHashSet;
+ 
+ use num_bigint::BigUint;
+ use rspack_collections::{
+",
+338,3204565892,https://github.com/quarylabs/sqruff/pull/1749,Darwinian Data Structure Selection,,crates/lib-core/src/lint_fix.rs,5,"@@ -145,8 +145,8 @@ impl LintFix {
+         templated_file: &TemplatedFile,
+         templated_slices: impl Iterator<Item = Range<usize>>,
+         file_end_slice: Option<RawFileSlice>,
+-    ) -> AHashSet<RawFileSlice> {
+-        let mut raw_slices = AHashSet::new();
++    ) -> FxHashSet<RawFileSlice> {
++        let mut raw_slices = FxHashSet::default();
+ 
+         for templated_slice in templated_slices {
+             let templated_slice =",
+377,3204565892,https://github.com/quarylabs/sqruff/pull/1749,Darwinian Data Structure Selection,,crates/lib-dialects/src/tsql_keywords.rs,2,"@@ -200,7 +200,7 @@ pub(crate) fn tsql_additional_reserved_keywords() -> AHashSet<&'static str> {
+ 
+ /// T-SQL future keywords from Microsoft documentation
+ /// These are potential reserved keywords in future versions
+-pub(crate) fn tsql_future_keywords() -> AHashSet<&'static str> {
++pub(crate) fn tsql_future_keywords() -> FxHashSet<&'static str> {
+     [
+         // Future Keywords (from Microsoft documentation)
+         ""ABSOLUTE"",
+",
+385,3204565892,https://github.com/quarylabs/sqruff/pull/1749,Darwinian Data Structure Selection,,crates/lib/src/core/linter/core.rs,4,"@@ -610,7 +609,7 @@ impl Linter {
+             }
+         }
+ 
+-        let mut filtered_buffer = AHashSet::new();
++        let mut filtered_buffer = FxHashSet::default();
+ 
+         for fpath in buffer {
+             let npath = helpers::normalize(&fpath).to_str().unwrap().to_string();",
+459,3204565892,https://github.com/quarylabs/sqruff/pull/1749,Darwinian Data Structure Selection,,crates/lib/src/rules/layout/lt03.rs,1,"@@ -1,4 +1,4 @@
+-use ahash::AHashMap;
++use rustc_hash::FxHashMap;
+ use sqruff_lib_core::dialects::syntax::{SyntaxKind, SyntaxSet};
+ use sqruff_lib_core::parser::segments::ErasedSegment;
+ 
+",
+477,3204565892,https://github.com/quarylabs/sqruff/pull/1749,Darwinian Data Structure Selection,,crates/lib/src/rules/layout/lt13.rs,2,"@@ -13,7 +13,7 @@ use crate::core::rules::{Erased, ErasedRule, LintPhase, LintResult, Rule, RuleGr
+ pub struct RuleLT13;
+ 
+ impl Rule for RuleLT13 {
+-    fn load_from_config(&self, _config: &AHashMap<String, Value>) -> Result<ErasedRule, String> {
++    fn load_from_config(&self, _config: &FxHashMap<String, Value>) -> Result<ErasedRule, String> {
+         Ok(RuleLT13.erased())
+     }
+ ",
+514,3204565892,https://github.com/quarylabs/sqruff/pull/1749,Darwinian Data Structure Selection,,crates/lib/src/utils/reflow/reindent.rs,1,"@@ -1,7 +1,7 @@
+ use std::borrow::Cow;
+ use std::mem::take;
+ 
+-use ahash::{AHashMap, AHashSet};
++use rustc_hash::{FxHashMap, FxHashSet};
+ use itertools::{Itertools, chain, enumerate};
+ use smol_str::SmolStr;
+ use sqruff_lib_core::dialects::syntax::{SyntaxKind, SyntaxSet};
+",
+521,3204565892,https://github.com/quarylabs/sqruff/pull/1749,Darwinian Data Structure Selection,,crates/lineage/src/qualify.rs,1,"@@ -1,6 +1,8 @@
+ use std::cell::{OnceCell, RefCell};
+ use std::collections::hash_map::Entry;
+-use std::collections::{HashMap, HashSet};
++use std::collections::HashMap;
++
++use rustc_hash::FxHashSet;
+ 
+ use indexmap::IndexMap;
+ 
+",
+526,3204565892,https://github.com/quarylabs/sqruff/pull/1749,Darwinian Data Structure Selection,,crates/sqlinference/src/infer_tests.rs,1,"@@ -1,6 +1,8 @@
+-use std::collections::{HashMap, HashSet};
++use std::collections::HashMap;
+ use std::fmt::Display;
+ 
++use rustc_hash::FxHashSet;
++
+ use sqruff_lib_core::dialects::Dialect;
+ use sqruff_lib_core::dialects::syntax::{SyntaxKind, SyntaxSet};
+ use sqruff_lib_core::parser::Parser;
+",
+532,3204565892,https://github.com/quarylabs/sqruff/pull/1749,Darwinian Data Structure Selection,,crates/sqlinference/src/inference.rs,1,"@@ -1,4 +1,6 @@
+-use std::collections::{HashMap, HashSet};
++use std::collections::HashMap;
++
++use rustc_hash::FxHashSet;
+ 
+ use sqruff_lib_core::parser::Parser;
+ 
+",
+541,3257665431,https://github.com/MihaiCristianCondrea/Smart-Cleaner-for-Android/pull/220,Darwinian Data Structure Selection,,app/src/main/kotlin/com/d4rk/cleaner/app/clean/analyze/ui/components/tabs/TabsContent.kt,2,"@@ -151,7 +151,7 @@ fun TabsContent(
+             FilesByDateSection(
+                 modifier = Modifier ,
+                 filesByDate = filesByDateRaw ,
+-                fileSelectionStates = data.analyzeState.fileSelectionMap.mapKeys { File(it.key.path) } ,
++                fileSelectionStates = data.analyzeState.fileSelectionMap.mapKeys { File(it.key) } ,
+                 onFileSelectionChange = viewModel::onFileSelectionChange ,
+                 onDateSelectionChange = { files, checked -> viewModel.onEvent(ScannerEvent.ToggleSelectFilesForDate(files , checked)) } ,
+                 originals = data.analyzeState.duplicateOriginals.map { File(it.path) }.toSet() ,",
+553,3075349977,https://github.com/unibeck/solstatus/pull/55,Enable Build-Time Optimizations,,src/components/app-sidebar.tsx,1,"@@ -16,7 +16,7 @@ import {
+   IconSparkles,
+   IconTargetArrow,
+ } from ""@tabler/icons-react""
+-import { Unbounded } from ""next/font/google""
++// import { Unbounded } from ""next/font/google""
+ import type * as React from ""react""
+ import SolStatusLogo from ""@/components/icons/solstatus-logo""
+ 
+",
+579,3107237879,https://github.com/MontrealAI/AGI-Alpha-Agent-v0/pull/1332,Enable Multi-threading,,alpha_factory_v1/demos/alpha_agi_insight_v1/insight_browser_v1/src/render/frontier.js,2,"@@ -35,20 +36,37 @@ export function renderFrontier(svg, pop, x, y) {
+   let dots = svg.select('g#dots');
+   if (dots.empty()) dots = svg.append('g').attr('id', 'dots');
+ 
+-  dots
+-    .selectAll('circle')
+-    .data(pop)
+-    .join('circle')
+-    .attr('cx', (d) => x(d.logic))
+-    .attr('cy', (d) => y(d.feasible))
+-    .attr('r', 3)
+-    .attr('fill', (d) => {
+-      if (front.includes(d)) return strategyColors.front;
++  if (pop.length > 5000) {
++    dots.selectAll('circle').remove();
++    const frontSet = new Set(front);
++    drawPoints(dots, pop, x, y, (d) => {
++      if (frontSet.has(d)) return strategyColors.front;
+       return strategyColors[d.strategy] || strategyColors.base;
+-    })
+-    .attr('filter', (d) => (front.includes(d) ? 'url(#glow)' : null))
+-    .on('mousemove', (ev, d) =>
+-      showTooltip(ev.pageX + 6, ev.pageY + 6, `logic: ${d.logic.toFixed(2)}\nfeas: ${d.feasible.toFixed(2)}`)
+-    )
+-    .on('mouseleave', hideTooltip);
++    });
++  } else {
++    const node = dots.node();
++    const fo = node.querySelector('foreignObject#canvas-layer');
++    if (fo) fo.remove();
++
++    dots
++      .selectAll('circle')
++      .data(pop)
++      .join('circle')
++      .attr('cx', (d) => x(d.logic))
++      .attr('cy', (d) => y(d.feasible))
++      .attr('r', 3)
++      .attr('fill', (d) => {
++        if (front.includes(d)) return strategyColors.front;
++        return strategyColors[d.strategy] || strategyColors.base;
++      })
++      .attr('filter', (d) => (front.includes(d) ? 'url(#glow)' : null))
++      .on('mousemove', (ev, d) =>
++        showTooltip(
++          ev.pageX + 6,
++          ev.pageY + 6,
++          `logic: ${d.logic.toFixed(2)}\nfeas: ${d.feasible.toFixed(2)}`
++        )
++      )
++      .on('mouseleave', hideTooltip);
++  }
+ }",
+621,3084684604,https://github.com/elixr-games/elics/pull/39,Optimize Object Use,,benchmarks/elics.js,1,"@@ -200,9 +200,9 @@ export function entityCycle() {
+ 			for (const _ of this.queries.as.entities) {
+ 				world.createEntity().addComponent(B);
+ 			}
+-			for (const e of Array.from(this.queries.bs.entities)) {
+-				e.destroy();
+-			}
++                        for (const e of this.queries.bs.entities) {
++                                e.destroy();
++                        }
+ 		}
+ 	}
+ ",
+645,3104683212,https://github.com/MontrealAI/AGI-Alpha-Agent-v0/pull/1245,Optimize Object Use,,src/interface/api_server.py,1,"@@ -12,10 +12,12 @@
+ import secrets
+ import time
+ import logging
+-from collections import OrderedDict
++from collections import OrderedDict, deque
+ from pathlib import Path
+ from typing import Any, List, TYPE_CHECKING, cast, Set
+ 
++from cachetools import TTLCache
++
+ from src.archive import Archive
+ from alpha_factory_v1.demos.alpha_agi_insight_v1.src.utils import alerts
+ from src.utils.config import init_config
+",
+653,3128644658,https://github.com/phellipeandrade/rbac/pull/43,Optimize Object Use,,src/rbac.ts,2,"@@ -23,101 +25,76 @@ const can =
+   (mappedRoles: MappedRoles<P>) => {
+     const logger = config.logger || defaultLogger;
+ 
+-    const log = (
+-      roleName: string,
+-      operation: string | RegExp,
+-      result: boolean,
+-      enabled: boolean
+-    ): boolean => {
+-      if (enabled && config.enableLogger) {
+-        logger(roleName, operation, result);
+-      }
+-      return result;
+-    };
++    const log = config.enableLogger
++      ? (roleName: string, operation: string | RegExp, result: boolean, enabled: boolean): boolean => {
++          if (enabled) logger(roleName, operation, result);
++          return result;
++        }
++      : (_r: string, _o: string | RegExp, result: boolean): boolean => result;
+ 
+     const checkDirect = async (
+       logRole: string,
+-      foundedRole: MappedRole<P>,
++      resolvedRole: MappedRole<P>,
+       operation: string | RegExp,
+       params?: P,
+       logEnabled = true,
+       skipFalseLog = false
+     ): Promise<boolean> => {
+-      const direct = foundedRole.can[operation as string];
+-      const regexOperation = regexFromOperation(operation);
+-      const isGlobOperation = isGlob(operation);
++      let whenFn: NormalizedWhenFn<P> | true | undefined;
+ 
+-      if (typeof operation === 'string' && direct === true) {
+-        return log(logRole, operation, true, logEnabled);
++      if (typeof operation === 'string') {
++        if (resolvedRole.direct.has(operation)) {
++          return log(logRole, operation, true, logEnabled);
++        }
++        whenFn = resolvedRole.conditional.get(operation);
+       }
+ 
++      const regexOperation = regexFromOperation(operation);
++      const isGlobOperation = isGlob(operation);
++
+       if (regexOperation || isGlobOperation) {
+         const regex = isGlobOperation
+           ? globToRegex(operation as string)
+           : (regexOperation as RegExp);
+-        return log(logRole, operation, checkRegex(regex, foundedRole.can), logEnabled);
++        return log(
++          logRole,
++          operation,
++          hasMatchingOperation(regex, resolvedRole.allOps),
++          logEnabled
++        );
+       }
+ 
+-      const matchGlob = foundedRole.globs.find(g => g.regex.test(String(operation)));
+-      if (matchGlob) {
+-        return evaluateWhen(matchGlob.when);
++      if (!whenFn) {
++        const matchPattern = resolvedRole.patterns.find(p =>
++          p.regex.test(String(operation))
++        );
++        if (matchPattern) whenFn = matchPattern.when;
+       }
+ 
+-      if (!direct) {
++      if (!whenFn) {
+         if (!skipFalseLog) log(logRole, operation, false, logEnabled);
+         return false;
+       }
+ 
+-      return evaluateWhen(direct);
++      return evaluateWhen(whenFn);
+ 
+-      async function evaluateWhen(when: When<P> | true | undefined): Promise<boolean> {
++      async function evaluateWhen(when: NormalizedWhenFn<P> | true | undefined): Promise<boolean> {
+         if (when === true) {
+           log(logRole, operation, true, logEnabled);
+           return true;
+         }
+-
+-        if (typeof when === 'function') {
+-          if ((when as Function).length >= 2) {
+-            return new Promise<boolean>((resolve, reject) => {
+-              (when as any)(params, (err: unknown, result?: boolean) => {
+-                if (err) return reject(err);
+-                resolve(Boolean(result));
+-              });
+-            })
+-              .then(res => {
+-                log(logRole, operation, res, logEnabled);
+-                return res;
+-              })
+-              .catch(() => {
+-                log(logRole, operation, false, logEnabled);
+-                return false;
+-              });
+-          }
+-
+-          try {
+-            const res = (when as any)(params);
+-            const final = res instanceof Promise ? await res : res;
+-            log(logRole, operation, Boolean(final), logEnabled);
+-            return Boolean(final);
+-          } catch {
+-            log(logRole, operation, false, logEnabled);
+-            return false;
+-          }
++        if (!when) {
++          if (!skipFalseLog) log(logRole, operation, false, logEnabled);
++          return false;
+         }
+-
+-        if (when instanceof Promise) {
+-          try {
+-            const res = await when;
+-            log(logRole, operation, Boolean(res), logEnabled);
+-            return Boolean(res);
+-          } catch {
+-            log(logRole, operation, false, logEnabled);
+-            return false;
+-          }
++        try {
++          const res = await when(params as P);
++          log(logRole, operation, res, logEnabled);
++          return res;
++        } catch {
++          log(logRole, operation, false, logEnabled);
++          return false;
+         }
+-
+-        log(logRole, operation, false, logEnabled);
+-        return false;
+       }
+     };
+ 
+",
+677,3188613776,https://github.com/mochilang/mochi/pull/4195,Optimize Object Use,,runtime/vm/vm.go,1,"@@ -2133,6 +2133,16 @@ func constKey(v Value) (string, bool) {
+ 		return ""bf"", true
+ 	case ValueStr:
+ 		return ""s"" + v.Str, true
++	case ValueList:
++		if len(v.List) == 0 {
++			return ""[]"", true
++		}
++		return """", false
++	case ValueMap:
++		if len(v.Map) == 0 {
++			return ""{}"", true
++		}
++		return """", false
+ 	case ValueNull:
+ 		return ""n"", true
+ 	default:",
+685,3213730809,https://github.com/jscarle/LightResults/pull/65,Optimize Object Use,,src/LightResults/Result`1.cs,1,"@@ -311,17 +311,22 @@ public Result<TDestination> AsFailure<TDestination>()
+     /// <summary>Determines whether two <see cref=""Result{TValue}""/> instances are equal.</summary>
+     /// <param name=""other"">The <see cref=""Result{TValue}""/> instance to compare with this instance.</param>
+     /// <returns><c>true</c> if the specified <see cref=""Result{TValue}""/> is equal to this instance; otherwise, <c>false</c>.</returns>
+-    public bool Equals(Result<TValue> other)
++    public bool Equals(in Result<TValue> other)
+     {
+         return Equals(_errors, other._errors) && EqualityComparer<TValue?>.Default.Equals(_valueOrDefault, other._valueOrDefault);
+     }
+ 
++    bool IEquatable<Result<TValue>>.Equals(Result<TValue> other)
++    {
++        return Equals(in other);
++    }
++
+     /// <summary>Determines whether the specified object is equal to this instance.</summary>
+     /// <param name=""obj"">The object to compare with this instance.</param>
+     /// <returns><c>true</c> if the specified object is equal to this instance; otherwise, <c>false</c>.</returns>
+     public override bool Equals(object? obj)
+     {
+-        return obj is Result<TValue> other && Equals(other);
++        return obj is Result<TValue> other && Equals(in other);
+     }
+ 
+     /// <summary>Returns the hash code for this instance.</summary>
+",
+777,3034997303,https://github.com/vercel/vercel/pull/13284,Performance-Optimized Dependency Selection,,packages/cli/src/commands/certs/ls.ts,5,"@@ -121,7 +121,7 @@ function formatCertNonFirstCn(cn: string, multiple: boolean): string[] {
+ }
+ 
+ function formatCertCn(cn: string, multiple: boolean) {
+-  return multiple ? `${chalk.gray('-')} ${chalk.bold(cn)}` : chalk.bold(cn);
++  return multiple ? `${pc.gray('-')} ${pc.bold(cn)}` : pc.bold(cn);
+ }
+ 
+ function formatCertFirstCn(
+",
+784,3034997303,https://github.com/vercel/vercel/pull/13284,Performance-Optimized Dependency Selection,,packages/cli/src/commands/certs/rm.ts,6,"@@ -134,9 +128,9 @@ function readConfirmation(client: Client, msg: string, certs: Cert[]) {
+ function formatCertRow(cert: Cert) {
+   return [
+     cert.uid,
+-    chalk.bold(cert.cns ? cert.cns.join(', ') : '–'),
++    pc.bold(cert.cns ? cert.cns.join(', ') : '–'),
+     ...(cert.created
+-      ? [chalk.gray(`${ms(Date.now() - new Date(cert.created).getTime())} ago`)]
++      ? [pc.gray(`${ms(Date.now() - new Date(cert.created).getTime())} ago`)]
+       : []),
+   ];
+ }",
+792,3034997303,https://github.com/vercel/vercel/pull/13284,Performance-Optimized Dependency Selection,,packages/cli/src/commands/dev/index.ts,2,"@@ -155,7 +155,7 @@ export default async function main(client: Client) {
+ function stringifyError(err: any) {
+   if (err instanceof NowError) {
+     const errMeta = JSON.stringify(err.meta, null, 2).replace(/\\n/g, '\n');
+-    return `${chalk.red(err.code)} ${err.message}\n${errMeta}`;
++    return `${pc.red(err.code)} ${err.message}\n${errMeta}`;
+   }
+   return err.stack;
+ }",
+823,3034997303,https://github.com/vercel/vercel/pull/13284,Performance-Optimized Dependency Selection,,packages/cli/src/commands/domains/inspect.ts,3,"@@ -61,9 +61,7 @@ export default async function inspect(client: Client, argv: string[]) {
+   output.debug(`Fetching domain info`);
+ 
+   const { contextName } = await getScope(client);
+-  output.spinner(
+-    `Fetching Domain ${domainName} under ${chalk.bold(contextName)}`
+-  );
++  output.spinner(`Fetching Domain ${domainName} under ${pc.bold(contextName)}`);
+ 
+   const information = await fetchInformation({
+     client,
+",
+828,3034997303,https://github.com/vercel/vercel/pull/13284,Performance-Optimized Dependency Selection,,packages/cli/src/commands/domains/ls.ts,2,"@@ -56,24 +56,24 @@ export default async function ls(client: Client, argv: string[]) {
+ 
+   if (args.length !== 0) {
+     output.error(
+-      `Invalid number of arguments. Usage: ${chalk.cyan(
++      `Invalid number of arguments. Usage: ${pc.cyan(
+         `${getCommandName('domains ls')}`
+       )}`
+     );
+     return 1;
+   }
+ 
+-  output.spinner(`Fetching Domains under ${chalk.bold(contextName)}`);
++  output.spinner(`Fetching Domains under ${pc.bold(contextName)}`);
+ 
+   const { domains, pagination } = await getDomains(
+     client,
+     ...paginationOptions
+   );
+ 
+   output.log(
+-    `${plural('Domain', domains.length, true)} found under ${chalk.bold(
++    `${plural('Domain', domains.length, true)} found under ${pc.bold(
+       contextName
+-    )} ${chalk.gray(lsStamp())}`
++    )} ${pc.gray(lsStamp())}`
+   );
+ 
+   if (domains.length > 0) {
+",
+835,3034997303,https://github.com/vercel/vercel/pull/13284,Performance-Optimized Dependency Selection,,packages/cli/src/commands/domains/transfer-in.ts,1,"@@ -1,4 +1,4 @@
+-import chalk from 'chalk';
++import pc from 'picocolors';
+ import * as ERRORS from '../../util/errors-ts';
+ import type Client from '../../util/client';
+ import getScope from '../../util/get-scope';
+",
+863,3034997303,https://github.com/vercel/vercel/pull/13284,Performance-Optimized Dependency Selection,,packages/cli/src/commands/inspect/index.ts,1,"@@ -1,6 +1,6 @@
+ import type { Build, Deployment } from '@vercel-internals/types';
+ import { isErrnoException } from '@vercel/error-utils';
+-import chalk from 'chalk';
++import pc from 'picocolors';
+ import ms from 'ms';
+ import title from 'title';
+ import { URL } from 'url';
+",
+866,3034997303,https://github.com/vercel/vercel/pull/13284,Performance-Optimized Dependency Selection,,packages/cli/src/commands/integration-resource/create-threshold.ts,3,"@@ -121,7 +121,7 @@ export async function createThreshold(client: Client) {
+ 
+   if (targetedResource.billingPlan.scope !== 'resource') {
+     output.log(
+-      `The resource ${chalk.bold(resourceName)} uses an installation-level balance.`
++      `The resource ${pc.bold(resourceName)} uses an installation-level balance.`
+     );
+ 
+     return await updateThresholdForInstallation({
+",
+947,3034997303,https://github.com/vercel/vercel/pull/13284,Performance-Optimized Dependency Selection,,packages/cli/src/commands/teams/add.ts,1,"@@ -1,4 +1,4 @@
+-import chalk from 'chalk';
++import pc from 'picocolors';
+ import stamp from '../../util/output/stamp';
+ import eraseLines from '../../util/output/erase-lines';
+ import chars from '../../util/output/chars';
+",
+952,3034997303,https://github.com/vercel/vercel/pull/13284,Performance-Optimized Dependency Selection,,packages/cli/src/commands/teams/invite.ts,1,"@@ -1,4 +1,4 @@
+-import chalk from 'chalk';
++import pc from 'picocolors';
+ import type Client from '../../util/client';
+ import cmd from '../../util/output/cmd';
+ import stamp from '../../util/output/stamp';
+",
+953,3034997303,https://github.com/vercel/vercel/pull/13284,Performance-Optimized Dependency Selection,,packages/cli/src/commands/teams/list.ts,1,"@@ -1,6 +1,6 @@
+ import chars from '../../util/output/chars';
+ import table from '../../util/output/table';
+-import { gray } from 'chalk';
++import { gray } from 'picocolors';
+ import getUser from '../../util/get-user';
+ import getTeams from '../../util/teams/get-teams';
+ import { packageName } from '../../util/pkg-name';",
+1007,3034997303,https://github.com/vercel/vercel/pull/13284,Performance-Optimized Dependency Selection,,packages/cli/src/util/env/diff-env-files.ts,1,"@@ -1,7 +1,7 @@
+ import type { Dictionary } from '@vercel/client';
+ import { readFile } from 'fs-extra';
+ import { parseEnv } from '../parse-env';
+-import chalk from 'chalk';
++import pc from 'picocolors';
+ import output from '../../output-manager';
+ 
+ export async function createEnvObject(
+",
+1016,3034997303,https://github.com/vercel/vercel/pull/13284,Performance-Optimized Dependency Selection,,packages/cli/src/util/format-table.ts,2,"@@ -38,7 +38,7 @@ export default function formatTable(
+       out += `${block.name}\n`;
+     }
+ 
+-    const rows = [header.map(s => chalk.dim(s))].concat(block.rows);
++    const rows = [header.map(s => pc.dim(s))].concat(block.rows);
+ 
+     if (rows.length > 0) {
+       rows[0][0] = ` ${rows[0][0]}`;",
+1028,3034997303,https://github.com/vercel/vercel/pull/13284,Performance-Optimized Dependency Selection,,packages/cli/src/util/input/input-project.ts,2,"@@ -53,7 +53,7 @@ export default async function inputProject(
+     // auto-detected a project to link
+     if (
+       await client.input.confirm(
+-        `Found project ${chalk.cyan(
++        `Found project ${pc.cyan(
+           `“${org.slug}/${detectedProject.name}”`
+         )}. Link to it?`,
+         true",
+1122,3154652967,https://github.com/dotnet/sdk/pull/49459,Reduce rebuilding size,,src/Tasks/Microsoft.NET.Build.Tasks/GenerateDepsFile.cs,1,"@@ -257,6 +257,12 @@ bool ShouldIncludeRuntimeAsset(ITaskItem item)
+             var writer = new DependencyContextWriter();
+             
+             bool shouldWriteFile = true;
++            MemoryStream contentStream = null;
++            
++            // Generate new content
++            contentStream = new MemoryStream();
++            writer.Write(dependencyContext, contentStream);
++            
+             // If file exists, check if content is different using streaming hash comparison
+             if (File.Exists(depsFilePath))
+             {
+",
+1190,3242666013,https://github.com/ohcnetwork/care_fe/pull/12979,Remove duplicate code,,src/components/Patient/symptoms/list.tsx,2,"@@ -38,37 +38,64 @@ export function SymptomsList({
+ }: SymptomsListProps) {
+   const { t } = useTranslation();
+ 
+-  const LIMIT = showTimeline ? 30 : 14;
+-
+-  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
+-    useInfiniteQuery({
+-      queryKey: [""infinite-symptoms"", patientId, encounterId],
+-      queryFn: async ({ pageParam = 0, signal }) => {
+-        const response = await query(symptomApi.listSymptoms, {
+-          pathParams: { patientId },
+-          queryParams: {
+-            encounter: encounterId,
+-            ordering: ""-created_date"",
+-            limit: LIMIT,
+-            offset: String(pageParam),
+-            exclude_verification_status: ""entered_in_error"",
+-          },
+-        })({ signal });
+-        return response as PaginatedResponse<Symptom>;
++  const LIMIT = showTimeline ? 50 : 25; // Increased default limits to reduce need for pagination
++
++  // Use regular query for encounter overview (non-timeline) for better performance
++  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = showTimeline
++    ? useInfiniteQuery({
++        queryKey: [""infinite-symptoms"", patientId, encounterId],
++        queryFn: async ({ pageParam = 0, signal }) => {
++          const response = await query(symptomApi.listSymptoms, {
++            pathParams: { patientId },
++            queryParams: {
++              encounter: encounterId,
++              ordering: ""-created_date"",
++              limit: LIMIT,
++              offset: String(pageParam),
++              exclude_verification_status: ""entered_in_error"",
++            },
++          })({ signal });
++          return response as PaginatedResponse<Symptom>;
++        },
++        initialPageParam: 0,
++        getNextPageParam: (lastPage, allPages) => {
++          const currentOffset = allPages.length * LIMIT;
++          return currentOffset < lastPage.count ? currentOffset : null;
++        },
++      })
++    : {
++        data: undefined,
++        isLoading: false,
++        fetchNextPage: () => {},
++        hasNextPage: false,
++        isFetchingNextPage: false,
++      };
++
++  // For encounter overview, use a simple query with higher limit
++  const { data: regularData, isLoading: isRegularLoading } = useQuery({
++    queryKey: [""symptoms"", patientId, encounterId],
++    queryFn: query(symptomApi.listSymptoms, {
++      pathParams: { patientId },
++      queryParams: {
++        encounter: encounterId,
++        ordering: ""-created_date"",
++        limit: LIMIT,
++        exclude_verification_status: ""entered_in_error"",
+       },
+-      initialPageParam: 0,
+-      getNextPageParam: (lastPage, allPages) => {
+-        const currentOffset = allPages.length * LIMIT;
+-        return currentOffset < lastPage.count ? currentOffset : null;
+-      },
+-    });
++    }),
++    enabled: !showTimeline,
++  });
++
++  const symptoms = showTimeline 
++    ? data?.pages.flatMap((page) => page.results) ?? []
++    : regularData?.results ?? [];
++  
++  const isLoadingCombined = showTimeline ? isLoading : isRegularLoading;
+ 
+-  if (isLoading) {
++  if (isLoadingCombined) {
+     return <TableSkeleton count={5} />;
+   }
+ 
+-  const symptoms = data?.pages.flatMap((page) => page.results) ?? [];
+-
+   if (!symptoms?.length) {
+     if (showTimeline) {
+       return (",
+1208,3186037018,https://github.com/mochilang/mochi/pull/3948,Select Algorithm Based on Instruction Speed,,runtime/vm/vm.go,2,"@@ -3442,7 +3442,7 @@ func (fc *funcCompiler) compileHashJoin(q *parser.QueryExpr, dst int, leftKey, r
+ 	fc.emit(q.Pos, Instr{Op: OpJumpIfTrue, A: emptyRight})
+ 
+ 	cond := fc.newReg()
+-	fc.emit(q.Pos, Instr{Op: OpLessEq, A: cond, B: rlen, C: llen})
++	fc.emit(q.Pos, Instr{Op: OpLessEqInt, A: cond, B: rlen, C: llen})
+ 	jmpLeft := len(fc.fn.Code)
+ 	fc.emit(q.Pos, Instr{Op: OpJumpIfFalse, A: cond})
+ 
+",
+1222,3254647682,https://github.com/JuliaLang/julia/pull/59071,Select Algorithm Based on Instruction Speed,,base/array.jl,1,"@@ -748,9 +748,16 @@ function _collect(cont, itr, ::HasEltype, isz::SizeUnknown)
+     return a
+ end
+ 
+-_collect_indices(::Tuple{}, A) = copyto!(Array{eltype(A),0}(undef), A)
+-_collect_indices(indsA::Tuple{Vararg{OneTo}}, A) =
+-    copyto!(Array{eltype(A)}(undef, length.(indsA)), A)
++function _collect_indices(::Tuple{}, A)
++    dest = Array{eltype(A),0}(undef)
++    isempty(A) && return dest
++    return copyto_unaliased!(IndexStyle(dest), dest, IndexStyle(A), A)
++end
++function _collect_indices(indsA::Tuple{Vararg{OneTo}}, A)
++    dest = Array{eltype(A)}(undef, length.(indsA))
++    isempty(A) && return dest
++    return copyto_unaliased!(IndexStyle(dest), dest, IndexStyle(A), A)
++end
+ function _collect_indices(indsA, A)
+     B = Array{eltype(A)}(undef, length.(indsA))
+     copyto!(B, CartesianIndices(axes(B)), A, CartesianIndices(indsA))",
+1243,3077187183,https://github.com/econ-ark/HARK/pull/1562,Select Computationally Efficient Algorithms,,HARK/ConsumptionSaving/ConsIndShockModel.py,1,"@@ -1401,11 +1401,8 @@ def get_Rfree(self):
+         RfreeNow : np.array
+              Array of size self.AgentCount with risk free interest rate for each agent.
+         """"""
+-        RfreeNow = np.ones(self.AgentCount)
+-        for t in range(self.T_cycle):
+-            these = t == self.t_cycle
+-            RfreeNow[these] = self.Rfree[t]
+-        return RfreeNow
++        Rfree_array = np.array(self.Rfree)
++        return Rfree_array[self.t_cycle]
+ 
+     def transition(self):
+         pLvlPrev = self.state_prev[""pLvl""]
+",
+1280,3175127708,https://github.com/mochilang/mochi/pull/3168,Select Computationally Efficient Algorithms,,runtime/vm/vm.go,3,"@@ -3625,9 +3626,17 @@ func (fc *funcCompiler) compileQueryFrom(q *parser.QueryExpr, dst int, level int
+ 	}
+ 	fc.emit(src.Pos, Instr{Op: OpMove, A: varReg, B: elemReg})
+ 
++	skip := -1
++	outerCheck := level == whereLevel && level < len(q.Froms) && q.Where != nil
++	if outerCheck {
++		cond := fc.compileExpr(q.Where)
++		skip = len(fc.fn.Code)
++		fc.emit(q.Where.Pos, Instr{Op: OpJumpIfFalse, A: cond})
++	}
++
+ 	if level < len(q.Froms) {
+ 		fc.pushScope()
+-		fc.compileQueryFrom(q, dst, level+1)
++		fc.compileQueryFrom(q, dst, level+1, whereLevel)
+ 		fc.popScope()
+ 	} else {
+ 		fc.pushScope()
+",
+1306,3189294728,https://github.com/prebid/Prebid.js/pull/13460,Select Computationally Efficient Algorithms,,modules/invibesBidAdapter.js,1,"@@ -779,12 +779,8 @@ let keywords = (function () {
+   function parse(str, cap) {
+     let parsedStr = str.replace(/[<>~|\\""`!@#$%^&*()=+?]/g, '');
+ 
+-    function onlyUnique(value, index, self) {
+-      return value !== '' && self.indexOf(value) === index;
+-    }
+-
+     let words = parsedStr.split(/[\s,;.:]+/);
+-    let uniqueWords = words.filter(onlyUnique);
++    let uniqueWords = Array.from(new Set(words.filter(word => word)));
+     parsedStr = '';
+ 
+     for (let i = 0; i < uniqueWords.length; i++) {",
+1310,3215138589,https://github.com/jxxghp/MoviePilot/pull/4579,Select Computationally Efficient Algorithms,,app/helper/memory.py,8,"@@ -287,15 +516,14 @@ def _append_memory_leak_analysis(self, snapshot_file):
+             f.write(f""当前tracemalloc内存: {current / 1024 / 1024:.2f} MB\n"")
+             f.write(f""tracemalloc峰值内存: {peak / 1024 / 1024:.2f} MB\n"")
+             
+-            # 获取内存分配统计
++            # 获取内存分配统计（限制数量）
+             try:
+-                # 获取前10个内存分配最多的位置
+                 snapshot = tracemalloc.take_snapshot()
+                 top_stats = snapshot.statistics('lineno')
+                 
+-                f.write(""\n内存分配最多的位置 (前10个):\n"")
++                f.write(""\n内存分配最多的位置 (前5个):\n"")
+                 f.write(""-"" * 80 + ""\n"")
+-                for i, stat in enumerate(top_stats[:10], 1):
++                for i, stat in enumerate(top_stats[:5], 1):
+                     f.write(f""{i:2d}. {stat.count:>8} 个对象, {stat.size / 1024 / 1024:>8.2f} MB\n"")
+                     f.write(f""    {stat.traceback.format()}\n"")
+                     
+",
+1333,3235179464,https://github.com/microsoft/testfx/pull/6060,Select Computationally Efficient Algorithms,,src/Platform/Microsoft.Testing.Platform/TestHostControllers/TestHostControllersManager.cs,3,"@@ -157,10 +157,10 @@ internal async Task<TestHostControllerConfiguration> BuildAsync(ServiceProvider
+             ITestHostProcessLifetimeHandler lifetimeHandler = lifetimeHandlerFactory(serviceProvider);
+ 
+             // Check if we have already extensions of the same type with same id registered
+-            if (lifetimeHandlers.Any(x => x.TestHostProcessLifetimeHandler.Uid == lifetimeHandler.Uid))
++            (ITestHostProcessLifetimeHandler testHostProcessLifetimeHandler, int order)? existingHandler = lifetimeHandlers.Where(x => x.TestHostProcessLifetimeHandler.Uid == lifetimeHandler.Uid).FirstOrDefault();
++            if (existingHandler is not null)
+             {
+-                (ITestHostProcessLifetimeHandler testHostProcessLifetimeHandler, int _) = lifetimeHandlers.Single(x => x.TestHostProcessLifetimeHandler.Uid == lifetimeHandler.Uid);
+-                throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, PlatformResources.ExtensionWithSameUidAlreadyRegisteredErrorMessage, lifetimeHandler.Uid, testHostProcessLifetimeHandler.GetType()));
++                throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, PlatformResources.ExtensionWithSameUidAlreadyRegisteredErrorMessage, lifetimeHandler.Uid, existingHandler.Value.testHostProcessLifetimeHandler.GetType()));
+             }
+ 
+             // We initialize only if enabled
+",
+1337,3235179464,https://github.com/microsoft/testfx/pull/6060,Select Computationally Efficient Algorithms,,src/Platform/Microsoft.Testing.Platform/TestHostOrcherstrator/TestHostOrchestratorManager.cs,1,"@@ -31,9 +31,9 @@ public async Task<TestHostOrchestratorConfiguration> BuildAsync(ServiceProvider
+             ITestHostOrchestrator orchestrator = factory(serviceProvider);
+ 
+             // Check if we have already extensions of the same type with same id registered
+-            if (orchestrators.Any(x => x.Uid == orchestrator.Uid))
++            ITestHostOrchestrator? currentRegisteredExtension = orchestrators.Where(x => x.Uid == orchestrator.Uid).FirstOrDefault();
++            if (currentRegisteredExtension is not null)
+             {
+-                ITestHostOrchestrator currentRegisteredExtension = orchestrators.Single(x => x.Uid == orchestrator.Uid);
+                 throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, PlatformResources.ExtensionWithSameUidAlreadyRegisteredErrorMessage, orchestrator.Uid, currentRegisteredExtension.GetType()));
+             }
+ 
+",
+1368,3239263606,https://github.com/tldraw/tldraw/pull/6472,Use Smaller Data Types,,packages/tldraw/src/lib/shapes/draw/toolStates/Drawing.ts,7,"@@ -593,12 +614,16 @@ export class Drawing extends StateNode {
+ 				const newPoints = [...newSegment.points]
+ 
+ 				if (newPoints.length && this.mergeNextPoint) {
+-					const { z } = newPoints[newPoints.length - 1]
+-					newPoints[newPoints.length - 1] = {
++					const lastPoint = newPoints[newPoints.length - 1]
++					const mergedPoint: VecModel = {
+ 						x: newPoint.x,
+ 						y: newPoint.y,
+-						z: z ? Math.max(z, newPoint.z) : newPoint.z,
+ 					}
++					// For pressure, use the maximum of existing and new pressure (if either exists)
++					if (lastPoint.z !== undefined || newPoint.z !== undefined) {
++						mergedPoint.z = Math.max(lastPoint.z || 0, newPoint.z || 0)
++					}
++					newPoints[newPoints.length - 1] = mergedPoint
+ 					// Note: we could recompute the line length here, but it's not really necessary
+ 					// this.currentLineLength = this.getLineLength(newSegments)
+ 				} else {
+",

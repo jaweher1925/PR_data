@@ -1,0 +1,335 @@
+diff --git a/src/index.rs b/src/index.rs
+index a921b7a..2e0b2dc 100644
+--- a/src/index.rs
++++ b/src/index.rs
+@@ -3,7 +3,12 @@
+ //! This module provides secondary indexing capabilities for the key-value store,
+ //! allowing efficient queries on value content in addition to key lookups.
+ 
++use std::borrow::Borrow;
++use std::cmp::Ordering;
+ use std::collections::{BTreeMap, HashMap, HashSet};
++use std::fmt;
++use std::hash::{Hash, Hasher};
++use std::ops::Bound::Included;
+ use std::sync::{Arc, RwLock};
+ 
+ /// Types of indexes supported
+@@ -78,14 +83,118 @@ impl From<bool> for IndexValue {
+     }
+ }
+ 
++/// An index value in the internal data structures.
++///
++/// Values supplied directly to [`SecondaryIndex::insert`] remain owned, while
++/// values fanned out by [`IndexManager`] are reference counted. This lets all
++/// managed indexes share one immutable value without changing the public
++/// [`IndexValue`] API or adding overhead to direct insertions.
++#[derive(Clone)]
++enum StoredIndexValue {
++    Owned(IndexValue),
++    Shared(Arc<IndexValue>),
++}
++
++impl StoredIndexValue {
++    fn as_value(&self) -> &IndexValue {
++        match self {
++            Self::Owned(value) => value,
++            Self::Shared(value) => value,
++        }
++    }
++}
++
++impl Borrow<IndexValue> for StoredIndexValue {
++    fn borrow(&self) -> &IndexValue {
++        self.as_value()
++    }
++}
++
++impl fmt::Debug for StoredIndexValue {
++    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
++        self.as_value().fmt(formatter)
++    }
++}
++
++impl PartialEq for StoredIndexValue {
++    fn eq(&self, other: &Self) -> bool {
++        self.as_value() == other.as_value()
++    }
++}
++
++impl Eq for StoredIndexValue {}
++
++impl PartialOrd for StoredIndexValue {
++    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
++        Some(self.cmp(other))
++    }
++}
++
++impl Ord for StoredIndexValue {
++    fn cmp(&self, other: &Self) -> Ordering {
++        self.as_value().cmp(other.as_value())
++    }
++}
++
++impl Hash for StoredIndexValue {
++    fn hash<H: Hasher>(&self, state: &mut H) {
++        self.as_value().hash(state);
++    }
++}
++
++/// A primary key stored in a secondary index.
++///
++/// Direct inserts retain the caller's `String`. Managed inserts use the shared
++/// form so the key's bytes are allocated only once, regardless of index count.
++#[derive(Clone)]
++enum StoredKey {
++    Owned(String),
++    Shared(Arc<str>),
++}
++
++impl StoredKey {
++    fn as_str(&self) -> &str {
++        match self {
++            Self::Owned(key) => key,
++            Self::Shared(key) => key,
++        }
++    }
++}
++
++impl Borrow<str> for StoredKey {
++    fn borrow(&self) -> &str {
++        self.as_str()
++    }
++}
++
++impl fmt::Debug for StoredKey {
++    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
++        self.as_str().fmt(formatter)
++    }
++}
++
++impl PartialEq for StoredKey {
++    fn eq(&self, other: &Self) -> bool {
++        self.as_str() == other.as_str()
++    }
++}
++
++impl Eq for StoredKey {}
++
++impl Hash for StoredKey {
++    fn hash<H: Hasher>(&self, state: &mut H) {
++        self.as_str().hash(state);
++    }
++}
++
+ /// Secondary index structure
+ #[derive(Debug)]
+ pub struct SecondaryIndex {
+     config: IndexConfig,
+     // For hash indexes: value -> set of keys
+-    hash_index: Arc<RwLock<HashMap<IndexValue, HashSet<String>>>>,
++    hash_index: Arc<RwLock<HashMap<StoredIndexValue, HashSet<StoredKey>>>>,
+     // For btree indexes: sorted map of value -> set of keys
+-    btree_index: Arc<RwLock<BTreeMap<IndexValue, HashSet<String>>>>,
++    btree_index: Arc<RwLock<BTreeMap<StoredIndexValue, HashSet<StoredKey>>>>,
+ }
+ 
+ impl SecondaryIndex {
+@@ -100,38 +209,43 @@ impl SecondaryIndex {
+ 
+     /// Add an entry to the index
+     pub fn insert(&self, key: String, value: IndexValue) -> Result<(), IndexError> {
++        self.insert_stored(StoredKey::Owned(key), StoredIndexValue::Owned(value))
++    }
++
++    /// Add data already shared by an index-manager operation.
++    fn insert_stored(&self, key: StoredKey, value: StoredIndexValue) -> Result<(), IndexError> {
+         match self.config.index_type {
+             IndexType::Hash => {
+                 let mut index = self.hash_index.write().unwrap();
+ 
+                 if self.config.unique {
+-                    if let Some(existing_keys) = index.get(&value) {
+-                        if !existing_keys.is_empty() && !existing_keys.contains(&key) {
++                    if let Some(existing_keys) = index.get(value.as_value()) {
++                        if !existing_keys.is_empty() && !existing_keys.contains(key.as_str()) {
+                             return Err(IndexError::UniqueConstraintViolation {
+                                 index: self.config.name.clone(),
+-                                value: format!("{:?}", value),
++                                value: format!("{:?}", value.as_value()),
+                             });
+                         }
+                     }
+                 }
+ 
+-                index.entry(value).or_insert_with(HashSet::new).insert(key);
++                index.entry(value).or_default().insert(key);
+             }
+             IndexType::BTree => {
+                 let mut index = self.btree_index.write().unwrap();
+ 
+                 if self.config.unique {
+-                    if let Some(existing_keys) = index.get(&value) {
+-                        if !existing_keys.is_empty() && !existing_keys.contains(&key) {
++                    if let Some(existing_keys) = index.get(value.as_value()) {
++                        if !existing_keys.is_empty() && !existing_keys.contains(key.as_str()) {
+                             return Err(IndexError::UniqueConstraintViolation {
+                                 index: self.config.name.clone(),
+-                                value: format!("{:?}", value),
++                                value: format!("{:?}", value.as_value()),
+                             });
+                         }
+                     }
+                 }
+ 
+-                index.entry(value).or_insert_with(HashSet::new).insert(key);
++                index.entry(value).or_default().insert(key);
+             }
+             _ => {
+                 // TODO: Implement other index types
+@@ -174,11 +288,17 @@ impl SecondaryIndex {
+         match self.config.index_type {
+             IndexType::Hash => {
+                 let index = self.hash_index.read().unwrap();
+-                Ok(index.get(value).cloned().unwrap_or_default())
++                Ok(index
++                    .get(value)
++                    .map(|keys| keys.iter().map(|key| key.as_str().to_owned()).collect())
++                    .unwrap_or_default())
+             }
+             IndexType::BTree => {
+                 let index = self.btree_index.read().unwrap();
+-                Ok(index.get(value).cloned().unwrap_or_default())
++                Ok(index
++                    .get(value)
++                    .map(|keys| keys.iter().map(|key| key.as_str().to_owned()).collect())
++                    .unwrap_or_default())
+             }
+             _ => Err(IndexError::UnsupportedIndexType),
+         }
+@@ -195,8 +315,8 @@ impl SecondaryIndex {
+                 let index = self.btree_index.read().unwrap();
+                 let mut result = HashSet::new();
+ 
+-                for (_, keys) in index.range(start.clone()..=end.clone()) {
+-                    result.extend(keys.iter().cloned());
++                for (_, keys) in index.range::<IndexValue, _>((Included(start), Included(end))) {
++                    result.extend(keys.iter().map(|key| key.as_str().to_owned()));
+                 }
+ 
+                 Ok(result)
+@@ -269,16 +389,37 @@ impl IndexManager {
+     ) -> Result<(), IndexError> {
+         let indexes = self.indexes.read().unwrap();
+ 
+-        for (_, index) in indexes.iter() {
++        if indexes.is_empty() {
++            return Ok(());
++        }
++
++        let old_index_value = old_value.map(|old| IndexValue::String(old.to_owned()));
++
++        // Keep the single-index path allocation-equivalent to a direct insert;
++        // reference counting only pays off when the data is actually shared.
++        if indexes.len() == 1 {
++            let index = indexes.values().next().expect("index count was checked");
++
++            if let Some(old_index_value) = &old_index_value {
++                index.remove(key, old_index_value)?;
++            }
++
++            return index.insert(key.to_owned(), IndexValue::String(new_value.to_owned()));
++        }
++
++        let new_index_value = StoredIndexValue::Shared(Arc::new(IndexValue::String(
++            new_value.to_owned(),
++        )));
++        let stored_key = StoredKey::Shared(Arc::from(key));
++
++        for index in indexes.values() {
+             // Remove old value from index if it exists
+-            if let Some(old) = old_value {
+-                let old_index_value = IndexValue::String(old.to_string());
+-                index.remove(key, &old_index_value)?;
++            if let Some(old_index_value) = &old_index_value {
++                index.remove(key, old_index_value)?;
+             }
+ 
+             // Add new value to index
+-            let new_index_value = IndexValue::String(new_value.to_string());
+-            index.insert(key.to_string(), new_index_value)?;
++            index.insert_stored(stored_key.clone(), new_index_value.clone())?;
+         }
+ 
+         Ok(())
+@@ -288,8 +429,13 @@ impl IndexManager {
+     pub fn remove_from_indexes(&self, key: &str, value: &str) -> Result<(), IndexError> {
+         let indexes = self.indexes.read().unwrap();
+ 
+-        for (_, index) in indexes.iter() {
+-            let index_value = IndexValue::String(value.to_string());
++        if indexes.is_empty() {
++            return Ok(());
++        }
++
++        let index_value = IndexValue::String(value.to_owned());
++
++        for index in indexes.values() {
+             index.remove(key, &index_value)?;
+         }
+ 
+@@ -432,4 +578,53 @@ mod tests {
+             )
+             .unwrap();
+     }
++
++    #[test]
++    fn test_manager_updates_and_removes_multiple_indexes() {
++        let manager = IndexManager::new();
++
++        for (name, index_type) in [
++            ("hash_index", IndexType::Hash),
++            ("btree_index", IndexType::BTree),
++        ] {
++            manager
++                .create_index(IndexConfig {
++                    name: name.to_owned(),
++                    index_type,
++                    unique: false,
++                    filter: None,
++                })
++                .unwrap();
++        }
++
++        manager.update_indexes("key", None, "old").unwrap();
++        manager
++            .update_indexes("key", Some("old"), "new")
++            .unwrap();
++
++        for name in ["hash_index", "btree_index"] {
++            let index = manager.get_index(name).unwrap();
++            assert!(index
++                .find_exact(&IndexValue::String("old".to_owned()))
++                .unwrap()
++                .is_empty());
++            assert_eq!(
++                index
++                    .find_exact(&IndexValue::String("new".to_owned()))
++                    .unwrap(),
++                HashSet::from(["key".to_owned()])
++            );
++        }
++
++        manager.remove_from_indexes("key", "new").unwrap();
++
++        for name in ["hash_index", "btree_index"] {
++            assert!(manager
++                .get_index(name)
++                .unwrap()
++                .find_exact(&IndexValue::String("new".to_owned()))
++                .unwrap()
++                .is_empty());
++        }
++    }
+ }

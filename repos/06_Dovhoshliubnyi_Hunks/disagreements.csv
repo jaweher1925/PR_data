@@ -1,0 +1,2271 @@
+part_id,pr_id,pr_url,filename,hunk_index,final_sub_pattern,categories_anthropic,reasoning_anthropic,categories_openai,reasoning_openai,agreement_type,intersection_categories,hunk_content
+44,2991070962,https://github.com/calcom/cal.com/pull/20676,packages/trpc/server/routers/viewer/eventTypes/_router.ts,3,Caching,14:object_creation(0.85)@L4-4,"A new cache entry object `{ data: result, timestamp: now }` is created and stored via `EVENT_TYPES_CACHE.set(...)`, which is a new object initialization/creation added to cache the result.",0:added_code_from_github(0.95)@L5-5,"The diff adds a new executable statement that stores the result in a cache, without clearly matching any more specific mutation category.",full_disagree,,"@@ -103,6 +114,8 @@ export const eventTypesRouter = router({
+ 
+       timer();
+ 
++      EVENT_TYPES_CACHE.set(cacheKey, { data: result, timestamp: now });
++
+       return result;
+     }),
+ "
+45,2991070962,https://github.com/calcom/cal.com/pull/20676,packages/trpc/server/routers/viewer/eventTypes/getEventTypesFromGroup.handler.ts,1,Caching,6:method_name_change(0.90)@L12-13,"The import of `mapEventType` is replaced with `mapEventTypeLightweight` (a renamed/different function), and `mapEventType` is changed to a type-only import, indicating the actual runtime function being used is renamed to a lightweight variant.",12:name_modification(0.97)@L7-8,"The diff changes the imported symbol usage by converting mapEventType to a type-only import and adding a different imported name, mapEventTypeLightweight, which is a clear name/import modification without evidence of type-signature or control-flow changes.",full_disagree,,"@@ -9,7 +9,8 @@ import type { PrismaClient } from ""@calcom/prisma"";
+ 
+ import type { TrpcSessionUser } from ""../../../types"";
+ import type { TGetEventTypesFromGroupSchema } from ""./getByViewer.schema"";
+-import { mapEventType } from ""./util"";
++import type { mapEventType } from ""./util"";
++import { mapEventTypeLightweight } from ""./util"";
+ 
+ const log = logger.getSubLogger({ prefix: [""getEventTypesFromGroup""] });
+ 
+"
+46,2991070962,https://github.com/calcom/cal.com/pull/20676,packages/trpc/server/routers/viewer/eventTypes/getEventTypesFromGroup.handler.ts,2,Caching,6:method_name_change(0.99)@L4-5,"The method being called is renamed from `findAllByUpId` to `findAllByUpIdLightweight`, which is a method name change.",12:name_modification(0.98)@L4-5,"The diff changes a called method name from EventTypeRepository.findAllByUpId to EventTypeRepository.findAllByUpIdLightweight without altering control flow, types, or return statements.",full_disagree,,"@@ -56,7 +57,7 @@ export const getEventTypesFromGroup = async ({
+     };
+ 
+     const [nonChildEventTypes, childEventTypes] = await Promise.all([
+-      EventTypeRepository.findAllByUpId(
++      EventTypeRepository.findAllByUpIdLightweight(
+         {
+           upId: userProfile.upId,
+           userId: ctx.user.id,
+"
+50,2991070962,https://github.com/calcom/cal.com/pull/20676,packages/trpc/server/routers/viewer/eventTypes/util.ts,1,Caching,4:duplicate_code(0.85)@L4-12,"A new exported function `mapEventTypeLightweight` is added that duplicates a subset of the logic from `mapEventType` (specifically the `safeDescription` and `metadata` fields), representing a lightweight version with duplicate code patterns.",0:added_code_from_github(0.98)@L6-13; 13:control_flow(0.91)@L9-11; 16:arithmetic_manipulation(0.88)@L9-12,"The diff adds a new function `mapEventTypeLightweight`, includes ternary-based conditional logic, and introduces comparison/boolean operators such as `&&`, `>`, and `? :` in the added code.",full_disagree,,"@@ -222,3 +222,12 @@ export const mapEventType = async (eventType: EventType) => ({
+     }))
+   ),
+ });
++
++export const mapEventTypeLightweight = async (eventType: EventType) => ({
++  ...eventType,
++  safeDescription:
++    eventType?.description && eventType.description.length > 0
++      ? markdownToSafeHTML(eventType.description)
++      : undefined,
++  metadata: eventType.metadata ? EventTypeMetaDataSchema.parse(eventType.metadata) : null,
++});"
+57,3006445782,https://github.com/saturday06/VRM-Addon-for-Blender/pull/795,src/io_scene_vrm/editor/spring_bone1/handler.py,3,Caching,,"The diff extracts sub-expressions (`.to_translation()` calls) into intermediate variables and renames `obj.matrix_world` to `obj_matrix_world` (a cached local variable), representing statement splitting and name modification.",15:statement_splitting(0.96)@L6-11; 12:name_modification(0.88)@L8-15,"The diff extracts repeated translation sub-expressions into an intermediate variable (statement splitting), replaces uses of obj.matrix_world and direct expressions with renamed variables, and directly changes the expression assigned from the tail translation computation.",full_disagree,,"@@ -563,14 +571,15 @@ def calculate_joint_pair_head_pose_bone_rotations(
+             @ current_head_rest_object_matrix
+         )
+ 
++    next_head_pose_bone_before_rotation_matrix_translation = next_head_pose_bone_before_rotation_matrix.to_translation()
+     next_head_world_translation = (
+-        obj.matrix_world @ next_head_pose_bone_before_rotation_matrix.to_translation()
++        obj_matrix_world @ next_head_pose_bone_before_rotation_matrix_translation
+     )
+ 
+     if not tail_joint.animation_state.initialized_as_tail:
+         initial_tail_world_translation = (
+-            obj.matrix_world @ current_tail_pose_bone_matrix
+-        ).to_translation()
++            obj_matrix_world @ current_tail_pose_bone_matrix_translation
++        )
+         tail_joint.animation_state.initialized_as_tail = True
+         tail_joint.animation_state.previous_world_translation = list(
+             initial_tail_world_translation
+"
+67,3006534682,https://github.com/saturday06/VRM-Addon-for-Blender/pull/797,src/io_scene_vrm/editor/spring_bone1/handler.py,6,Caching,15:statement_splitting(0.90)@L1-7,"The call to `.inverted_safe()` is replaced with a pre-computed variable `current_head_rest_object_matrix_inverted`, which is a cached/extracted intermediate variable (statement splitting), avoiding redundant computation at the call site.",12:name_modification(0.94)@L4-4,"The only clear change is replacing a method call expression with an existing differently named variable/expression (`current_head_rest_object_matrix.inverted_safe()` → `current_head_rest_object_matrix_inverted`), which is best classified as a name modification.",full_disagree,,"@@ -669,7 +709,7 @@ def calculate_joint_pair_head_pose_bone_rotations(
+ 
+     next_tail_pose_bone_before_rotation_matrix = (
+         next_head_pose_bone_matrix
+-        @ current_head_rest_object_matrix.inverted_safe()
++        @ current_head_rest_object_matrix_inverted
+         @ current_tail_rest_object_matrix
+     )
+ "
+72,3033566586,https://github.com/calcom/cal.com/pull/21048,apps/web/components/apps/AppPage.tsx,2,Caching,14:object_creation(0.85)@L4-5,"The function definition is wrapped with `useCallback(...)`, which is a new function call/initialization wrapping the existing arrow function.",,"The function definition is changed to call useCallback around the same arrow function body, which is best captured as a name/callee modification rather than a type, control-flow, or return change.",full_disagree,,"@@ -111,7 +111,7 @@ export const AppPage = ({
+     isPaid: !!paid,
+   });
+ 
+-  const handleAppInstall = () => {
++  const handleAppInstall = useCallback(() => {
+     setIsLoading(true);
+     if (isConferencing(categories)) {
+       mutation.mutate({
+"
+75,3033566586,https://github.com/calcom/cal.com/pull/21048,apps/web/modules/apps/apps-view.tsx,2,Caching,14:object_creation(0.85)@L4-21,"The diff introduces lazy-loaded component definitions using `lazy()` with dynamic `import()` calls, which are new object/component creations (lazy component wrappers) initialized with factory functions.",0:added_code_from_github(0.98)@L3-19; 12:name_modification(0.88)@L3-19,"The diff adds several new lazy-loaded component declarations and introduces new identifiers such as AllApps, AppStoreCategories, PopularAppsSlider, and RecentAppsSlider, with no clear evidence of other mutation types.",full_disagree,,"@@ -18,6 +14,23 @@ import { HorizontalTabs } from ""@calcom/ui/components/navigation"";
+ 
+ import AppsLayout from ""@components/apps/layouts/AppsLayout"";
+ 
++const AllApps = lazy(() =>
++  import(""@calcom/features/apps/components/AllApps"").then((mod) => ({ default: mod.AllApps }))
++);
++const AppStoreCategories = lazy(() =>
++  import(""@calcom/features/apps/components/Categories"").then((mod) => ({ default: mod.AppStoreCategories }))
++);
++const PopularAppsSlider = lazy(() =>
++  import(""@calcom/features/apps/components/PopularAppsSlider"").then((mod) => ({
++    default: mod.PopularAppsSlider,
++  }))
++);
++const RecentAppsSlider = lazy(() =>
++  import(""@calcom/features/apps/components/RecentAppsSlider"").then((mod) => ({
++    default: mod.RecentAppsSlider,
++  }))
++);
++
+ const tabs: HorizontalTabItemProps[] = [
+   {
+     name: ""app_store"",
+"
+78,3033566586,https://github.com/calcom/cal.com/pull/21048,packages/app-store/_appRegistry.ts,1,Caching,12:name_modification(0.95)@L4-4,"The diff adds an import of `getCache` and `setCache` from a new cache module, which is a name/import modification introducing new named utilities into scope.",0:added_code_from_github(0.95)@L4-4,"The diff adds a new import statement for getCache and setCache, which is clearly added code and does not show any other mutation pattern.",full_disagree,,"@@ -1,6 +1,7 @@
+ import { appStoreMetadata } from ""@calcom/app-store/appStoreMetaData"";
+ import { getAppFromSlug } from ""@calcom/app-store/utils"";
+ import getInstallCountPerApp from ""@calcom/lib/apps/getInstallCountPerApp"";
++import { getCache, setCache } from ""@calcom/lib/cache"";
+ import { getAllDelegationCredentialsForUser } from ""@calcom/lib/delegationCredential/server"";
+ import type { UserAdminTeams } from ""@calcom/lib/server/repository/user"";
+ import prisma, { safeAppSelect, safeCredentialSelect } from ""@calcom/prisma"";
+"
+82,3033566586,https://github.com/calcom/cal.com/pull/21048,packages/features/apps/components/AllApps.tsx,3,Caching,14:object_creation(0.85)@L4-25,"The plain variable assignment of `filteredApps` is wrapped in a `useMemo(() => { ... }, [apps, selectedCategory, searchText])` call, which is a new object/memoized-value creation construct added around the existing computation.",0:added_code_from_github(0.86)@L16-30; 15:statement_splitting(0.90)@L16-30,"The diff wraps the existing chained expression in a new useMemo callback with a dependency array, introducing new code and restructuring a single assignment expression into a block with an explicit return.",full_disagree,,"@@ -150,20 +150,22 @@ export function AllApps({ apps, searchText, categories, userAdminTeams }: AllApp
+     setSelectedCategory(validCategory);
+   };
+ 
+-  const filteredApps = apps
+-    .filter((app) =>
+-      selectedCategory !== null
+-        ? app.categories
+-          ? app.categories.includes(selectedCategory as AppCategories)
+-          : app.category === selectedCategory
+-        : true
+-    )
+-    .filter((app) => (searchText ? app.name.toLowerCase().includes(searchText.toLowerCase()) : true))
+-    .sort(function (a, b) {
+-      if (a.name < b.name) return -1;
+-      else if (a.name > b.name) return 1;
+-      return 0;
+-    });
++  const filteredApps = useMemo(() => {
++    return apps
++      .filter((app) =>
++        selectedCategory !== null
++          ? app.categories
++            ? app.categories.includes(selectedCategory as AppCategories)
++            : app.category === selectedCategory
++          : true
++      )
++      .filter((app) => (searchText ? app.name.toLowerCase().includes(searchText.toLowerCase()) : true))
++      .sort(function (a, b) {
++        if (a.name < b.name) return -1;
++        else if (a.name > b.name) return 1;
++        return 0;
++      });
++  }, [apps, selectedCategory, searchText]);
+ 
+   return (
+     <div>
+"
+86,3033886992,https://github.com/calcom/cal.com/pull/21052,apps/web/components/apps/AppPage.tsx,2,Caching,14:object_creation(0.92)@L4-5,"The function definition is wrapped with `useCallback(...)`, which is a new function call/object creation wrapping the existing arrow function.",12:name_modification(0.82)@L4-8,"The function definition line changes by wrapping the existing handler assignment in a different identifier call (`useCallback`), which is best classified as a name/call modification with no other clearly visible syntactic mutation in the shown diff.",full_disagree,,"@@ -111,7 +111,7 @@ export const AppPage = ({
+     isPaid: !!paid,
+   });
+ 
+-  const handleAppInstall = () => {
++  const handleAppInstall = useCallback(() => {
+     setIsLoading(true);
+     if (isConferencing(categories)) {
+       mutation.mutate({
+"
+88,3033886992,https://github.com/calcom/cal.com/pull/21052,apps/web/modules/apps/apps-view.tsx,2,Caching,14:object_creation(0.90)@L4-21,"The diff adds new lazy-loaded component definitions using `lazy()` and dynamic `import()` calls, which are new object/value creation initializations replacing what were likely direct imports.",0:added_code_from_github(0.99)@L3-17,"The diff adds several new lazy-loaded component declarations without any clearer evidence of other mutation types such as control-flow, type, return, or statement-splitting changes.",full_disagree,,"@@ -18,6 +14,23 @@ import { HorizontalTabs } from ""@calcom/ui/components/navigation"";
+ 
+ import AppsLayout from ""@components/apps/layouts/AppsLayout"";
+ 
++const AllApps = lazy(() =>
++  import(""@calcom/features/apps/components/AllApps"").then((mod) => ({ default: mod.AllApps }))
++);
++const AppStoreCategories = lazy(() =>
++  import(""@calcom/features/apps/components/Categories"").then((mod) => ({ default: mod.AppStoreCategories }))
++);
++const PopularAppsSlider = lazy(() =>
++  import(""@calcom/features/apps/components/PopularAppsSlider"").then((mod) => ({
++    default: mod.PopularAppsSlider,
++  }))
++);
++const RecentAppsSlider = lazy(() =>
++  import(""@calcom/features/apps/components/RecentAppsSlider"").then((mod) => ({
++    default: mod.RecentAppsSlider,
++  }))
++);
++
+ const tabs: HorizontalTabItemProps[] = [
+   {
+     name: ""app_store"",
+"
+89,3033886992,https://github.com/calcom/cal.com/pull/21052,apps/web/modules/apps/apps-view.tsx,3,Caching,14:object_creation(0.95)@L1-22,"The diff wraps existing JSX elements in new `<Suspense>` component instances with fallback prop containing new JSX elements, which constitutes modified object creation/initialization of React components.",0:added_code_from_github(0.92)@L6-24; 10:extra_brackets(0.88)@L6-24,"The diff adds Suspense wrapper code around existing JSX blocks, which is added code and introduces extra enclosing brackets/tags without clearly matching other mutation categories.",full_disagree,,"@@ -84,18 +97,22 @@ export default function Apps({ isAdmin, categories, appStore, userAdminTeams }:
+       emptyStore={!appStore.length}>
+       <div className=""flex flex-col gap-y-8"">
+         {!searchText && (
+-          <>
+-            <AppStoreCategories categories={categories} />
+-            <PopularAppsSlider items={appStore} />
+-            <RecentAppsSlider items={appStore} />
+-          </>
++          <Suspense fallback={<div className=""bg-subtle h-24 animate-pulse rounded-md"" />}>
++            <>
++              <AppStoreCategories categories={categories} />
++              <PopularAppsSlider items={appStore} />
++              <RecentAppsSlider items={appStore} />
++            </>
++          </Suspense>
+         )}
+-        <AllApps
+-          apps={appStore}
+-          searchText={searchText}
+-          categories={categories.map((category) => category.name)}
+-          userAdminTeams={userAdminTeams}
+-        />
++        <Suspense fallback={<div className=""bg-subtle h-96 animate-pulse rounded-md"" />}>
++          <AllApps
++            apps={appStore}
++            searchText={searchText}
++            categories={categories.map((category) => category.name)}
++            userAdminTeams={userAdminTeams}
++          />
++        </Suspense>
+       </div>
+     </AppsLayout>
+   );"
+91,3033886992,https://github.com/calcom/cal.com/pull/21052,packages/app-store/_appRegistry.ts,1,Caching,12:name_modification(0.95)@L4-4,"The diff only adds an import statement for `getCache` and `setCache` from a new module path, which is a name/import modification introducing new named references.",0:added_code_from_github(0.96)@L5-5,"The diff adds a new import statement for getCache and setCache, which is an addition of code without any clearer evidence of other mutation patterns.",full_disagree,,"@@ -1,6 +1,7 @@
+ import { appStoreMetadata } from ""@calcom/app-store/appStoreMetaData"";
+ import { getAppFromSlug } from ""@calcom/app-store/utils"";
+ import getInstallCountPerApp from ""@calcom/lib/apps/getInstallCountPerApp"";
++import { getCache, setCache } from ""@calcom/lib/cache"";
+ import { getAllDelegationCredentialsForUser } from ""@calcom/lib/delegationCredential/server"";
+ import type { UserAdminTeams } from ""@calcom/lib/server/repository/user"";
+ import prisma, { safeAppSelect, safeCredentialSelect } from ""@calcom/prisma"";
+"
+97,3033886992,https://github.com/calcom/cal.com/pull/21052,packages/features/apps/components/AllApps.tsx,3,Caching,14:object_creation(0.95)@L4-22,"The diff wraps the existing filteredApps computation inside a useMemo() hook call, which is a new object/hook initialization added around the existing filtering and sorting logic.",0:added_code_from_github(0.83)@L14-27,"The patch wraps the existing filteredApps computation in a new useMemo callback with a dependency array, adding new code and restructuring the original single assignment into a callback body with an explicit return.",full_disagree,,"@@ -150,20 +150,22 @@ export function AllApps({ apps, searchText, categories, userAdminTeams }: AllApp
+     setSelectedCategory(validCategory);
+   };
+ 
+-  const filteredApps = apps
+-    .filter((app) =>
+-      selectedCategory !== null
+-        ? app.categories
+-          ? app.categories.includes(selectedCategory as AppCategories)
+-          : app.category === selectedCategory
+-        : true
+-    )
+-    .filter((app) => (searchText ? app.name.toLowerCase().includes(searchText.toLowerCase()) : true))
+-    .sort(function (a, b) {
+-      if (a.name < b.name) return -1;
+-      else if (a.name > b.name) return 1;
+-      return 0;
+-    });
++  const filteredApps = useMemo(() => {
++    return apps
++      .filter((app) =>
++        selectedCategory !== null
++          ? app.categories
++            ? app.categories.includes(selectedCategory as AppCategories)
++            : app.category === selectedCategory
++          : true
++      )
++      .filter((app) => (searchText ? app.name.toLowerCase().includes(searchText.toLowerCase()) : true))
++      .sort(function (a, b) {
++        if (a.name < b.name) return -1;
++        else if (a.name > b.name) return 1;
++        return 0;
++      });
++  }, [apps, selectedCategory, searchText]);
+ 
+   return (
+     <div>
+"
+104,3046771940,https://github.com/calcom/cal.com/pull/21166,packages/trpc/server/routers/viewer/slots/util.ts,3,Caching,8:inlining(0.92)@L9-11; 12:name_modification(0.85)@L5-7,"The call to `getSlotsFn` is replaced with a direct call to `getSlots` (inlining/bypassing the wrapper), and `monitorCallbackSync(getSlots)` gains an extra string argument `'getSlots'` (name modification to the call arguments).",,"The diff splits the `getSlotsFn` assignment across two lines and changes the subsequent call from `getSlotsFn(...)` to `getSlots(...)`, which is a called-name modification.",full_disagree,,"@@ -505,9 +505,10 @@ async function _getAvailableSlots({ input, ctx }: GetScheduleOptions): Promise<I
+     eventType.schedulingType === SchedulingType.ROUND_ROBIN ||
+     allUsersAvailability.length > 1;
+ 
+-  const getSlotsFn = process.env.NODE_ENV === ""production"" ? monitorCallbackSync(getSlots) : getSlots;
++  const getSlotsFn =
++    process.env.NODE_ENV === ""production"" ? monitorCallbackSync(getSlots, ""getSlots"") : getSlots;
+ 
+-  const timeSlots = getSlotsFn({
++  const timeSlots = getSlots({
+     inviteeDate: startTime,
+     eventLength: input.duration || eventType.length,
+     offsetStart: eventType.offsetStart,"
+106,3075207290,https://github.com/hyperlight-dev/hyperlight/pull/510,src/hyperlight_host/src/hypervisor/hyperv_linux.rs,3,Caching,3:deleted_blocks(0.95)@L5-6,"The `.clone()` call is removed from the `mshv` value returned from the match arm, which is a deletion of code (removing the clone operation for a performance improvement).",12:name_modification(0.93)@L6-6,"The patch replaces the method call expression `mshv.clone()` with the variable `mshv`, which is a direct modification of the called name/expression without changing control flow, types, or return statements.",full_disagree,,"@@ -328,7 +334,7 @@ impl HypervLinuxDriver {
+         #[cfg(gdb)] gdb_conn: Option<DebugCommChannel<DebugResponse, DebugMsg>>,
+     ) -> Result<Self> {
+         let mshv = match get_mshv_handle() {
+-            Some(mshv) => mshv.clone(),
++            Some(mshv) => mshv,
+             None => return Err(new_error!(""MSHV is not available on this system"")),
+         };
+ "
+107,3075207290,https://github.com/hyperlight-dev/hyperlight/pull/510,src/hyperlight_host/src/hypervisor/kvm.rs,3,Caching,6:method_name_change(0.95)@L4-5,"The change removes the `.clone()` call on `kvm`, replacing `kvm.clone()` with just `kvm`, which is a method call removal (the method `clone` is no longer called).",,"The only meaningful change replaces `kvm.clone()` with `kvm`, which is a modification of the expression/name used without changing control flow, types, or return statements.",full_disagree,,"@@ -314,7 +320,7 @@ impl KVMDriver {
+         #[cfg(gdb)] gdb_conn: Option<DebugCommChannel<DebugResponse, DebugMsg>>,
+     ) -> Result<Self> {
+         let kvm = match get_kvm_handle() {
+-            Some(kvm) => kvm.clone(),
++            Some(kvm) => kvm,
+             None => return Err(new_error!(""KVM is not available on this system"")),
+         };
+ "
+114,3104406142,https://github.com/phel-lang/phel-lang/pull/823,src/php/Lang/Collections/Vector/PersistentVector.php,2,Caching,15:statement_splitting(0.80)@L5-5,"A new assignment statement `$this->tailSize = count($tail)` is added to the constructor, caching the result of `count($tail)` into an instance variable — this is statement splitting/caching of a sub-expression into an intermediate field for performance.",0:added_code_from_github(0.93)@L4-8,"The diff adds a new executable statement assigning $this->tailSize = count($tail); in the constructor, without clearly matching any more specific mutation category.",full_disagree,,"@@ -50,6 +52,7 @@ public function __construct(
+         private readonly array $tail,
+     ) {
+         parent::__construct($hasher, $equalizer, $meta);
++        $this->tailSize = count($tail);
+     }
+ 
+     public static function empty(HasherInterface $hasher, EqualizerInterface $equalizer): self
+"
+119,3128867544,https://github.com/mochilang/mochi/pull/214,interpreter/interpreter.go,1,Caching,,"A new helper function `argsKey` is added that marshals arguments to a JSON string key, which is a common memoization/caching pattern; since it doesn't clearly fit other mutation categories and represents arbitrary new code added, it best matches added_code_from_github.",0:added_code_from_github(0.97)@L5-8; 5:return_statement_mods(0.90)@L7-8,"The diff adds a new helper function with executable code, including a new return statement returning string(b).",full_disagree,,"@@ -157,6 +157,11 @@ func valueToAny(v Value) any {
+ 	}
+ }
+ 
++func argsKey(args []any) string {
++	b, _ := json.Marshal(args)
++	return string(b)
++}
++
+ // Interpreter executes Mochi programs using a shared runtime and type environment.
+ type Interpreter struct {
+ 	prog     *parser.Program
+"
+131,3164813640,https://github.com/FarmBot/Farmbot-Web-App/pull/2493,frontend/photos/images/image_flipper.tsx,3,Caching,,"A new prop `preloadedImage={this.preloadedImgs[currentImage.uuid]}` is added to the component, introducing new functionality (preloaded image passing) that wasn't present before.",0:added_code_from_github(0.83)@L4-10,"The diff adds a new prop argument line to a JSX component invocation, which is added code without clearer evidence of other mutation categories.",full_disagree,,"@@ -94,6 +127,7 @@ export class ImageFlipper extends
+           target={this.props.target}
+           hover={this.props.hover}
+           onImageLoad={this.onImageLoad}
++          preloadedImage={this.preloadedImgs[currentImage.uuid]}
+           dark={dark}
+           image={currentImage} />
+         : <PlaceholderImg textOverlay={Content.NO_IMAGES_YET}"
+137,3166859797,https://github.com/jdereg/java-util/pull/347,src/main/java/com/cedarsoftware/util/Unsafe.java,2,Caching,6:method_name_change(0.95)@L4-9,"The diff replaces direct calls to `getDeclaredField` and `getMethod` on the unsafe class with calls to `ReflectionUtils.getField` and `ReflectionUtils.getMethod`, which are method name/call changes routing through a utility class.",12:name_modification(0.97)@L5-10,"The patch replaces direct reflection calls on unsafeClass (getDeclaredField/getMethod) with calls to ReflectionUtils.getField/getMethod, which is a clear method/class name substitution without changing control flow, types, or return statements.",full_disagree,,"@@ -22,10 +23,10 @@ final class Unsafe
+     public Unsafe() {
+         try {
+             Class<?> unsafeClass = forName(""sun.misc.Unsafe"", ClassUtilities.getClassLoader(Unsafe.class));
+-            Field f = unsafeClass.getDeclaredField(""theUnsafe"");
++            Field f = ReflectionUtils.getField(unsafeClass, ""theUnsafe"");
+             trySetAccessible(f);
+             sunUnsafe = f.get(null);
+-            allocateInstance = unsafeClass.getMethod(""allocateInstance"", Class.class);
++            allocateInstance = ReflectionUtils.getMethod(unsafeClass, ""allocateInstance"", Class.class);
+             trySetAccessible(allocateInstance);
+         }
+         catch (Exception e) {
+"
+138,3166859797,https://github.com/jdereg/java-util/pull/347,src/main/java/com/cedarsoftware/util/Unsafe.java,3,Caching,6:method_name_change(0.85)@L4-5,"The call `allocateInstance.invoke(sunUnsafe, clazz)` is replaced with `ReflectionUtils.call(sunUnsafe, allocateInstance, clazz)`, which substitutes a different method name/API for performing the reflective invocation.",12:name_modification(0.95)@L4-4; 5:return_statement_mods(0.88)@L4-4,"The diff changes the expression returned by the return statement, replacing a direct method call on allocateInstance with a call to ReflectionUtils.call, which is both a return-expression modification and a method/class name change at the call site.",full_disagree,,"@@ -47,7 +48,7 @@ public Object allocateInstance(Class<?> clazz)
+         }
+ 
+         try {
+-            return allocateInstance.invoke(sunUnsafe, clazz);
++            return ReflectionUtils.call(sunUnsafe, allocateInstance, clazz);
+         }
+         catch (IllegalAccessException | IllegalArgumentException e ) {
+             String name = clazz.getName();"
+162,3217742863,https://github.com/gmathi/NovelLibrary/pull/247,app/src/main/java/io/github/gmathi/novellibrary/cleaner/HtmlCleaner.kt,8,Caching,,"The diff renames variables (result→colorRegex, notationResult→colorReg with type change from Regex to MatchResult?), modifies the return expression, and collapses multiple reassignment statements into chained calls.",12:name_modification(0.93)@L4-18; 15:statement_splitting(0.88)@L11-18,"The diff renames variables/usages (result/notationResult to colorRegex/colorReg), rewrites the chained next() updates into separate direct expressions, and changes the expression returned in one return statement.",full_disagree,,"@@ -1011,22 +1005,18 @@ open class HtmlCleaner protected constructor() {
+                     }
+                     else -> {
+                         // Most likely invalid color
+-                        return result.groupValues[1]
++                        return colorRegex.groupValues[1]
+                     }
+                 }
+ 
+             } else if (col.startsWith(""rgb"", true) || col.startsWith(""hsl"", true)) {
+                 // rgb/rgba/hsl/hsla functional notations
+-                val colorReg = Regex(""(?:[,(]\\s*)([0-9\\-+.e]+%?)"")
+-                var notationResult = colorReg.matchEntire(col)
++                val colorReg = FUNCTIONAL_COLOR_REGEX.matchEntire(col)
+ 
+-                val compA = processColorComponent(notationResult!!.groupValues[1])
+-                notationResult = notationResult.next()
+-                val compB = processColorComponent(notationResult!!.groupValues[1])
+-                notationResult = notationResult.next()
+-                val compC = processColorComponent(notationResult!!.groupValues[1])
+-                notationResult = notationResult.next()
+-                val alpha = processColorComponent(notationResult?.groupValues?.get(1) ?: ""1"")
++                val compA = processColorComponent(colorReg!!.groupValues[1])
++                val compB = processColorComponent(colorReg.next().groupValues[1])
++                val compC = processColorComponent(colorReg.next().groupValues[1])
++                val alpha = processColorComponent(colorReg.next().groupValues[1] ?: ""1"")
+ 
+                 return if (col.startsWith(""rgb""))
+                     invertColor(compA, compB, compC, alpha)
+"
+163,3219696751,https://github.com/dotnet/aspnetcore/pull/62661,src/Components/Components/src/PersistentStateValueProvider.cs,1,Caching,12:name_modification(0.95)@L5-6,"The only change is adding the `static` modifier to the `_serializerCache` field declaration, which changes the field's access pattern from instance-level to class-level — this is a modifier/qualifier change on the field, most closely matching name_modification (modifier change) rather than type_change since the declared type remains the same.",,"The only meaningful change is adding the 'static' modifier to the _serializerCache field declaration, which does not change the declared type but does modify the field declaration itself.",full_disagree,,"@@ -19,7 +19,7 @@ internal sealed class PersistentStateValueProvider(PersistentComponentState stat
+ {
+     private static readonly ConcurrentDictionary<(string, string, string), byte[]> _keyCache = new();
+     private static readonly ConcurrentDictionary<(Type, string), PropertyGetter> _propertyGetterCache = new();
+-    private readonly ConcurrentDictionary<Type, IPersistentComponentStateSerializer?> _serializerCache = new();
++    private static readonly ConcurrentDictionary<Type, IPersistentComponentStateSerializer?> _serializerCache = new();
+ 
+     private readonly Dictionary<ComponentState, PersistingComponentStateSubscription> _subscriptions = [];
+ "
+175,3239561220,https://github.com/parse-community/parse-dashboard/pull/2920,src/dashboard/index.js,1,Caching,,"The diff adds an import of `registerServiceWorker` and calls it, which is a standard boilerplate addition (added code from GitHub), with no other meaningful structural changes beyond this new import and function call.",0:added_code_from_github(0.98)@L5-11,"The diff adds a new import and a new function call, which is arbitrary added code without clearer evidence of any more specific mutation category.",full_disagree,,"@@ -12,10 +12,12 @@ import installDevTools from 'immutable-devtools';
+ import React from 'react';
+ import ReactDOM from 'react-dom';
+ import Dashboard from './Dashboard';
++import registerServiceWorker from '../registerServiceWorker';
+ 
+ require('stylesheets/fonts.scss');
+ require('graphiql/graphiql.min.css');
+ installDevTools(Immutable);
+ 
+ const path = window.PARSE_DASHBOARD_PATH || '/';
+ ReactDOM.render(<Dashboard path={path} />, document.getElementById('browser_mount'));
++registerServiceWorker();"
+178,3241523087,https://github.com/doodlum/skyrim-community-shaders/pull/1281,src/Features/DynamicCubemaps.cpp,1,Caching,6:method_name_change(0.85)@L7-8,"The call `REL::Module::IsVR()` is replaced with `globals::cached::IsVR()`, changing the class/namespace path used to invoke the IsVR method, which constitutes a method (and namespace) name/path change.",12:name_modification(0.97)@L6-8,"The only clear change is a method/class reference rename in the conditional from REL::Module::IsVR() to globals::cached::IsVR(), with no other syntactic mutation pattern evident.",full_disagree,,"@@ -30,7 +30,7 @@ void DynamicCubemaps::DrawSettings()
+ 			recompileFlag |= ImGui::Checkbox(""Enable Screen Space Reflections"", reinterpret_cast<bool*>(&settings.EnabledSSR));
+ 			if (auto _tt = Util::HoverTooltipWrapper()) {
+ 				ImGui::Text(""Enable Screen Space Reflections on Water"");
+-				if (REL::Module::IsVR() && !enabledAtBoot) {
++				if (globals::cached::IsVR() && !enabledAtBoot) {
+ 					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
+ 					ImGui::Text(
+ 						""A restart is required to enable in VR. ""
+"
+180,3241523087,https://github.com/doodlum/skyrim-community-shaders/pull/1281,src/Features/DynamicCubemaps.cpp,3,Caching,6:method_name_change(0.85)@L5-6,"The call `REL::Module::IsVR()` is replaced with `globals::cached::IsVR()`, changing the namespace/class path of the method being called (from REL::Module to globals::cached), which constitutes a method/function name (and namespace) change.",12:name_modification(0.98)@L4-4,"The only substantive change is replacing the called name REL::Module::IsVR() with globals::cached::IsVR(), which is a method/path name modification.",full_disagree,,"@@ -138,7 +138,7 @@ void DynamicCubemaps::DrawSettings()
+ void DynamicCubemaps::LoadSettings(json& o_json)
+ {
+ 	settings = o_json;
+-	if (REL::Module::IsVR()) {
++	if (globals::cached::IsVR()) {
+ 		Util::LoadGameSettings(iniVRCubeMapSettings);
+ 	}
+ 	recompileFlag = true;
+"
+183,3241523087,https://github.com/doodlum/skyrim-community-shaders/pull/1281,src/Features/DynamicCubemaps.cpp,6,Caching,6:method_name_change(0.90)@L4-5,"The call `REL::Module::IsVR()` is replaced with `globals::cached::IsVR()`, changing the method/namespace used to call the function (method name / call-site name change).",12:name_modification(0.98)@L4-4,The diff changes the called name from REL::Module::IsVR() to globals::cached::IsVR() without altering control flow structure or operators.,full_disagree,,"@@ -174,7 +174,7 @@ void DynamicCubemaps::DataLoaded()
+ 
+ void DynamicCubemaps::PostPostLoad()
+ {
+-	if (REL::Module::IsVR() && settings.EnabledSSR) {
++	if (globals::cached::IsVR() && settings.EnabledSSR) {
+ 		std::map<std::string, uintptr_t> earlyhiddenVRCubeMapSettings{
+ 			{ ""bScreenSpaceReflectionEnabled:Display"", 0x1ED5BC0 },
+ 		};"
+189,3241523087,https://github.com/doodlum/skyrim-community-shaders/pull/1281,src/Globals.cpp,1,Caching,14:object_creation(0.85)@L4-4,"A new pointer variable `cachedDepthStencilData` is added and initialized to `nullptr`, which constitutes a new variable initialization/creation.",0:added_code_from_github(0.95)@L6-6,The diff adds a new variable declaration line (`void* cachedDepthStencilData = nullptr;`) and does not clearly match any more specific mutation category.,full_disagree,,"@@ -121,6 +121,7 @@ namespace globals
+ 		void* cachedRendererRuntimeData = nullptr;
+ 		void* cachedShadowStateRuntimeData = nullptr;
+ 		void* cachedGraphicsStateRuntimeData = nullptr;
++		void* cachedDepthStencilData = nullptr;
+ 	}
+ 
+ 	State* state = nullptr;
+"
+190,3241523087,https://github.com/doodlum/skyrim-community-shaders/pull/1281,src/Globals.cpp,2,Caching,,"A new line is added that caches a pointer to depth stencil data via a static_cast, following the same pattern as the surrounding cache assignments, representing new code added to the function.",0:added_code_from_github(0.98)@L4-4; 12:name_modification(0.82)@L4-4,"The diff adds one new assignment statement introducing a new cached variable field and referencing an existing method call, with no clear type, control-flow, return, or operator change.",full_disagree,,"@@ -213,6 +214,7 @@ namespace globals
+ 		game::cachedRendererRuntimeData = static_cast<void*>(&rendererRuntimeData);
+ 		game::cachedShadowStateRuntimeData = isVR ? static_cast<void*>(&game::shadowState->GetVRRuntimeData()) : static_cast<void*>(&game::shadowState->GetRuntimeData());
+ 		game::cachedGraphicsStateRuntimeData = isVR ? static_cast<void*>(&game::graphicsState->GetVRRuntimeData()) : static_cast<void*>(&game::graphicsState->GetRuntimeData());
++		game::cachedDepthStencilData = static_cast<void*>(&game::renderer->GetDepthStencilData());
+ 	}
+ 
+ 	void OnDataLoaded()"
+199,3265736885,https://github.com/hmislk/hmis/pull/14205,src/main/java/com/divudi/bean/pharmacy/PharmacyFastRetailSaleController.java,3,Caching,15:statement_splitting(0.90)@L4-9,"The diff replaces `getStock().getItemBatch()` with a pre-extracted local variable `itemBatch`, which is a statement splitting / intermediate variable extraction pattern (caching a sub-expression into a local variable).",12:name_modification(0.98)@L7-14,"The patch replaces method-call chains using getStock().getItemBatch() with the variable name itemBatch, which is a clear name/reference modification without changing control flow, types, or return statements.",full_disagree,,"@@ -860,12 +864,12 @@ public double addBillItemSingleItem() {
+         addedQty = qty;
+         billItem.getPharmaceuticalBillItem().setQtyInUnit(0 - qty);
+         billItem.getPharmaceuticalBillItem().setStock(stock);
+-        billItem.getPharmaceuticalBillItem().setItemBatch(getStock().getItemBatch());
++        billItem.getPharmaceuticalBillItem().setItemBatch(itemBatch);
+         calculateBillItem();
+         ////System.out.println(""Rate*****"" + billItem.getRate());
+         billItem.setInwardChargeType(InwardChargeType.Medicine);
+ 
+-        billItem.setItem(getStock().getItemBatch().getItem());
++        billItem.setItem(itemBatch.getItem());
+         billItem.setBill(getPreBill());
+ 
+         billItem.setSearialNo(getPreBill().getBillItems().size() + 1);
+"
+203,3213747226,https://github.com/jscarle/LightResults/pull/70,src/LightResults/Result.cs,2,Compiler Optimization Hints/Directives,,"The diff adds a `[MethodImpl(MethodImplOptions.AggressiveInlining)]` attribute to the `IsSuccess()` method as a performance optimization hint, which is an addition of external code/attribute; the `/// <inheritdoc/>` line is unchanged but present in context, and no other mutation patterns clearly apply.",0:added_code_from_github(0.91)@L4-4,"The diff adds a new MethodImpl attribute line to the method, which is added code and does not clearly fit any more specific mutation category.",full_disagree,,"@@ -68,6 +69,7 @@ public static Result<TValue> Success<TValue>(TValue value)
+     }
+ 
+     /// <inheritdoc/>
++    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+     public bool IsSuccess()
+     {
+         return _isSuccess;
+"
+204,3213747226,https://github.com/jscarle/LightResults/pull/70,src/LightResults/Result.cs,3,Compiler Optimization Hints/Directives,,"The diff adds [MethodImpl(MethodImplOptions.AggressiveInlining)] attributes to two methods as a performance optimization, which is adding code (attribute decorators) from external sources, and the inheritdoc comments remain unchanged but new attribute lines are inserted.",0:added_code_from_github(0.93)@L4-12,"The diff adds two MethodImpl(AggressiveInlining) attribute lines before existing methods, which is added code and does not clearly fit more specific mutation categories like inlining or control-flow changes.",full_disagree,,"@@ -304,12 +306,14 @@ public static Result<TValue> Failure<TValue>(IReadOnlyList<IError> errors)
+     }
+ 
+     /// <inheritdoc/>
++    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+     public bool IsFailure()
+     {
+         return !_isSuccess;
+     }
+ 
+     /// <inheritdoc/>
++    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+     public bool IsFailure([MaybeNullWhen(false)] out IError error)
+     {
+         // ReSharper disable once PreferConcreteValueOverDefault
+"
+205,3213747226,https://github.com/jscarle/LightResults/pull/70,src/LightResults/Result.cs,4,Compiler Optimization Hints/Directives,,"A [MethodImpl(MethodImplOptions.AggressiveInlining)] attribute is added to the HasError<TError> method, which is an arbitrary performance hint added from external code patterns rather than fitting neatly into other categories — though it could also be considered added_code_from_github as a performance annotation addition.",0:added_code_from_github(0.83)@L4-4,"The diff adds a new MethodImpl attribute line to the method, which is an added code statement and does not clearly match any more specific mutation category.",full_disagree,,"@@ -325,6 +329,7 @@ public bool IsFailure([MaybeNullWhen(false)] out IError error)
+     }
+ 
+     /// <inheritdoc/>
++    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+     public bool HasError<TError>()
+         where TError : IError
+     {
+"
+206,3213747226,https://github.com/jscarle/LightResults/pull/70,src/LightResults/Result.cs,5,Compiler Optimization Hints/Directives,,"A `[MethodImpl(MethodImplOptions.AggressiveInlining)]` attribute is added to the method, which is an arbitrary performance hint added from external code patterns, fitting the added_code_from_github category as a performance-improvement annotation.",0:added_code_from_github(0.89)@L4-4; 8:inlining(0.97)@L4-4,"The diff adds a MethodImpl(AggressiveInlining) attribute to the method, which is an added code annotation specifically indicating inlining behavior.",full_disagree,,"@@ -346,6 +351,7 @@ public bool HasError<TError>()
+     }
+ 
+     /// <inheritdoc/>
++    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+     public bool HasError<TError>([MaybeNullWhen(false)] out TError error)
+         where TError : IError
+     {
+"
+207,3213747226,https://github.com/jscarle/LightResults/pull/70,src/LightResults/Result.cs,6,Compiler Optimization Hints/Directives,,"A [MethodImpl(MethodImplOptions.AggressiveInlining)] attribute is added to the AsFailure method, which is an arbitrary performance hint added from external code/practices.",0:added_code_from_github(0.87)@L5-5,The diff adds a new code attribute line (`[MethodImpl(MethodImplOptions.AggressiveInlining)]`) and does not clearly match any more specific mutation category from the list.,full_disagree,,"@@ -390,6 +396,7 @@ public static implicit operator Result(Error error)
+ 
+     /// <summary>Converts the current <see cref=""Result{TValue}""/> to a failure <see cref=""Result""/>.</summary>
+     /// <returns>A new instance of <see cref=""Result""/> containing the same error as the <see cref=""Result{TValue}""/>, if any.</returns>
++    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+     public Result AsFailure()
+     {
+         if (_errors is not null)
+"
+209,3213850102,https://github.com/jscarle/LightResults/pull/74,src/LightResults/Error.cs,2,Compiler Optimization Hints/Directives,,"The diff adds a [MethodImpl(MethodImplOptions.AggressiveInlining)] attribute to the ToString() method, which is an optimization hint added from external code patterns, but doesn't fit cleanly into other categories — it's most accurately an addition of optimization code rather than a structural change, though it could also be considered a comment-like annotation; it doesn't change control flow, types, names, or return statements.",0:added_code_from_github(0.90)@L4-4,"The diff adds a new attribute line before the method definition, which is added code and does not clearly match any more specific mutation category.",full_disagree,,"@@ -75,6 +76,7 @@ public Error(string message, IReadOnlyDictionary<string, object> metadata)
+     }
+ 
+     /// <inheritdoc/>
++    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+     public override string ToString()
+     {
+         var errorType = GetType()"
+210,3213850102,https://github.com/jscarle/LightResults/pull/74,src/LightResults/Result.cs,2,Compiler Optimization Hints/Directives,,"A [MethodImpl(MethodImplOptions.AggressiveInlining)] attribute is added to the Equals method, which is an arbitrary code addition from GitHub to improve performance by hinting the JIT compiler to inline this method.",0:added_code_from_github(0.90)@L5-5,"The diff adds a new method attribute line ([MethodImpl(MethodImplOptions.AggressiveInlining)]), which is added code and does not clearly fit any more specific mutation category listed.",full_disagree,,"@@ -436,6 +437,7 @@ public Result<TDestination> AsFailure<TDestination>()
+     /// <summary>Determines whether two <see cref=""Result""/> instances are equal.</summary>
+     /// <param name=""other"">The <see cref=""Result""/> instance to compare with this instance.</param>
+     /// <returns><c>true</c> if the specified <see cref=""Result""/> is equal to this instance; otherwise, <c>false</c>.</returns>
++    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+     public bool Equals(Result other)
+     {
+         return Equals(_errors, other._errors);
+"
+212,3213850102,https://github.com/jscarle/LightResults/pull/74,src/LightResults/Result.cs,4,Compiler Optimization Hints/Directives,,"A [MethodImpl(MethodImplOptions.AggressiveInlining)] attribute was added to the operator== method, which is an arbitrary performance hint added from external knowledge/GitHub, not fitting neatly into other mutation categories.",0:added_code_from_github(0.81)@L5-5,The diff adds a new code attribute line ([MethodImpl(MethodImplOptions.AggressiveInlining)]) and does not clearly match any more specific mutation category.,full_disagree,,"@@ -460,6 +464,7 @@ public override int GetHashCode()
+     /// <param name=""left"">The first <see cref=""Result""/> instance to compare.</param>
+     /// <param name=""right"">The second <see cref=""Result""/> instance to compare.</param>
+     /// <returns><c>true</c> if the specified <see cref=""Result""/> instances are equal; otherwise, <c>false</c>.</returns>
++    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+     public static bool operator ==(Result left, Result right)
+     {
+         return left.Equals(right);
+"
+218,3213876116,https://github.com/jscarle/LightResults/pull/76,src/LightResults/Common/SingleItemMetadataDictionary.cs,2,Compiler Optimization Hints/Directives,12:name_modification(0.90)@L4-10,"The diff adds `[MethodImpl(MethodImplOptions.AggressiveInlining)]` attributes to two methods, which are compiler hints (not inlining in the code-transformation sense) and represent added attributes/annotations that modify method behavior hints — this is best captured as added code (attribute annotations) from a known performance pattern.",0:added_code_from_github(0.91)@L3-10,"The diff adds two MethodImpl(AggressiveInlining) attribute lines to existing methods, which is added code and does not fit the other specific mutation categories.",full_disagree,,"@@ -22,11 +23,13 @@ public SingleItemMetadataDictionary(string key, object? value)
+ 
+     IEnumerable<object?> IReadOnlyDictionary<string, object?>.Values => new ValueEnumerable(_value);
+ 
++    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+     public bool ContainsKey(string key)
+     {
+         return string.Equals(key, _key, StringComparison.Ordinal);
+     }
+ 
++    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+     public bool TryGetValue(string key, out object? value)
+     {
+         if (ContainsKey(key))
+"
+220,3213876116,https://github.com/jscarle/LightResults/pull/76,src/LightResults/Common/SingleItemMetadataDictionary.cs,4,Compiler Optimization Hints/Directives,,"A [MethodImpl(MethodImplOptions.AggressiveInlining)] attribute is added to the MoveNext method, which is an optimization hint added from external code/GitHub patterns.",0:added_code_from_github(0.83)@L4-4,"The diff adds a new MethodImpl attribute line before MoveNext, which is an added code annotation and does not clearly fit any more specific mutation category.",full_disagree,,"@@ -62,6 +68,7 @@ private struct Enumerator(string key, object? value) : IEnumerator<KeyValuePair<
+ 
+         object IEnumerator.Current => Current;
+ 
++        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+         public bool MoveNext()
+         {
+             if (_moved)
+"
+221,3213876116,https://github.com/jscarle/LightResults/pull/76,src/LightResults/Common/SingleItemMetadataDictionary.cs,5,Compiler Optimization Hints/Directives,,"The diff adds `[MethodImpl(MethodImplOptions.AggressiveInlining)]` attributes to the `Reset` and `Dispose` methods, which are performance hints directing the JIT compiler to inline these methods — this is added code (attributes) from a known optimization pattern, but doesn't fit neatly into most other categories; it's closest to added_code_from_github as it introduces new attribute decorations for performance improvement.",0:added_code_from_github(0.88)@L5-13,"The diff adds MethodImpl(AggressiveInlining) attributes before two methods, which is added code and does not clearly fit more specific mutation categories like inlining or method renaming.",full_disagree,,"@@ -71,11 +78,13 @@ public bool MoveNext()
+             return true;
+         }
+ 
++        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+         public void Reset()
+         {
+             _moved = false;
+         }
+ 
++        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+         public void Dispose()
+         {
+         }
+"
+222,3213876116,https://github.com/jscarle/LightResults/pull/76,src/LightResults/Common/SingleItemMetadataDictionary.cs,6,Compiler Optimization Hints/Directives,,"The diff adds [MethodImpl(MethodImplOptions.AggressiveInlining)] attributes to two methods, which are attribute annotations directing the JIT compiler to inline these methods — this is an added code pattern from GitHub for performance improvement.",0:added_code_from_github(0.90)@L4-11,"The diff adds two MethodImpl(AggressiveInlining) attributes before existing methods, which is added code and does not clearly fit any more specific mutation category listed.",full_disagree,,"@@ -85,11 +94,13 @@ private struct KeyEnumerable(string key) : IEnumerable<string>, IEnumerator<stri
+     {
+         private bool _moved;
+ 
++        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+         IEnumerator<string> IEnumerable<string>.GetEnumerator()
+         {
+             return this;
+         }
+ 
++        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+         IEnumerator IEnumerable.GetEnumerator()
+         {
+             return this;
+"
+223,3213876116,https://github.com/jscarle/LightResults/pull/76,src/LightResults/Common/SingleItemMetadataDictionary.cs,7,Compiler Optimization Hints/Directives,,"A [MethodImpl(MethodImplOptions.AggressiveInlining)] attribute is added to the MoveNext method, which is an optimization hint added from external code patterns.",0:added_code_from_github(0.93)@L4-4,"The diff adds a new attribute line ([MethodImpl(MethodImplOptions.AggressiveInlining)]) before the MoveNext method, which is added code and does not clearly fit the other mutation categories.",full_disagree,,"@@ -99,6 +110,7 @@ IEnumerator IEnumerable.GetEnumerator()
+ 
+         object IEnumerator.Current => key;
+ 
++        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+         public bool MoveNext()
+         {
+             if (_moved)
+"
+224,3213876116,https://github.com/jscarle/LightResults/pull/76,src/LightResults/Common/SingleItemMetadataDictionary.cs,8,Compiler Optimization Hints/Directives,,"The diff adds [MethodImpl(MethodImplOptions.AggressiveInlining)] attributes to Reset() and Dispose() methods, which are compiler hints added to improve inlining performance but are not themselves code inlining in the refactoring sense; this is best categorized as added code (attributes) from a known performance pattern.",0:added_code_from_github(0.82)@L5-13,"The diff adds two MethodImpl(AggressiveInlining) attributes before existing methods, which is added code and does not clearly fit other mutation categories like inlining or control-flow changes.",full_disagree,,"@@ -108,11 +120,13 @@ public bool MoveNext()
+             return true;
+         }
+ 
++        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+         public void Reset()
+         {
+             _moved = false;
+         }
+ 
++        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+         public void Dispose()
+         {
+         }
+"
+225,3213876116,https://github.com/jscarle/LightResults/pull/76,src/LightResults/Common/SingleItemMetadataDictionary.cs,9,Compiler Optimization Hints/Directives,12:name_modification(0.85)@L4-11,"The diff adds [MethodImpl(MethodImplOptions.AggressiveInlining)] attributes to two methods, which are compiler hint annotations directing the JIT to inline those methods — this constitutes adding attributes/decorators from a known pattern, and the attribute names reference specific framework identifiers.",0:added_code_from_github(0.86)@L4-11,"The diff adds two MethodImpl attribute lines to existing methods, which is added code and does not clearly fit the more specific mutation categories.",full_disagree,,"@@ -122,11 +136,13 @@ private struct ValueEnumerable(object? value) : IEnumerable<object?>, IEnumerato
+     {
+         private bool _moved;
+ 
++        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+         IEnumerator<object?> IEnumerable<object?>.GetEnumerator()
+         {
+             return this;
+         }
+ 
++        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+         IEnumerator IEnumerable.GetEnumerator()
+         {
+             return this;
+"
+226,3213876116,https://github.com/jscarle/LightResults/pull/76,src/LightResults/Common/SingleItemMetadataDictionary.cs,10,Compiler Optimization Hints/Directives,,"A `[MethodImpl(MethodImplOptions.AggressiveInlining)]` attribute is added to the `MoveNext` method, which is an arbitrary performance hint added from external code patterns, fitting the added_code_from_github category for a performance-improvement PR.",0:added_code_from_github(0.87)@L4-4,"The diff adds a new method attribute annotation line ([MethodImpl(MethodImplOptions.AggressiveInlining)]), which is added code and does not clearly fit the other mutation categories.",full_disagree,,"@@ -136,6 +152,7 @@ IEnumerator IEnumerable.GetEnumerator()
+ 
+         object IEnumerator.Current => value!;
+ 
++        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+         public bool MoveNext()
+         {
+             if (_moved)
+"
+227,3213876116,https://github.com/jscarle/LightResults/pull/76,src/LightResults/Common/SingleItemMetadataDictionary.cs,11,Compiler Optimization Hints/Directives,,"The diff adds `[MethodImpl(MethodImplOptions.AggressiveInlining)]` attributes to `Reset()` and `Dispose()` methods, which are compiler hints to inline these methods — this is adding code (attribute decorators) that likely came from a performance-improvement pattern on GitHub, directing the JIT to aggressively inline these trivial methods.",0:added_code_from_github(0.95)@L3-13,"The diff adds two MethodImpl(AggressiveInlining) attribute lines to existing methods, which is added code and does not clearly fit any more specific mutation category listed.",full_disagree,,"@@ -145,11 +162,13 @@ public bool MoveNext()
+             return true;
+         }
+ 
++        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+         public void Reset()
+         {
+             _moved = false;
+         }
+ 
++        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+         public void Dispose()
+         {
+         }"
+228,3213876116,https://github.com/jscarle/LightResults/pull/76,src/LightResults/Common/StringHelper.cs,2,Compiler Optimization Hints/Directives,,"The only change is adding a `[MethodImpl(MethodImplOptions.AggressiveInlining)]` attribute to the method, which is a performance annotation that doesn't fit neatly into most categories but is closest to added code (an attribute decoration) with no other changes.",0:added_code_from_github(0.92)@L5-5,"The diff adds a new MethodImpl attribute annotation line, which is meaningful added code and does not clearly fit any more specific mutation category listed.",full_disagree,,"@@ -16,6 +17,7 @@ internal static class StringHelper
+     private const string PreMessageStr = "" { Message = \"""";
+     private const string PostMessageStr = ""\"" }"";
+ 
++    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+     public static string GetResultValueString<T>(T value)
+     {
+         switch (value)
+"
+230,3213876116,https://github.com/jscarle/LightResults/pull/76,src/LightResults/Common/StringHelper.cs,4,Compiler Optimization Hints/Directives,,"A `[MethodImpl(MethodImplOptions.AggressiveInlining)]` attribute is added to the method, which is an annotation/directive added from a known performance optimization pattern on GitHub, directing the JIT to inline the method at call sites.",0:added_code_from_github(0.85)@L6-6,"The diff adds a new MethodImpl attribute line to the method, which is added code and does not clearly fit any more specific mutation category.",full_disagree,,"@@ -92,6 +96,7 @@ private static string GetResultCharValueString(string valueString)
+ #endif
+     }
+ 
++    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+     private static string GetResultStringValueString(string valueString)
+     {
+ #if NET6_0_OR_GREATER
+"
+231,3213876116,https://github.com/jscarle/LightResults/pull/76,src/LightResults/Common/StringHelper.cs,5,Compiler Optimization Hints/Directives,,"A [MethodImpl(MethodImplOptions.AggressiveInlining)] attribute is added to the method, which is a performance hint that doesn't fit neatly into the listed categories but most closely resembles added code from GitHub (an arbitrary performance annotation added to the method definition).",0:added_code_from_github(0.82)@L5-5,The diff adds a new method attribute line ([MethodImpl(MethodImplOptions.AggressiveInlining)]) and does not clearly match any more specific mutation category from the list.,full_disagree,,"@@ -108,6 +113,7 @@ private static string GetResultStringValueString(string valueString)
+ #endif
+     }
+ 
++    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+     private static string GetResultValueValueString(string valueString)
+     {
+ #if NET6_0_OR_GREATER
+"
+232,3213876116,https://github.com/jscarle/LightResults/pull/76,src/LightResults/Common/StringHelper.cs,6,Compiler Optimization Hints/Directives,,"A [MethodImpl(MethodImplOptions.AggressiveInlining)] attribute is added to the method, which is a performance hint directing the JIT compiler to inline the method — this is an added annotation/attribute from the .NET framework, best categorized as added code (performance optimization attribute) with no other structural changes.",0:added_code_from_github(0.93)@L4-4,"The diff adds a new MethodImpl(AggressiveInlining) attribute line, which is an added code element and does not clearly fit other mutation categories such as inlining or control-flow changes.",full_disagree,,"@@ -118,6 +124,7 @@ private static string GetResultValueValueString(string valueString)
+ #endif
+     }
+ 
++    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+     public static string GetResultErrorString(string errorMessage)
+     {
+ #if NET6_0_OR_GREATER
+"
+234,3213876116,https://github.com/jscarle/LightResults/pull/76,src/LightResults/Common/StringHelper.cs,8,Compiler Optimization Hints/Directives,,"The diff adds a [MethodImpl(MethodImplOptions.AggressiveInlining)] attribute to the GetResultValueSpan method, which is a performance hint directing the JIT to inline the method; this is an attribute addition that doesn't fit neatly into most categories but most closely resembles added code from GitHub as a performance annotation.",0:added_code_from_github(0.94)@L5-5,"The diff adds a new MethodImpl attribute line to the method, which is added code, and none of the more specific mutation categories clearly apply.",full_disagree,,"@@ -151,6 +159,7 @@ public static string GetErrorString(string type, string message)
+     private const int PreMessageStrLength = 14;
+     private const int PostMessageStrLength = 3;
+ 
++    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+     private static void GetResultValueSpan(Span<char> span, string state)
+     {
+         PreResultStr.AsSpan()
+"
+236,3213876116,https://github.com/jscarle/LightResults/pull/76,src/LightResults/Common/StringHelper.cs,10,Compiler Optimization Hints/Directives,,"The diff adds a [MethodImpl(MethodImplOptions.AggressiveInlining)] attribute to the GetResultValueStringSpan method, which is a performance hint to the JIT compiler but doesn't fit neatly into most categories; it's most accurately categorized as added code (attribute/annotation) from a known performance improvement pattern.",0:added_code_from_github(0.93)@L7-7,"The diff adds a new MethodImpl attribute line to the method, which is an arbitrary code addition and does not clearly match any more specific mutation category.",full_disagree,,"@@ -193,6 +203,7 @@ private static void GetResultValueCharSpan(Span<char> span, string state)
+             .CopyTo(span);
+     }
+ 
++    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+     private static void GetResultValueStringSpan(Span<char> span, string state)
+     {
+         PreResultStr.AsSpan()
+"
+237,3213876116,https://github.com/jscarle/LightResults/pull/76,src/LightResults/Common/StringHelper.cs,11,Compiler Optimization Hints/Directives,,"The diff adds a [MethodImpl(MethodImplOptions.AggressiveInlining)] attribute to the GetResultErrorSpan method, which is an attribute/annotation addition that doesn't fit neatly into the defined categories but is closest to added_code_from_github as it's adding a performance hint directive.",0:added_code_from_github(0.89)@L4-4,The diff adds a new method attribute line ([MethodImpl(MethodImplOptions.AggressiveInlining)]) and does not clearly match any more specific mutation category.,full_disagree,,"@@ -217,6 +228,7 @@ private static void GetResultValueStringSpan(Span<char> span, string state)
+             .CopyTo(span);
+     }
+ 
++    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+     private static void GetResultErrorSpan(Span<char> span, string state)
+     {
+         PreResultStr.AsSpan()
+"
+238,3213876116,https://github.com/jscarle/LightResults/pull/76,src/LightResults/Common/StringHelper.cs,12,Compiler Optimization Hints/Directives,,"The diff adds a [MethodImpl(MethodImplOptions.AggressiveInlining)] attribute to the GetErrorSpan method, which is a performance hint attribute added to the method definition — this is best categorized as added code (an attribute/annotation) from a known optimization pattern.",0:added_code_from_github(0.92)@L4-4,"The diff adds a new MethodImpl attribute line to the method, which is added code and does not clearly fit the more specific mutation categories.",full_disagree,,"@@ -238,6 +250,7 @@ private static void GetResultErrorSpan(Span<char> span, string state)
+             .CopyTo(span);
+     }
+ 
++    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+     private static void GetErrorSpan(Span<char> span, (string errorType, string errorMessage) state)
+     {
+         state.errorType"
+240,3213876116,https://github.com/jscarle/LightResults/pull/76,src/LightResults/Error.cs,3,Compiler Optimization Hints/Directives,,"The diff adds a [MethodImpl(MethodImplOptions.AggressiveInlining)] attribute to the Equals method, which is a performance annotation instructing the JIT to inline the method; this could be categorized as added code from GitHub, and the surrounding context includes comment lines that are part of the diff but unchanged.",0:added_code_from_github(0.83)@L6-6,"The diff adds a new method attribute annotation ([MethodImpl(MethodImplOptions.AggressiveInlining)]) and does not clearly match any more specific mutation category such as inlining, control flow, or return modification.",full_disagree,,"@@ -118,6 +120,7 @@ public Error(string message, IReadOnlyDictionary<string, object?> metadata)
+     /// <summary>Determines whether the specified <see cref=""Error""/> is equal to this instance.</summary>
+     /// <param name=""other"">The <see cref=""Error""/> to compare with this instance.</param>
+     /// <returns><c>true</c> if the specified <see cref=""Error""/> is equal to this instance; otherwise, <c>false</c>.</returns>
++    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+     public bool Equals(Error? other)
+     {
+         if (ReferenceEquals(null, other))
+"
+241,3213876116,https://github.com/jscarle/LightResults/pull/76,src/LightResults/Error.cs,4,Compiler Optimization Hints/Directives,12:name_modification(0.85)@L4-11,"The diff adds [MethodImpl(MethodImplOptions.AggressiveInlining)] attributes to two methods, which are compiler hint annotations to suggest inlining but are not themselves code inlining (no function body is expanded at a call site), and represent added attribute/annotation code.",0:added_code_from_github(0.85)@L4-4; 0:added_code_from_github(0.85)@L11-11,"The diff adds two new MethodImpl/AggressiveInlining attribute lines, which is added code and does not clearly fit any more specific mutation category listed.",full_disagree,,"@@ -145,12 +148,14 @@ public bool Equals(Error? other)
+     }
+ 
+     /// <inheritdoc/>
++    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+     public override bool Equals(object? obj)
+     {
+         return obj is Error other && Equals(other);
+     }
+ 
+     /// <inheritdoc/>
++    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+     public override int GetHashCode()
+     {
+         var hash = new HashCode();
+"
+242,3213876116,https://github.com/jscarle/LightResults/pull/76,src/LightResults/Error.cs,5,Compiler Optimization Hints/Directives,2:comment_modification(0.85)@L1-6,"A [MethodImpl(MethodImplOptions.AggressiveInlining)] attribute is added to the operator== method, which is an arbitrary performance annotation added from GitHub; the surrounding lines are documentation comments that were also touched in the diff context.",,"The diff adds a new attribute annotation line before the operator method, which is added code and does not clearly fit any more specific mutation category.",full_disagree,,"@@ -168,6 +173,7 @@ public override int GetHashCode()
+     /// <param name=""left"">The first <see cref=""Error""/> instance to compare.</param>
+     /// <param name=""right"">The second <see cref=""Error""/> instance to compare.</param>
+     /// <returns><c>true</c> if the specified <see cref=""Error""/> instances are equal; otherwise, <c>false</c>.</returns>
++    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+     public static bool operator ==(Error? left, Error? right)
+     {
+         if (left is null)
+"
+244,3213876116,https://github.com/jscarle/LightResults/pull/76,src/LightResults/Result`1.cs,1,Compiler Optimization Hints/Directives,,"The diff adds a [MethodImpl(MethodImplOptions.AggressiveInlining)] attribute to the implicit operator, which is an addition of an attribute/code decoration that doesn't fit neatly into other categories but represents added code (an attribute annotation) to improve performance via inlining hints to the JIT compiler.",0:added_code_from_github(0.91)@L4-4,"The diff adds a new attribute line (`[MethodImpl(MethodImplOptions.AggressiveInlining)]`), which is an added code statement and does not clearly fit other mutation categories like inlining or control-flow changes.",full_disagree,,"@@ -299,6 +299,7 @@ public bool HasError<TError>([MaybeNullWhen(false)] out TError error)
+     /// <param name=""value"">The value to convert into a success result.</param>
+     /// <returns>A new instance of <see cref=""Result{TValue}""/> representing a success result with the specified value.</returns>
+     [SuppressMessage(""Usage"", ""CA2225: Operator overloads have named alternates"", Justification = ""We don't want to expose named alternates in this case."")]
++    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+     public static implicit operator Result<TValue>(TValue value)
+     {
+         return new Result<TValue>(value);
+"
+245,3213876116,https://github.com/jscarle/LightResults/pull/76,src/LightResults/Result`1.cs,2,Compiler Optimization Hints/Directives,2:comment_modification(0.85)@L4-4,"The diff adds a [MethodImpl(MethodImplOptions.AggressiveInlining)] attribute to the implicit operator, which is an annotation/decorator addition rather than a structural code change; this is closest to a comment/attribute modification for performance hinting purposes.",0:added_code_from_github(0.95)@L5-5,"The diff adds a new MethodImpl attribute line, which is added executable-related code and does not clearly match any more specific mutation category.",full_disagree,,"@@ -308,6 +309,7 @@ public static implicit operator Result<TValue>(TValue value)
+     /// <param name=""error"">The error to convert into a failure result.</param>
+     /// <returns>A new instance of <see cref=""Result{TValue}""/> representing a failure result with the specified error.</returns>
+     [SuppressMessage(""Usage"", ""CA2225: Operator overloads have named alternates"", Justification = ""We don't want to expose named alternates in this case."")]
++    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+     public static implicit operator Result<TValue>(Error error)
+     {
+         return new Result<TValue>(error);
+"
+248,3213876116,https://github.com/jscarle/LightResults/pull/76,src/LightResults/Result`1.cs,5,Compiler Optimization Hints/Directives,,"The diff adds a [MethodImpl(MethodImplOptions.AggressiveInlining)] attribute to the operator== method, which is an added annotation from external code/GitHub to improve performance via inlining hints.",0:added_code_from_github(0.89)@L7-7,"The diff adds a new MethodImpl attribute line to the operator method, which is added code and does not clearly fit any more specific mutation category.",full_disagree,,"@@ -369,6 +375,7 @@ public override int GetHashCode()
+     /// <param name=""left"">The first <see cref=""Result{TValue}""/> instance to compare.</param>
+     /// <param name=""right"">The second <see cref=""Result{TValue}""/> instance to compare.</param>
+     /// <returns><c>true</c> if the specified <see cref=""Result{TValue}""/> instances are equal; otherwise, <c>false</c>.</returns>
++    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+     public static bool operator ==(in Result<TValue> left, in Result<TValue> right)
+     {
+         return left.Equals(in right);
+"
+253,3070322024,https://github.com/calcom/cal.com/pull/21374,packages/lib/getUserAvailability.ts,2,Concurrency Control / Rate Limiting,14:object_creation(0.85)@L3-4,"A new `pLimit(10)` object is created and stored in `limit`, and the direct call to `_getUserAvailability` is wrapped (inlined) inside a `limit(() => ...)` concurrency-limiting wrapper, changing the call structure while preserving the same logic.",0:added_code_from_github(0.88)@L5-5; 15:statement_splitting(0.86)@L5-5; 11:synchronization(0.97)@L8-24,"The patch adds a new local variable initialization for a concurrency limiter and wraps each async call in limit(() => ...), which introduces synchronization/concurrency-control behavior and adds new code while extracting the limiter into a separate statement.",full_disagree,,"@@ -699,22 +700,26 @@ type GetUsersAvailabilityProps = {
+ };
+ 
+ const _getUsersAvailability = async ({ users, query, initialData }: GetUsersAvailabilityProps) => {
++  const limit = pLimit(10);
++
+   return await Promise.all(
+     users.map((user) =>
+-      _getUserAvailability(
+-        {
+-          ...query,
+-          userId: user.id,
+-          username: user.username || """",
+-        },
+-        initialData
+-          ? {
+-              ...initialData,
+-              user,
+-              currentBookings: user.currentBookings,
+-              outOfOfficeDays: user.outOfOfficeDays,
+-            }
+-          : undefined
++      limit(() =>
++        _getUserAvailability(
++          {
++            ...query,
++            userId: user.id,
++            username: user.username || """",
++          },
++          initialData
++            ? {
++                ...initialData,
++                user,
++                currentBookings: user.currentBookings,
++                outOfOfficeDays: user.outOfOfficeDays,
++              }
++            : undefined
++        )
+       )
+     )
+   );"
+283,3078172167,https://github.com/elixr-games/elics/pull/17,src/Query.ts,2,Darwinian Data Structure Selection,6:method_name_change(0.95)@L8-9,"The diff replaces `.and(...).equals(this.requiredMask)` with `.contains(this.requiredMask)` and `.and(...).isEmpty()` with `.intersects(this.excludedMask)`, which are method name changes (and inlining of chained calls into single method calls), plus indentation-only changes that constitute no meaningful logic change beyond the method renames.",12:name_modification(0.90)@L4-9,The diff replaces chained method calls with different method names (`and`/`equals`/`isEmpty` to `contains`/`intersects`) and also modifies the returned expression by changing how `hasRequired` and `hasExcluded` are computed before the return.,full_disagree,,"@@ -22,14 +22,12 @@ export class Query {
+ 		public queryId: string,
+ 	) {}
+ 
+-	matches(entity: Entity) {
+-		const hasRequired = entity.bitmask
+-			.and(this.requiredMask)
+-			.equals(this.requiredMask);
+-		const hasExcluded = !entity.bitmask.and(this.excludedMask).isEmpty();
++        matches(entity: Entity) {
++                const hasRequired = entity.bitmask.contains(this.requiredMask);
++                const hasExcluded = entity.bitmask.intersects(this.excludedMask);
+ 
+-		return hasRequired && !hasExcluded;
+-	}
++                return hasRequired && !hasExcluded;
++        }
+ 
+ 	subscribe(
+ 		event: 'qualify' | 'disqualify',"
+285,3078172167,https://github.com/elixr-games/elics/pull/17,src/QueryManager.ts,3,Darwinian Data Structure Selection,,"The collection type changes from Set to Array (add→push, clear→length=0), control flow is modified by adding an if(!entity.dirty) guard and replacing forEach with a for...of loop, and new dirty-flag tracking logic is introduced.",13:control_flow(0.95)@L8-13; 12:name_modification(0.88)@L10-11; 15:statement_splitting(0.90)@L20-24; 16:arithmetic_manipulation(0.82)@L10-10,"The patch changes control flow by replacing a simple else-body and forEach callback with guarded if logic and a for-of loop, renames collection operations/fields (add→push, clear→length reset), splits callback-based statements into multiple explicit statements, adds a boolean negation check, and changes collection initialization/update style by using array-style push/length semantics.",full_disagree,,"@@ -41,21 +41,25 @@ export class QueryManager {
+ 					});
+ 				}
+ 			});
+-		} else {
+-			this.entitiesToUpdate.add(entity);
+-		}
+-	}
++                } else {
++                        if (!entity.dirty) {
++                                entity.dirty = true;
++                                this.entitiesToUpdate.push(entity);
++                        }
++                }
++        }
+ 
+ 	resetEntity(entity: Entity): void {
+ 		this.queries.forEach((query) => query.entities.delete(entity));
+ 	}
+ 
+ 	deferredUpdate(): void {
+-		if (this.deferredEntityUpdates) {
+-			this.entitiesToUpdate.forEach((entity) =>
+-				this.updateEntity(entity, true),
+-			);
+-			this.entitiesToUpdate.clear();
+-		}
+-	}
++                if (this.deferredEntityUpdates) {
++                        for (const entity of this.entitiesToUpdate) {
++                                this.updateEntity(entity, true);
++                                entity.dirty = false;
++                        }
++                        this.entitiesToUpdate.length = 0;
++                }
++        }
+ }"
+289,3137786825,https://github.com/jodendaal/OpenAI.Net/pull/89,src/OpenAI.Net/Extensions/StringExtensions.cs,1,Darwinian Data Structure Selection,7:type_change(0.95)@L4-5,"The return expression changes from `new List<string> { value }` to `new string[] { value }`, which is a type change from a generic List to an array (both satisfy IList<string>, but the concrete type changes).",14:object_creation(0.91)@L4-8; 5:return_statement_mods(0.88)@L7-7,"The patch changes the returned initializer from a List<string> object creation to a string[] array creation, directly modifying the expression in the return statement.",full_disagree,,"@@ -6,7 +6,7 @@ public static class StringExtensions
+     {
+         public static IList<string> ToList(this string value) 
+         { 
+-            return new List<string> { value };  
++            return new string[] { value };  
+         }
+ 
+         public static byte[] Base64ToBytes(this string value)"
+309,3147340923,https://github.com/web-infra-dev/rspack/pull/10677,crates/rspack_core/src/compiler/module_executor/entry.rs,1,Darwinian Data Structure Selection,7:type_change(0.80)@L4-4,"The diff adds an import for `FxHashMap` from `rustc_hash`, which is a faster hash map replacing the standard `HashMap`, representing a type change (HashMap→FxHashMap) with a name modification of the import.",0:added_code_from_github(0.94)@L4-4,"The diff adds a new import statement for FxHashMap, which is an arbitrary code addition without any clearly visible type-signature change or other mutation pattern.",full_disagree,,"@@ -1,6 +1,7 @@
+ use std::collections::hash_map::Entry;
+ 
+ use rspack_error::miette::diagnostic;
++use rustc_hash::FxHashMap;
+ 
+ use super::{
+   context::{ExecutorTaskContext, ImportModuleMeta},"
+311,3147340923,https://github.com/web-infra-dev/rspack/pull/10677,crates/rspack_core/src/exports/export_info_setter.rs,1,Darwinian Data Structure Selection,12:name_modification(0.85)@L2-3,"The import changes from `std::collections::hash_map::Entry` to `rustc_hash::FxHashMap`, swapping one hash map library import for another (rustc-hash's FxHashMap instead of std's HashMap Entry).",,"The diff replaces one imported path/name with another import (`std::collections::hash_map::Entry` removed, `rustc_hash::FxHashMap` added), which is a clear name/import modification without enough context to confirm a declared type change.",full_disagree,,"@@ -1,6 +1,5 @@
+-use std::collections::hash_map::Entry;
+-
+ use rspack_util::atom::Atom;
++use rustc_hash::FxHashMap;
+ 
+ use super::{
+   ExportInfoData, ExportInfoTargetValue, ExportProvided, ExportsInfo, Inlinable, UsageFilterFnTy,
+"
+313,3147340923,https://github.com/web-infra-dev/rspack/pull/10677,crates/rspack_ids/src/occurrence_chunk_ids_plugin.rs,2,Darwinian Data Structure Selection,6:method_name_change(0.95)@L5-6,"The initialization of the HashMap changes from `HashMap::new()` to `HashMap::default()`, which is a method name change on the constructor/factory call.",,"The only meaningful change replaces one constructor-like associated function call with another on the same type (`HashMap::new()` to `HashMap::default()`), which is best classified as a method/name modification.",full_disagree,,"@@ -44,7 +44,7 @@ async fn chunk_ids(&self, compilation: &mut rspack_core::Compilation) -> Result<
+   let chunk_graph = &compilation.chunk_graph;
+   let module_graph = &compilation.get_module_graph();
+   let chunk_group_by_ukey = &compilation.chunk_group_by_ukey;
+-  let mut occurs_in_initial_chunks_map = HashMap::new();
++  let mut occurs_in_initial_chunks_map = HashMap::default();
+ 
+   for chunk in compilation.chunk_by_ukey.values() {
+     let mut occurs = 0;"
+339,3204565892,https://github.com/quarylabs/sqruff/pull/1749,crates/lib-core/src/parser.rs,1,Darwinian Data Structure Selection,7:type_change(0.90)@L14-15,"The import is changed from `ahash::AHashMap` to `rustc_hash::FxHashMap`, which is a swap of one hash map library for another with a different type name (AHashMap→FxHashMap), constituting both a type_change (the declared type changes) and a name_modification (the import path and type name are renamed).",,"The diff changes the imported hash map type path/name from ahash::AHashMap to rustc_hash::FxHashMap, which is clearly a name/import modification without enough context to confirm an actual declared type signature change.",full_disagree,,"@@ -11,7 +11,7 @@ pub mod parsers;
+ pub mod segments;
+ pub mod types;
+ 
+-use ahash::AHashMap;
++use rustc_hash::FxHashMap;
+ 
+ use crate::dialects::Dialect;
+ use crate::errors::SQLParseError;
+"
+341,3204565892,https://github.com/quarylabs/sqruff/pull/1749,crates/lib-core/src/parser/context.rs,1,Darwinian Data Structure Selection,7:type_change(0.90)@L1-2,"The diff replaces the `ahash::AHashMap` import with `rustc_hash::FxHashMap`, which is a swap of one hash map library for another with a different type name (AHashMap→FxHashMap), constituting both a type_change and a name_modification.",12:name_modification(0.94)@L2-3,"The diff removes one imported map type/path (AHashMap) while retaining another (FxHashMap), which is best classified as an import/name change rather than a declared type signature change.",full_disagree,,"@@ -1,4 +1,3 @@
+-use ahash::AHashMap;
+ use rustc_hash::FxHashMap;
+ use smol_str::SmolStr;
+ 
+"
+344,3204565892,https://github.com/quarylabs/sqruff/pull/1749,crates/lib-core/src/parser/grammar.rs,1,Darwinian Data Structure Selection,7:type_change(0.90)@L7-8,"The import changes from `ahash::AHashSet` to `rustc_hash::FxHashSet`, which is both a library/name change and a type change since the hash set type itself changes (AHashSet→FxHashSet).",12:name_modification(0.95)@L6-7,"The diff changes the imported set type name from AHashSet to FxHashSet via a different import path, which is a clear name modification without enough evidence of a declared type signature change in this patch.",full_disagree,,"@@ -4,7 +4,7 @@ pub mod delimited;
+ pub mod noncode;
+ pub mod sequence;
+ 
+-use ahash::AHashSet;
++use rustc_hash::FxHashSet;
+ use std::borrow::Cow;
+ use std::sync::OnceLock;
+ 
+"
+347,3204565892,https://github.com/quarylabs/sqruff/pull/1749,crates/lib-core/src/parser/grammar/anyof.rs,1,Darwinian Data Structure Selection,,,7:type_change(0.96)@L2-3; 12:name_modification(0.88)@L2-3,"The diff changes the imported set type from AHashSet to FxHashSet, which is both a type change and a name modification.",full_disagree,,"@@ -1,4 +1,4 @@
+-use ahash::AHashSet;
++use rustc_hash::FxHashSet;
+ use itertools::{Itertools, chain};
+ use nohash_hasher::IntMap;
+ 
+"
+351,3204565892,https://github.com/quarylabs/sqruff/pull/1749,crates/lib-core/src/parser/grammar/noncode.rs,1,Darwinian Data Structure Selection,7:type_change(0.90)@L1-2,"The import changes from `ahash::AHashSet` to `rustc_hash::FxHashSet`, which is a different library with a different type name (AHashSet→FxHashSet), constituting both a type change and a name modification.",12:name_modification(0.87)@L2-2,"The diff changes the imported type name/path from ahash::AHashSet to rustc_hash::FxHashSet, which is a clear name/import modification without enough context to confirm a declared type signature change.",full_disagree,,"@@ -1,4 +1,4 @@
+-use ahash::AHashSet;
++use rustc_hash::FxHashSet;
+ 
+ use crate::dialects::syntax::SyntaxSet;
+ use crate::errors::SQLParseError;
+"
+394,3204565892,https://github.com/quarylabs/sqruff/pull/1749,crates/lib/src/core/rules/context.rs,1,Darwinian Data Structure Selection,7:type_change(0.95)@L4-5,"The import changes from `ahash::AHashMap` to `rustc_hash::FxHashMap`, which is a library swap that also changes the actual type name (AHashMap→FxHashMap), constituting both a name modification and a type change.",12:name_modification(0.89)@L6-7,"The diff changes the imported map type name/path from ahash::AHashMap to rustc_hash::FxHashMap, which is clearly a name/import modification.",full_disagree,,"@@ -2,7 +2,7 @@ use std::any::{Any, TypeId};
+ use std::cell::RefCell;
+ use std::rc::Rc;
+ 
+-use ahash::AHashMap;
++use rustc_hash::FxHashMap;
+ use sqruff_lib_core::dialects::Dialect;
+ use sqruff_lib_core::parser::segments::{ErasedSegment, Tables};
+ use sqruff_lib_core::templaters::TemplatedFile;
+"
+455,3204565892,https://github.com/quarylabs/sqruff/pull/1749,crates/lib/src/rules/layout/lt01.rs,1,Darwinian Data Structure Selection,7:type_change(0.95)@L1-2,"The import changes from `ahash::AHashMap` to `rustc_hash::FxHashMap`, which is both a library/name change and a type change since the HashMap type itself changes from AHashMap to FxHashMap.",12:name_modification(0.93)@L2-2,"The patch changes the imported type/library name from AHashMap to FxHashMap in a use statement, which is a clear name modification without enough context to confirm a declared type signature change.",full_disagree,,"@@ -1,4 +1,4 @@
+-use ahash::AHashMap;
++use rustc_hash::FxHashMap;
+ 
+ use crate::core::config::Value;
+ use crate::core::rules::context::RuleContext;
+"
+496,3204565892,https://github.com/quarylabs/sqruff/pull/1749,crates/lib/src/rules/structure/st04.rs,1,Darwinian Data Structure Selection,,,7:type_change(0.97)@L2-3,"The diff replaces the imported map type AHashMap with FxHashMap, which is a declared type change and also a name change in the imported symbol.",full_disagree,,"@@ -1,4 +1,4 @@
+-use ahash::AHashMap;
++use rustc_hash::FxHashMap;
+ use itertools::Itertools;
+ use smol_str::ToSmolStr;
+ use sqruff_lib_core::dialects::syntax::{SyntaxKind, SyntaxSet};
+"
+540,3257665431,https://github.com/MihaiCristianCondrea/Smart-Cleaner-for-Android/pull/220,app/src/main/kotlin/com/d4rk/cleaner/app/clean/analyze/ui/components/tabs/TabsContent.kt,1,Darwinian Data Structure Selection,12:name_modification(0.90)@L4-5,"The change replaces `it.key.path` with `it.key` in the `mapKeys` lambda, modifying how the key is accessed/referenced (removing the `.path` property access), which is a name/expression modification rather than a type or arithmetic change.",,"The patch changes the accessed expression from it.key.path to it.key inside the File(...) call, which is a modification of the referenced member/name rather than a type, control-flow, or return change.",full_disagree,,"@@ -141,7 +141,7 @@ fun TabsContent(
+             DuplicateGroupsSection(
+                 modifier = Modifier ,
+                 filesByDate = filesByDate ,
+-                fileSelectionStates = data.analyzeState.fileSelectionMap.mapKeys { File(it.key.path) } ,
++                fileSelectionStates = data.analyzeState.fileSelectionMap.mapKeys { File(it.key) } ,
+                 onFileSelectionChange = viewModel::onFileSelectionChange ,
+                 onDateSelectionChange = { files, checked -> viewModel.onEvent(ScannerEvent.ToggleSelectFilesForDate(files , checked)) } ,
+                 originals = data.analyzeState.duplicateOriginals.map { File(it.path) }.toSet() ,
+"
+548,3257665431,https://github.com/MihaiCristianCondrea/Smart-Cleaner-for-Android/pull/220,app/src/main/kotlin/com/d4rk/cleaner/app/clean/scanner/ui/ScannerViewModel.kt,6,Darwinian Data Structure Selection,3:deleted_blocks(0.85)@L4-5,"The `.map { it.toFile() }` transformation is removed, so the intermediate conversion from file paths to File objects is eliminated—this is a deletion of a transformation block; note this could also be seen as the reverse (removing an inlined transformation), but primarily it's a deleted operation that changes the type of fileObjs.",15:statement_splitting(0.83)@L7-7,"The patch replaces a method-call expression with a previously prepared variable/value form on the assignment line, simplifying the statement without changing control flow, types, or returns.",full_disagree,,"@@ -848,7 +855,7 @@ class ScannerViewModel(
+                 return@launch
+             }
+ 
+-            val fileObjs = filesToMove.map { it.toFile() }
++            val fileObjs = filesToMove
+             val totalFileSizeToMove: Long = fileObjs.sumOf { it.length() }
+ 
+             val includeDuplicates = dataStore.deleteDuplicateFiles.first() &&
+"
+552,3257665431,https://github.com/MihaiCristianCondrea/Smart-Cleaner-for-Android/pull/220,app/src/main/kotlin/com/d4rk/cleaner/app/clean/trash/ui/TrashViewModel.kt,1,Darwinian Data Structure Selection,7:type_change(0.90)@L4-5,"The map key type changes from File to String (file.absolutePath), which changes the declared type of the map's key from File to String.",12:name_modification(0.91)@L6-6,"The patch changes the map key reference from `file` to `file.absolutePath`, which is a modification of the referenced object/property name without clearly changing control flow, types, or return behavior.",full_disagree,,"@@ -108,7 +108,7 @@ class TrashViewModel(
+     private fun onFileSelectionChange(file : File , isChecked : Boolean) {
+         _uiState.updateData(newState = _uiState.value.screenState) { currentData ->
+             val updatedSelections = currentData.fileSelectionStates.toMutableMap().apply {
+-                this[file] = isChecked
++                this[file.absolutePath] = isChecked
+             }
+             currentData.copy(
+                 fileSelectionStates = updatedSelections , selectedFileCount = updatedSelections.count { it.value })
+"
+570,3070227634,https://github.com/calcom/cal.com/pull/21372,packages/lib/getUserAvailability.ts,2,Enable Multi-threading,13:control_flow(0.85)@L1-10,"The diff changes a synchronous-style call into a promise chain with `.then()` and pushes the promise into an array, modifying control flow by deferring assignment to a callback and adding the promise to a collection for later resolution.",15:statement_splitting(0.95)@L7-11,"The original single awaited/called expression is split by attaching a then-callback that assigns to an intermediate variable and adding a separate push statement, which is a clear statement-splitting change with added code.",full_disagree,,"@@ -364,7 +367,10 @@ const _getUserAvailability = async function getUsersWorkingHoursLifeTheUniverseA
+       initialData?.busyTimesFromLimitsBookings ?? [],
+       timeZone,
+       initialData?.rescheduleUid ?? undefined
+-    );
++    ).then((result) => {
++      busyTimesFromLimits = result;
++    });
++    busyTimesPromises.push(busyTimesFromLimitsPromise);
+   }
+ 
+   const teamForBookingLimits =
+"
+576,3084608702,https://github.com/calcom/cal.com/pull/21479,apps/api/v2/src/modules/slots/slots-2024-04-15/slots.module.ts,1,Enable Multi-threading,12:name_modification(0.90)@L5-15,"A new service import (SlotsWorkerService_2024_04_15) is added and registered as a provider, introducing a new named entity into the module configuration.",0:added_code_from_github(0.98)@L5-15; 10:extra_brackets(0.87)@L11-15,"The diff adds a new service import and provider entry, and it also reformats the providers array from a single line into a multi-line bracketed form with extra brackets/lines.",full_disagree,,"@@ -2,13 +2,19 @@ import { EventTypesModule_2024_04_15 } from ""@/ee/event-types/event-types_2024_0
+ import { PrismaModule } from ""@/modules/prisma/prisma.module"";
+ import { SlotsController_2024_04_15 } from ""@/modules/slots/slots-2024-04-15/controllers/slots.controller"";
+ import { SlotsOutputService_2024_04_15 } from ""@/modules/slots/slots-2024-04-15/services/slots-output.service"";
++import { SlotsWorkerService_2024_04_15 } from ""@/modules/slots/slots-2024-04-15/services/slots-worker.service"";
+ import { SlotsService_2024_04_15 } from ""@/modules/slots/slots-2024-04-15/services/slots.service"";
+ import { SlotsRepository_2024_04_15 } from ""@/modules/slots/slots-2024-04-15/slots.repository"";
+ import { Module } from ""@nestjs/common"";
+ 
+ @Module({
+   imports: [PrismaModule, EventTypesModule_2024_04_15],
+-  providers: [SlotsRepository_2024_04_15, SlotsService_2024_04_15, SlotsOutputService_2024_04_15],
++  providers: [
++    SlotsRepository_2024_04_15,
++    SlotsService_2024_04_15,
++    SlotsOutputService_2024_04_15,
++    SlotsWorkerService_2024_04_15,
++  ],
+   controllers: [SlotsController_2024_04_15],
+   exports: [SlotsService_2024_04_15],
+ })"
+597,3152003781,https://github.com/liam-hq/liam/pull/2037,frontend/apps/app/components/Chat/Chat.tsx,1,Minimize Payload Size / Pass Reference Instead of Value,3:deleted_blocks(0.95)@L1-8,"The diff removes the `schemaData` argument from the `sendChatMessage` function call, which is a deletion of a parameter/argument block.",,"The diff only removes a method call argument (`schemaData`), which does not clearly match any listed mutation category such as control flow, return modification, type change, or statement splitting.",full_disagree,,"@@ -74,7 +74,6 @@ export const Chat: FC<Props> = ({ schemaData, tableGroups, designSession }) => {
+     // Send chat message to API
+     const result = await sendChatMessage({
+       message: content,
+-      schemaData,
+       tableGroups,
+       messages,
+       designSession,"
+600,3151002300,https://github.com/microsoft/kiota/pull/6671,vscode/npm-package/install.ts,3,Non-Blocking I/O,6:method_name_change(0.95)@L7-8,"The synchronous `fs.existsSync(kiotaBinaryZip)` call is replaced with the asynchronous `await checkFileExists(kiotaBinaryZip)`, which is a method name change (and adds await), substituting one function call for another.",12:name_modification(0.94)@L5-6,"The patch changes the condition of an if statement by replacing the called API fs.existsSync with await checkFileExists, which is a call/name substitution within control-flow logic.",full_disagree,,"@@ -61,7 +90,7 @@ export async function ensureKiotaIsPresentInPath(installPath: string, runtimeDep
+           const zipFilePath = `${installPath}.zip`;
+           // If env variable that points to kiota binary zip exists, use it to copy the file instead of downloading it
+           const kiotaBinaryZip = process.env.KIOTA_SIDELOADING_BINARY_ZIP_PATH;
+-          if (kiotaBinaryZip && fs.existsSync(kiotaBinaryZip)) {
++          if (kiotaBinaryZip && await checkFileExists(kiotaBinaryZip)) {
+             fs.copyFileSync(kiotaBinaryZip, zipFilePath);
+           } else {
+             const downloadUrl = getDownloadUrl(currentPlatform);"
+601,3209964949,https://github.com/ethyca/fides/pull/6310,clients/admin-ui/src/features/system/privacy-declarations/hooks.ts,1,Non-Blocking I/O,14:object_creation(0.85)@L4-4,"A new property `minimal: true` is added to the object literal passed as the first argument to `useGetAllFilteredDatasetsQuery`, modifying the initialization/creation of that options object.",,"The diff adds a new argument property (`minimal: true`) to an existing object literal, which is added code without any clearer match to the more specific mutation categories.",full_disagree,,"@@ -38,6 +38,7 @@ export const usePrivacyDeclarationData = ({
+   const { isLoading: isLoadingDatasets } = useGetAllFilteredDatasetsQuery(
+     {
+       onlyUnlinkedDatasets: false,
++      minimal: true,
+     },
+     {
+       skip: !includeDatasets,"
+603,3209964949,https://github.com/ethyca/fides/pull/6310,src/fides/api/api/v1/endpoints/generic_overrides.py,1,Non-Blocking I/O,12:name_modification(0.90)@L1-8,"The diff adds two new imports (`from functools import partial` and `from fastapi.concurrency import run_in_threadpool`), which are new name/module references being introduced into the codebase without any other structural code changes visible in this snippet.",0:added_code_from_github(0.94)@L2-5,"The diff adds two new import statements, which is added code and does not clearly match any more specific mutation category.",full_disagree,,"@@ -1,6 +1,8 @@
++from functools import partial
+ from typing import Dict, List, Optional, Type, Union
+ 
+ from fastapi import Depends, HTTPException, Query, Response, Security
++from fastapi.concurrency import run_in_threadpool
+ from fastapi.encoders import jsonable_encoder
+ from fastapi.responses import JSONResponse
+ from fastapi_pagination import Page, Params
+"
+606,3209964949,https://github.com/ethyca/fides/pull/6310,clients/admin-ui/src/features/datastore-connections/add-connection/forms/YamlEditorForm.tsx,2,Non-Blocking I/O,6:method_name_change(0.95)@L4-6; 14:object_creation(0.85)@L4-6,"The query hook is renamed from `useGetAllDatasetsQuery` to `useGetAllFilteredDatasetsQuery` (method_name_change), and the call now passes a new object argument `{ minimal: true }` where none existed before (object_creation).",12:name_modification(0.98)@L3-6; 15:statement_splitting(0.87)@L3-6,The diff replaces one query hook call with another hook name and splits the single-line call into a multi-line call with an extracted object argument.,full_disagree,,"@@ -40,7 +40,9 @@ const YamlEditorForm = ({
+   const [isTouched, setIsTouched] = useState(false);
+   const [isEmptyState, setIsEmptyState] = useState(!yamlData);
+   const warningDisclosure = useDisclosure();
+-  const { data: allDatasets } = useGetAllDatasetsQuery();
++  const { data: allDatasets } = useGetAllFilteredDatasetsQuery({
++    minimal: true,
++  });
+   const [overWrittenKeys, setOverWrittenKeys] = useState<string[]>([]);
+ 
+   const validate = (value: string) => {"
+608,3209964949,https://github.com/ethyca/fides/pull/6310,clients/admin-ui/src/features/datastore-connections/system_portal_config/forms/fields/DatasetConfigField/useDatasetConfigField.tsx,1,Non-Blocking I/O,,"A new property `minimal: true` is added to the object/argument passed to `useGetAllFilteredDatasetsQuery`, modifying the initialization of the query parameters object.",0:added_code_from_github(0.95)@L4-10,"The diff adds a new argument property `minimal: true` to the query call, which is an added code change without clearer evidence for other mutation categories.",full_disagree,,"@@ -34,6 +34,7 @@ export const useDatasetConfigField = ({
+ 
+   const { data: unlinkedDatasets } = useGetAllFilteredDatasetsQuery({
+     onlyUnlinkedDatasets: true,
++    minimal: true,
+   });
+ 
+   const unlinkedDatasetOptions: Option[] = useMemo("
+612,3240593081,https://github.com/Doriandarko/make-it-heavy/pull/9,main.py,2,Non-Blocking I/O,6:method_name_change(0.90)@L4-5,"The method call is changed from `agent.run(user_input)` to `agent.run_async(user_input)` (method rename), and wrapped in `asyncio.run(...)` which introduces a new function call wrapping the expression.",12:name_modification(0.86)@L4-4,"The patch replaces a direct method call with a wrapped async invocation, introducing a different called method name (`run` to `run_async`) and restructuring the expression by adding `asyncio.run(...)` around it.",full_disagree,,"@@ -32,7 +33,7 @@ def main():
+                 continue
+             
+             print(""Agent: Thinking..."")
+-            response = agent.run(user_input)
++            response = asyncio.run(agent.run_async(user_input))
+             print(f""Agent: {response}"")
+             
+         except KeyboardInterrupt:
+"
+613,3240593081,https://github.com/Doriandarko/make-it-heavy/pull/9,orchestrator.py,4,Non-Blocking I/O,9:exception_handling(0.90)@L21-28,A new async method `run_agent_async` is added (likely from a GitHub integration with Tygent) that includes exception handling via a try/except block mirroring the existing synchronous method.,0:added_code_from_github(0.96)@L8-30; 13:control_flow(0.88)@L11-30; 14:object_creation(0.84)@L15-15; 5:return_statement_mods(0.90)@L20-29,"The diff adds a new async method with new try/except control flow, creates an OpenRouterAgent instance, and introduces new return statements in the added code.",full_disagree,,"@@ -100,6 +103,29 @@ def run_agent_parallel(self, agent_id: int, subtask: str) -> Dict[str, Any]:
+                 ""response"": f""Error: {str(e)}"",
+                 ""execution_time"": 0
+             }
++
++    async def run_agent_async(self, agent_id: int, subtask: str) -> Dict[str, Any]:
++        """"""Asynchronous agent execution used with Tygent.""""""
++        try:
++            self.update_agent_progress(agent_id, ""PROCESSING..."")
++            agent = OpenRouterAgent(silent=True)
++            start_time = time.time()
++            response = await agent.run_async(subtask)
++            execution_time = time.time() - start_time
++            self.update_agent_progress(agent_id, ""COMPLETED"", response)
++            return {
++                ""agent_id"": agent_id,
++                ""status"": ""success"",
++                ""response"": response,
++                ""execution_time"": execution_time,
++            }
++        except Exception as e:
++            return {
++                ""agent_id"": agent_id,
++                ""status"": ""error"",
++                ""response"": f""Error: {str(e)}"",
++                ""execution_time"": 0,
++            }
+     
+     def aggregate_results(self, agent_results: List[Dict[str, Any]]) -> str:
+         """"""
+"
+617,3246158661,https://github.com/MihaiCristianCondrea/Smart-Cleaner-for-Android/pull/212,app/src/main/kotlin/com/d4rk/cleaner/app/clean/whatsapp/details/ui/WhatsAppDetailsViewModel.kt,3,Non-Blocking I/O,13:control_flow(0.95)@L4-17,"The diff wraps the existing `_uiState.update` block inside a `launch(dispatchers.default)` coroutine block, changing the control flow by offloading the sorting/updating work to a background dispatcher.",,"The patch wraps the existing _uiState.update block inside a newly added launch(dispatchers.default) block, introducing added code and altering execution/control structure without changing types, returns, or operators.",full_disagree,,"@@ -78,14 +80,16 @@ class DetailsViewModel(
+                 )
+             )
+         }
+-        _uiState.update { current ->
+-            val sorted = sort(current.data?.files ?: emptyList())
+-            current.copy(
+-                data = current.data?.copy(
+-                    files = sorted,
+-                    suggested = sort(getJunkCandidates(sorted))
++        launch(dispatchers.default) {
++            _uiState.update { current ->
++                val sorted = sort(current.data?.files ?: emptyList())
++                current.copy(
++                    data = current.data?.copy(
++                        files = sorted,
++                        suggested = sort(getJunkCandidates(sorted))
++                    )
+                 )
+-            )
++            }
+         }
+     }
+ "
+621,3084684604,https://github.com/elixr-games/elics/pull/39,benchmarks/elics.js,1,Optimize Object Use,6:method_name_change(0.85)@L4-7,"The iteration over `Array.from(this.queries.bs.entities)` is replaced with direct iteration over `this.queries.bs.entities`, removing the `Array.from()` method call wrapper — this is effectively a method call removal/name change at the call site, simplifying the iteration.",,"The code replaces the call `Array.from(this.queries.bs.entities)` with direct use of `this.queries.bs.entities`, which is a method-call/name substitution rather than a control-flow, type, or return change.",full_disagree,,"@@ -200,9 +200,9 @@ export function entityCycle() {
+ 			for (const _ of this.queries.as.entities) {
+ 				world.createEntity().addComponent(B);
+ 			}
+-			for (const e of Array.from(this.queries.bs.entities)) {
+-				e.destroy();
+-			}
++                        for (const e of this.queries.bs.entities) {
++                                e.destroy();
++                        }
+ 		}
+ 	}
+ "
+628,3087728875,https://github.com/ryokun6/ryos/pull/94,src/apps/chats/components/ChatInput.tsx,2,Optimize Object Use,6:method_name_change(0.95)@L4-8; 14:object_creation(0.85)@L4-8,"The store hook is renamed from `useAppStore` to `useAppStoreShallow` and now receives an inline selector function that creates a new object literal, representing both a method name change and a new object creation pattern.",12:name_modification(0.98)@L3-7; 15:statement_splitting(0.97)@L3-7,"The patch replaces a hook call name (`useAppStore` to `useAppStoreShallow`) and splits the single destructuring statement into a selector callback with intermediate object properties, adding new code in the process.",full_disagree,,"@@ -91,7 +91,11 @@ export function ChatInput({
+   const audioButtonRef = useRef<HTMLButtonElement>(null);
+   const { playNote } = useChatSynth();
+   const { play: playNudgeSound } = useSound(Sounds.MSN_NUDGE);
+-  const { typingSynthEnabled, debugMode, aiModel } = useAppStore();
++  const { typingSynthEnabled, debugMode, aiModel } = useAppStoreShallow((s) => ({
++    typingSynthEnabled: s.typingSynthEnabled,
++    debugMode: s.debugMode,
++    aiModel: s.aiModel,
++  }));
+ 
+   // Get the model display name for debug information
+   const modelDisplayName = aiModel ? AI_MODELS[aiModel]?.name : null;"
+629,3087728875,https://github.com/ryokun6/ryos/pull/94,src/components/layout/MenuBar.tsx,2,Optimize Object Use,6:method_name_change(0.95)@L4-7; 14:object_creation(0.85)@L4-7,"The hook call changes from `useAppStore()` to `useAppStoreShallow((s) => ({...}))`, which is a method/function name change, and introduces a new object literal as an argument to the selector function.",12:name_modification(0.97)@L4-7; 15:statement_splitting(0.96)@L4-7,"The diff replaces a hook call with a differently named hook and splits the original single destructuring statement into a multi-line callback/object expression, adding new code but without clear type, control-flow, or return-statement changes.",full_disagree,,"@@ -426,7 +426,10 @@ function DefaultMenuItems() {
+ }
+ 
+ function VolumeControl() {
+-  const { masterVolume, setMasterVolume } = useAppStore();
++  const { masterVolume, setMasterVolume } = useAppStoreShallow((s) => ({
++    masterVolume: s.masterVolume,
++    setMasterVolume: s.setMasterVolume,
++  }));
+   const { play: playVolumeChangeSound } = useSound(Sounds.VOLUME_CHANGE);
+   const launchApp = useLaunchApp();
+   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+"
+635,3087728875,https://github.com/ryokun6/ryos/pull/94,src/apps/control-panels/components/ControlPanelsAppComponent.tsx,2,Optimize Object Use,6:method_name_change(0.95)@L4-35; 14:object_creation(0.85)@L4-35,"The call to `useAppStore()` is replaced with `useAppStoreShallow((s) => ({...}))`, which is a method name change (renamed hook) and introduces a new object literal creation as a selector argument.",12:name_modification(0.96)@L4-36; 15:statement_splitting(0.91)@L4-36,"The patch replaces a simple useAppStore() call with a renamed hook call useAppStoreShallow and expands the expression into a multi-line selector object, adding substantial new code and splitting the original single statement into many lines.",full_disagree,,"@@ -200,7 +200,37 @@ export function ControlPanelsAppComponent({
+     masterVolume,
+     setMasterVolume,
+     setCurrentWallpaper,
+-  } = useAppStore();
++  } = useAppStoreShallow((s) => ({
++    debugMode: s.debugMode,
++    setDebugMode: s.setDebugMode,
++    shaderEffectEnabled: s.shaderEffectEnabled,
++    setShaderEffectEnabled: s.setShaderEffectEnabled,
++    aiModel: s.aiModel,
++    setAiModel: s.setAiModel,
++    terminalSoundsEnabled: s.terminalSoundsEnabled,
++    setTerminalSoundsEnabled: s.setTerminalSoundsEnabled,
++    uiSoundsEnabled: s.uiSoundsEnabled,
++    setUiSoundsEnabled: s.setUiSoundsEnabled,
++    uiVolume: s.uiVolume,
++    setUiVolume: s.setUiVolume,
++    speechEnabled: s.speechEnabled,
++    setSpeechEnabled: s.setSpeechEnabled,
++    chatSynthVolume: s.chatSynthVolume,
++    setChatSynthVolume: s.setChatSynthVolume,
++    speechVolume: s.speechVolume,
++    setSpeechVolume: s.setSpeechVolume,
++    ttsModel: s.ttsModel,
++    setTtsModel: s.setTtsModel,
++    ttsVoice: s.ttsVoice,
++    setTtsVoice: s.setTtsVoice,
++    synthPreset: s.synthPreset,
++    setSynthPreset: s.setSynthPreset,
++    ipodVolume: s.ipodVolume,
++    setIpodVolume: s.setIpodVolume,
++    masterVolume: s.masterVolume,
++    setMasterVolume: s.setMasterVolume,
++    setCurrentWallpaper: s.setCurrentWallpaper,
++  }));
+ 
+   // States for previous volume levels for mute/unmute functionality
+   const [prevMasterVolume, setPrevMasterVolume] = useState("
+636,3087728875,https://github.com/ryokun6/ryos/pull/94,src/apps/chats/components/ChatsMenuBar.tsx,2,Optimize Object Use,6:method_name_change(0.95)@L4-12; 14:object_creation(0.85)@L5-12,"The hook call is changed from `useAppStore()` to `useAppStoreShallow(...)` (method name change), and an inline object literal `{...}` is passed as an argument to the new hook call (object creation).",12:name_modification(0.85)@L3-11; 15:statement_splitting(0.97)@L3-11,"The patch replaces a single hook call with a different named call and splits it into a selector callback object across multiple added lines, introducing new code but not clearly changing control flow, types, returns, or operators.",full_disagree,,"@@ -58,7 +58,14 @@ export function ChatsMenuBar({
+     setTypingSynthEnabled,
+     synthPreset,
+     setSynthPreset,
+-  } = useAppStore();
++  } = useAppStoreShallow((s) => ({
++    speechEnabled: s.speechEnabled,
++    setSpeechEnabled: s.setSpeechEnabled,
++    typingSynthEnabled: s.typingSynthEnabled,
++    setTypingSynthEnabled: s.setTypingSynthEnabled,
++    synthPreset: s.synthPreset,
++    setSynthPreset: s.setSynthPreset,
++  }));
+ 
+   return (
+     <MenuBar>"
+661,3155697260,https://github.com/gear-tech/gear/pull/4725,pallets/gear/src/benchmarking/code.rs,1,Optimize Object Use,6:method_name_change(0.85)@L4-6,"The change replaces `code.to_vec()` with `code`, removing the `.to_vec()` method call — this is effectively inlining/eliminating a redundant conversion, but most precisely it removes a method call (to_vec), which could be seen as a method name change/removal; however, more accurately this is removing an unnecessary clone/conversion call, which fits as a type_change since the type of `code` returned by `serialize().unwrap()` is already the appropriate type (Vec<u8>) and `.to_vec()` was a redundant conversion.",,The returned struct initializer is modified by changing the expression assigned to the returned field from `code.to_vec()` to `code` within `Self { ... }`.,full_disagree,,"@@ -291,7 +291,7 @@ where
+         let code = program.build().serialize().unwrap();
+         let hash = CodeId::generate(&code);
+         Self {
+-            code: code.to_vec(),
++            code,
+             hash,
+             memory: def.memory,
+             _data: PhantomData,"
+663,3158684496,https://github.com/mochilang/mochi/pull/2003,compile/cpp/compiler.go,4,Optimize Object Use,,"A new helper function `isPrimitive` is added to the codebase, which is arbitrary code addition that doesn't fit more specific mutation categories like inlining or control_flow modifications to existing code.",0:added_code_from_github(0.99)@L4-11; 13:control_flow(0.88)@L5-8; 5:return_statement_mods(0.93)@L7-10,"The diff adds a new helper function with a switch statement and explicit return statements, so it includes added code, control-flow addition, and return-statement additions.",full_disagree,,"@@ -635,6 +642,14 @@ func (c *Compiler) cppTypeRef(t types.Type) string {
+ 	return ""auto""
+ }
+ 
++func isPrimitive(t string) bool {
++	switch t {
++	case ""int"", ""double"", ""bool"", ""char"":
++		return true
++	}
++	return false
++}
++
+ func getEmptyListLiteral(e *parser.Expr) *parser.ListLiteral {
+ 	if e == nil || e.Binary == nil {
+ 		return nil"
+665,3168509434,https://github.com/mochilang/mochi/pull/2721,interpreter/builtins.go,2,Optimize Object Use,3:deleted_blocks(0.80)@L1-3,"The diff shows a new definition of builtinFuncs() that simply returns a pre-built builtinFuncMap variable instead of constructing and returning a new map literal inline, suggesting the map construction was extracted/moved elsewhere (deleted_blocks at original site) and the method now references a cached map (name_modification for builtinFuncMap), while the overall pattern replaces inline map construction with a variable reference (object_creation change).",0:added_code_from_github(0.97)@L6-8; 5:return_statement_mods(0.95)@L7-7,"The diff adds a new method with a return statement returning a map value, which is clearly added code; no rename or type signature change is shown in the added lines themselves.",full_disagree,,"@@ -234,3 +236,7 @@ func (i *Interpreter) builtinFuncs() map[string]func(*Interpreter, *parser.CallE
+ 		""eval"":   builtinEval,
+ 	}
+ }
++
++func (i *Interpreter) builtinFuncs() map[string]func(*Interpreter, *parser.CallExpr) (any, error) {
++	return builtinFuncMap
++}"
+666,3168509434,https://github.com/mochilang/mochi/pull/2721,types/env.go,1,Optimize Object Use,11:synchronization(0.80)@L8-8,"The diff adds an import of the 'sync' package, which is used for synchronization primitives in Go, indicating synchronization logic is being introduced.",,"The diff adds the import name ""sync"", which is a clear identifier/import-path name modification and does not by itself show actual synchronization logic being added.",full_disagree,,"@@ -5,6 +5,7 @@ import (
+ 	""io""
+ 	""mochi/parser""
+ 	""os""
++	""sync""
+ )
+ 
+ // ModelSpec defines a named model configuration.
+"
+683,3213730809,https://github.com/jscarle/LightResults/pull/65,src/LightResults/Result.cs,1,Optimize Object Use,6:method_name_change(0.85)@L5-7,"The diff adds an explicit `in` parameter modifier to the `Equals(Result other)` method signature (effectively renaming/modifying its signature), adds a new explicit interface implementation `IEquatable<Result>.Equals(Result other)` that delegates to the `in`-parameter overload, and updates the call site in `Equals(object?)` to use `in`; the new interface implementation method is new code added to satisfy the interface contract while the optimized overload uses pass-by-reference.",7:type_change(0.95)@L6-6; 0:added_code_from_github(0.92)@L11-14; 5:return_statement_mods(0.88)@L20-20,"The diff changes the method parameter to an in-parameter (type/signature change), adds a new explicit interface Equals method, and modifies a return expression in Equals(object?) to call Equals(in other).",full_disagree,,"@@ -412,17 +412,22 @@ public Result<TDestination> AsFailure<TDestination>()
+     /// <summary>Determines whether two <see cref=""Result""/> instances are equal.</summary>
+     /// <param name=""other"">The <see cref=""Result""/> instance to compare with this instance.</param>
+     /// <returns><c>true</c> if the specified <see cref=""Result""/> is equal to this instance; otherwise, <c>false</c>.</returns>
+-    public bool Equals(Result other)
++    public bool Equals(in Result other)
+     {
+         return Equals(_errors, other._errors);
+     }
+ 
++    bool IEquatable<Result>.Equals(Result other)
++    {
++        return Equals(in other);
++    }
++
+     /// <summary>Determines whether the specified object is equal to this instance.</summary>
+     /// <param name=""obj"">The object to compare with this instance.</param>
+     /// <returns><c>true</c> if the specified object is equal to this instance; otherwise, <c>false</c>.</returns>
+     public override bool Equals(object? obj)
+     {
+-        return obj is Result other && Equals(other);
++        return obj is Result other && Equals(in other);
+     }
+ 
+     /// <summary>Returns the hash code for this instance.</summary>
+"
+684,3213730809,https://github.com/jscarle/LightResults/pull/65,src/LightResults/Result.cs,2,Optimize Object Use,12:name_modification(0.90)@L4-17,"The diff adds `in` modifiers to the parameters of the `==` and `!=` operators (changing `Result left` to `in Result left` etc.) and updates the corresponding method calls to pass arguments by reference (`left.Equals(in right)`), which constitutes a modification to how parameters/arguments are named/qualified rather than a type change or control flow change.",7:type_change(0.95)@L6-16; 5:return_statement_mods(0.92)@L8-17,The patch changes the operator method parameter signatures from Result to in Result (type/signature change) and directly modifies both return expressions to call Equals(in right) instead of Equals(right).,full_disagree,,"@@ -436,18 +441,18 @@ public override int GetHashCode()
+     /// <param name=""left"">The first <see cref=""Result""/> instance to compare.</param>
+     /// <param name=""right"">The second <see cref=""Result""/> instance to compare.</param>
+     /// <returns><c>true</c> if the specified <see cref=""Result""/> instances are equal; otherwise, <c>false</c>.</returns>
+-    public static bool operator ==(Result left, Result right)
++    public static bool operator ==(in Result left, in Result right)
+     {
+-        return left.Equals(right);
++        return left.Equals(in right);
+     }
+ 
+     /// <summary>Determines whether two <see cref=""Result""/> instances are not equal.</summary>
+     /// <param name=""left"">The first <see cref=""Result""/> instance to compare.</param>
+     /// <param name=""right"">The second <see cref=""Result""/> instance to compare.</param>
+     /// <returns><c>true</c> if the specified <see cref=""Result""/> instances are not equal; otherwise, <c>false</c>.</returns>
+-    public static bool operator !=(Result left, Result right)
++    public static bool operator !=(in Result left, in Result right)
+     {
+-        return !left.Equals(right);
++        return !left.Equals(in right);
+     }
+ 
+     /// <inheritdoc/>"
+689,3220760486,https://github.com/jniebuhr/gaggimate/pull/299,src/display/core/Controller.cpp,1,Optimize Object Use,12:name_modification(0.85)@L4-5,"The string literal is wrapped in the Arduino F() macro, which moves the string to flash memory for performance, representing a modification to how the argument is expressed (wrapping with a macro call) rather than a type change, return statement change, or other category.",,"The change wraps the string literal in the F(...) macro, modifying how the string object/value is initialized/passed without altering control flow, types, or return statements.",full_disagree,,"@@ -18,7 +18,7 @@ void Controller::setup() {
+     mode = settings.getStartupMode();
+ 
+     if (!SPIFFS.begin(true)) {
+-        Serial.println(""An Error has occurred while mounting LittleFS"");
++        Serial.println(F(""An Error has occurred while mounting LittleFS""));
+     }
+ 
+     pluginManager = new PluginManager();"
+692,3220760486,https://github.com/jniebuhr/gaggimate/pull/299,src/display/drivers/LilyGo-T-RGB/LilyGo_RGBPanel.cpp,1,Optimize Object Use,,"The change wraps the string literal with the Arduino `F()` macro, which moves the string to flash memory — this is a function/macro call substitution (the string argument is now wrapped in a different call), which best fits method_name_change as the call at the site changes from a plain string to F(string).",14:object_creation(0.91)@L4-8,"The only meaningful change wraps the string literal in an F(...) macro, which changes the expression initialization/creation form passed to Serial.println without altering control flow, types, or returns.",full_disagree,,"@@ -45,7 +45,7 @@ bool LilyGo_RGBPanel::begin(LilyGo_RGBPanel_Color_Order order) {
+ 
+     // Initialize the XL9555 expansion chip
+     if (!extension.init(Wire, BOARD_I2C_SDA, BOARD_I2C_SCL)) {
+-        Serial.println(""External GPIO expansion chip does not exist."");
++        Serial.println(F(""External GPIO expansion chip does not exist.""));
+         assert(false);
+     }
+ 
+"
+693,3220760486,https://github.com/jniebuhr/gaggimate/pull/299,src/display/drivers/LilyGo-T-RGB/LilyGo_RGBPanel.cpp,2,Optimize Object Use,6:method_name_change(0.85)@L4-5,"The change wraps the string literal with `F()` macro (a method/function call added around the string argument), which is a common Arduino optimization to store strings in flash memory — this is a method call being added/changed at the call site, but most accurately it represents a name/wrapper modification; however strictly speaking the string literal is now passed through the F() function wrapper, which could also be seen as object_creation or name_modification, but the closest match is that the argument expression is modified by wrapping with F(), fitting name_modification for the macro wrapper addition.",,"The patch changes the string argument from a plain literal to the F(...) macro-wrapped form, which modifies the expression's initialization/creation form without altering control flow, types, or return statements.",full_disagree,,"@@ -57,7 +57,7 @@ bool LilyGo_RGBPanel::begin(LilyGo_RGBPanel_Color_Order order) {
+     extension.digitalWrite(power_enable, HIGH);
+ 
+     if (!initTouch()) {
+-        Serial.println(""Touch chip not found."");
++        Serial.println(F(""Touch chip not found.""));
+     }
+ 
+     initBUS();
+"
+694,3220760486,https://github.com/jniebuhr/gaggimate/pull/299,src/display/drivers/LilyGo-T-RGB/LilyGo_RGBPanel.cpp,3,Optimize Object Use,6:method_name_change(0.85)@L4-15,"The string literals passed to Serial.print/println are wrapped with the F() macro, which moves them to flash memory (PROGMEM) — this is technically a function call substitution/wrapping pattern; the closest match is method_name_change since the argument expression changes from a raw string to an F()-wrapped string, but actually this is best captured as name_modification since F() is a macro wrapping the same values, though the most accurate category is that the argument expressions are modified by wrapping with F(), which doesn't cleanly fit type_change, name_modification, or object_creation — it's closest to name_modification as the string literals themselves don't change but their storage specifier does via the F() macro wrapper.",12:name_modification(0.91)@L4-13,"The patch changes string-print call arguments from plain string literals to the F(...) macro wrapper, which is a code-level name/API usage modification without changing control flow, types, or return statements.",full_disagree,,"@@ -76,15 +76,15 @@ bool LilyGo_RGBPanel::installSD() {
+     if (SD_MMC.begin(""/sdcard"", true, false)) {
+         uint8_t cardType = SD_MMC.cardType();
+         if (cardType != CARD_NONE) {
+-            Serial.print(""SD Card Type: "");
++            Serial.print(F(""SD Card Type: ""));
+             if (cardType == CARD_MMC)
+-                Serial.println(""MMC"");
++                Serial.println(F(""MMC""));
+             else if (cardType == CARD_SD)
+-                Serial.println(""SDSC"");
++                Serial.println(F(""SDSC""));
+             else if (cardType == CARD_SDHC)
+-                Serial.println(""SDHC"");
++                Serial.println(F(""SDHC""));
+             else
+-                Serial.println(""UNKNOWN"");
++                Serial.println(F(""UNKNOWN""));
+             uint64_t cardSize = SD_MMC.cardSize() / (1024 * 1024);
+             Serial.printf(""SD Card Size: %lluMB\n"", cardSize);
+         }"
+697,3220760486,https://github.com/jniebuhr/gaggimate/pull/299,src/display/drivers/Waveshare/WavesharePanel.cpp,2,Optimize Object Use,6:method_name_change(0.85)@L4-14,"The string literals are wrapped with the F() macro (which moves strings to flash memory in Arduino), which changes the function call from passing a raw string literal to passing an F()-wrapped string — this is a method/function call change, but more precisely it's a name_modification or inlining; however, the closest match is that the argument type changes via wrapping with F(), and since the actual call signature changes (different overload selected), this is best categorized as a name_modification of the argument expression — but reviewing again, wrapping 'string' with F('string') is adding a function call wrapper, which is closest to method_name_change since a different overload (taking __FlashStringHelper*) is now called instead of the char* overload.",12:name_modification(0.88)@L4-13,"The patch wraps string literals in the F(...) macro for several Serial print calls, which changes the called expression/name usage without altering control flow, types, returns, or operators.",full_disagree,,"@@ -78,15 +78,15 @@ bool WavesharePanel::installSD() {
+     if (SD_MMC.begin(""/sdcard"", true, false)) {
+         uint8_t cardType = SD_MMC.cardType();
+         if (cardType != CARD_NONE) {
+-            Serial.print(""SD Card Type: "");
++            Serial.print(F(""SD Card Type: ""));
+             if (cardType == CARD_MMC)
+-                Serial.println(""MMC"");
++                Serial.println(F(""MMC""));
+             else if (cardType == CARD_SD)
+-                Serial.println(""SDSC"");
++                Serial.println(F(""SDSC""));
+             else if (cardType == CARD_SDHC)
+-                Serial.println(""SDHC"");
++                Serial.println(F(""SDHC""));
+             else
+-                Serial.println(""UNKNOWN"");
++                Serial.println(F(""UNKNOWN""));
+             uint64_t cardSize = SD_MMC.cardSize() / (1024 * 1024);
+             Serial.printf(""SD Card Size: %lluMB\n"", cardSize);
+         }"
+698,3220760486,https://github.com/jniebuhr/gaggimate/pull/299,src/display/drivers/WaveshareDriver.cpp,1,Optimize Object Use,14:object_creation(0.85)@L4-5,"The change wraps the string literal in the Arduino `F()` macro, which stores the string in flash memory instead of RAM — this is an object creation/initialization change (wrapping a literal in a flash-string object constructor), which is a common Arduino performance optimization.",,"The patch changes the string argument from a plain literal to the F(...) macro form, which modifies how the value is created/initialized at the call site.",full_disagree,,"@@ -7,7 +7,7 @@ void WaveshareDriver::init() {
+     printf(""WaveshareDriver initialzing\n"");
+     if (!panel.begin()) {
+         for (uint8_t i = 0; i < 20; i++) {
+-            Serial.println(""Error, failed to initialize T-RGB"");
++            Serial.println(F(""Error, failed to initialize T-RGB""));
+             delay(1000);
+         }
+         ESP.restart();"
+699,3220760486,https://github.com/jniebuhr/gaggimate/pull/299,src/display/plugins/WebUIPlugin.cpp,1,Optimize Object Use,12:name_modification(0.90)@L1-41,"The diff wraps string literals with the Arduino F() macro (which stores strings in flash memory rather than RAM), which is a name/call modification to how the string literals are referenced, not a type change or other structural change.",14:object_creation(0.89)@L6-20,"The patch changes three string literal assignments to use the F(...) macro, which modifies how those values are initialized/created without altering control flow, types, or return statements.",full_disagree,,"@@ -220,21 +220,21 @@ void WebUIPlugin::handleProfileRequest(uint32_t clientId, JsonDocument &request)
+             auto obj = response[""profile""].to<JsonObject>();
+             writeProfile(obj, profile);
+         } else {
+-            response[""error""] = ""Profile not found"";
++            response[""error""] = F(""Profile not found"");
+         }
+     } else if (type == ""req:profiles:save"") {
+         auto obj = request[""profile""].as<JsonObject>();
+         Profile profile;
+         parseProfile(obj, profile);
+         if (!profileManager->saveProfile(profile)) {
+-            response[""error""] = ""Save failed"";
++            response[""error""] = F(""Save failed"");
+         }
+         auto respObj = response[""profile""].to<JsonObject>();
+         writeProfile(respObj, profile);
+     } else if (type == ""req:profiles:delete"") {
+         auto id = request[""id""].as<String>();
+         if (!profileManager->deleteProfile(id)) {
+-            response[""error""] = ""Delete failed"";
++            response[""error""] = F(""Delete failed"");
+         }
+     } else if (type == ""req:profiles:select"") {
+         auto id = request[""id""].as<String>();"
+700,3220760486,https://github.com/jniebuhr/gaggimate/pull/299,src/display/plugins/mDNSPlugin.cpp,1,Optimize Object Use,14:object_creation(0.85)@L5-6,"The change wraps the string literal with the Arduino F() macro, which moves the string to flash memory — this is a new function/macro call wrapping the string literal, representing a modified object/value creation at the call site; it could also be seen as a method name change since `println` now receives an F-string object rather than a char pointer.",,"The patch changes the argument to Serial.println by wrapping the string literal with the F() macro, which is a modification to literal/object initialization rather than control flow, naming, or return behavior.",full_disagree,,"@@ -13,6 +13,6 @@ void mDNSPlugin::start(Event const &event) const {
+     if (apMode)
+         return;
+     if (!MDNS.begin(controller->getSettings().getMdnsName().c_str())) {
+-        Serial.println(""Error setting up MDNS responder!"");
++        Serial.println(F(""Error setting up MDNS responder!""));
+     }
+ }"
+709,3262412016,https://github.com/microsoft/testfx/pull/6162,src/Adapter/MSTestAdapter.PlatformServices/Execution/ExceptionHelper.cs,1,Optimize Object Use,13:control_flow(0.95)@L4-4,"A `#if NET6_0_OR_GREATER` preprocessor directive is added, which introduces conditional compilation (a form of control flow branching) around the existing code.",,"The diff adds a new preprocessor directive line (#if NET6_0_OR_GREATER), which is a meaningful code addition not better captured by the other specific mutation categories.",full_disagree,,"@@ -104,6 +104,7 @@ internal static string TrimStackTrace(string stackTrace)
+         }
+ 
+         StringBuilder result = new(stackTrace.Length);
++#if NET6_0_OR_GREATER
+         ReadOnlySpan<char> remaining = stackTrace.AsSpan();
+         ReadOnlySpan<char> newLine = Environment.NewLine.AsSpan();
+ 
+"
+711,3262412016,https://github.com/microsoft/testfx/pull/6162,src/Adapter/MSTestAdapter.PlatformServices/Execution/ExceptionHelper.cs,3,Optimize Object Use,13:control_flow(0.85)@L4-4,"A `#if NET6_0_OR_GREATER` preprocessor conditional is added, which modifies control flow (conditional compilation), and the surrounding doc comment block is also affected.",0:added_code_from_github(0.88)@L4-4,"The diff adds a new preprocessor directive line (#if NET6_0_OR_GREATER), which is meaningful added code and does not clearly fit the more specific mutation categories.",full_disagree,,"@@ -224,6 +245,7 @@ internal static bool HasReferenceToUTF(string stackFrame)
+         return false;
+     }
+ 
++#if NET6_0_OR_GREATER
+     /// <summary>
+     /// Returns whether the parameter stackFrame has reference to UTF.
+     /// </summary>
+"
+712,3262412016,https://github.com/microsoft/testfx/pull/6162,src/Adapter/MSTestAdapter.PlatformServices/Execution/ExceptionHelper.cs,4,Optimize Object Use,1:no_change(0.85)@L1-5,"The only change is adding a `#endif` preprocessor directive to close a conditional compilation block, which is a structural/syntactic adjustment rather than a meaningful code logic change.",,"The diff adds a new preprocessor directive line (`#endif`), which is a meaningful code addition not fitting the other more specific mutation categories.",full_disagree,,"@@ -245,4 +267,5 @@ internal static bool HasReferenceToUTF(ReadOnlySpan<char> stackFrame)
+ 
+         return false;
+     }
++#endif
+ }"
+713,2766896431,https://github.com/onlook-dev/onlook/pull/982,apps/studio/src/routes/editor/EditPanel/StylesTab/compound/BorderInput.tsx,1,Performance-Optimized Dependency Selection,6:method_name_change(0.85)@L4-12; 12:name_modification(0.85)@L4-12; 3:deleted_blocks(0.90)@L6-9; 13:control_flow(0.80)@L10-12,"The diff replaces a `motion.div` (framer-motion animated component) with a plain `div`, removing the motion animation props (initial/animate/exit) and replacing them with CSS-based transition classes that include a ternary expression for conditional styling based on `showGroup`.",14:object_creation(0.83)@L8-11; 15:statement_splitting(0.92)@L8-11; 16:arithmetic_manipulation(0.88)@L9-10,"The patch replaces the JSX component tag name, rewrites the props by removing object-literal animation props and introducing a computed template-string className split across lines, and adds a boolean conditional expression controlling classes.",full_disagree,,"@@ -86,12 +86,11 @@ const BorderInput = observer(({ compoundStyle }: { compoundStyle: CompoundStyle
+             return null;
+         }
+         return (
+-            <motion.div
++            <div
+                 key={compoundStyle.key}
+-                initial={{ height: 0 }}
+-                animate={{ height: 'auto' }}
+-                exit={{ height: 0 }}
+-                className=""flex flex-col gap-2""
++                className={`flex flex-col gap-2 overflow-hidden transition-[height] duration-300 ease-in-out ${
++                    showGroup ? 'h-auto opacity-100' : 'h-0 opacity-0'
++                }`}
+             >
+                 {compoundStyle.children.map((elementStyle) => (
+                     <div key={elementStyle.key} className=""ml-2 flex flex-row items-center"">
+"
+715,2766896431,https://github.com/onlook-dev/onlook/pull/982,apps/studio/src/routes/editor/EditPanel/StylesTab/compound/DisplayInput.tsx,1,Performance-Optimized Dependency Selection,12:name_modification(0.95)@L4-4,"The diff removes the import of 'motion' from 'motion/react', which is a removal of a named import/dependency reference with no other code changes.",,"The only meaningful change is removal of the imported identifier `motion` from the import statement, which is a name-level modification rather than a type or control-flow change.",full_disagree,,"@@ -1,7 +1,6 @@
+ import { useEditorEngine } from '@/components/Context';
+ import { type CompoundStyle, type SingleStyle, StyleType } from '@/lib/editor/styles/models';
+ import { observer } from 'mobx-react-lite';
+-import { motion } from 'motion/react';
+ import { useEffect, useState } from 'react';
+ import NumberUnitInput from '../single/NumberUnitInput';
+ import SelectInput from '../single/SelectInput';
+"
+718,2766896431,https://github.com/onlook-dev/onlook/pull/982,apps/studio/src/routes/editor/EditPanel/StylesTab/compound/NestedInputs.tsx,1,Performance-Optimized Dependency Selection,12:name_modification(0.95)@L6-6,"The diff removes the import of 'motion' from 'motion/react', which is a library/import removal (name modification of an import path), with no other code changes present.",,"The diff removes a named import (`motion`) from an import statement, which is a modification of a referenced name rather than a type, control-flow, or other syntactic change.",full_disagree,,"@@ -3,7 +3,6 @@ import type { CompoundStyleImpl } from '@/lib/editor/styles';
+ import { Icons } from '@onlook/ui/icons';
+ import { ToggleGroup, ToggleGroupItem } from '@onlook/ui/toggle-group';
+ import { observer } from 'mobx-react-lite';
+-import { motion } from 'motion/react';
+ import { useEffect, useState } from 'react';
+ import TextInput from '../single/TextInput';
+ 
+"
+1088,3153634298,https://github.com/remotion-dev/remotion/pull/5403,packages/promo-pages/src/components/homepage/Demo/DisplayedEmoji.tsx,3,Performance-Optimized Dependency Selection,14:object_creation(0.85)@L6-12; 15:statement_splitting(0.90)@L4-13,"The diff splits the single Promise.all argument into multiple promises (statement splitting) and adds a new dynamic import call with object destructuring that constructs a new object (object creation), expanding the array passed to Promise.all.",0:added_code_from_github(0.95)@L4-11,"The diff adds new executable code by extending the Promise.all array with a dynamic import and destructuring its result, and the original single promise expression is split into multiple elements and lines.",full_disagree,,"@@ -40,8 +42,14 @@ export const DisplayedEmoji: React.FC<{
+ 	const [handle] = useState(() => delayRender());
+ 
+ 	useEffect(() => {
+-		Promise.all([fetch(src).then((res) => res.json())])
+-			.then(([json]) => {
++		Promise.all([
++			fetch(src).then((res) => res.json()),
++			import('@remotion/lottie').then(({Lottie, getLottieMetadata}) => ({
++				Lottie,
++				getLottieMetadata,
++			})),
++		])
++			.then(([json, {Lottie, getLottieMetadata}]) => {
+ 				setData({
+ 					Lottie,
+ 					duration: getLottieMetadata(json)?.durationInSeconds as number,
+"
+1111,3137892942,https://github.com/primer/react/pull/6197,packages/react/src/stories/ThemeProvider.stories.tsx,2,Reduce rebuilding size,12:name_modification(0.90)@L5-14; 14:object_creation(0.80)@L5-14,"The diff transforms `GlobalStyle` from a `createGlobalStyle` tagged template literal (a styled-components API call) into a React functional component returning JSX, which involves changing the construction/initialization approach (object_creation), renaming/replacing the API (name_modification), and the CSS value changes from a theme function call to a CSS variable (also name_modification).",15:statement_splitting(0.91)@L6-14,"The diff replaces the GlobalStyle initializer from a createGlobalStyle tagged template to a JSX-returning function with a new <style> element and split multiline string content, which reflects a name/callee change, statement restructuring, and changed creation/initialization form.",full_disagree,,"@@ -17,11 +16,15 @@ export default {
+   },
+ } as Meta
+ 
+-const GlobalStyle = createGlobalStyle`
+-    body {
+-        background-color: ${themeGet('colors.bg.canvas')};
+-    }
+-`
++const GlobalStyle = () => (
++  <style>
++    {`
++      body {
++        background-color: var(--bgColor-default);
++      }
++    `}
++  </style>
++)
+ 
+ function ActiveColorScheme() {
+   const {colorScheme} = useTheme()"
+1113,3137892942,https://github.com/primer/react/pull/6197,packages/react/src/stories/useAnchoredPosition.stories.tsx,3,Reduce rebuilding size,12:name_modification(0.85)@L1-28; 7:type_change(0.90)@L8-28,"The styled-components definitions for Nav and Main are replaced with React functional components using CSS classes, changing the component type from styled components to plain React components with ComponentPropsWithoutRef type signatures.",3:deleted_blocks(0.95)@L2-15; 13:control_flow(0.83)@L16-25; 15:statement_splitting(0.90)@L16-25,"The diff removes the styled-component template literal blocks and replaces them with component definitions using destructured props and JSX wrappers, which clearly involves deleted code blocks, changed identifiers/references, a shift in code structure, and splitting logic into explicit intermediate component bodies.",full_disagree,,"@@ -239,21 +225,17 @@ export const ComplexAncestry = () => {
+   )
+ }
+ 
+-const Nav = styled('nav')`
+-  width: 300px;
+-  padding: ${get('space.3')};
+-  position: relative;
+-  overflow: hidden;
+-  border-right: 1px solid ${get('colors.border.gray')};
+-`
+-const Main = styled('main')`
+-  display: flex;
+-  position: absolute;
+-  top: 0;
+-  left: 0;
+-  right: 0;
+-  bottom: 0;
+-`
++const Nav = ({children, ...props}: React.ComponentPropsWithoutRef<'nav'>) => (
++  <nav className={classes.Nav} {...props}>
++    {children}
++  </nav>
++)
++
++const Main = ({children, ...props}: React.ComponentPropsWithoutRef<'main'>) => (
++  <main className={classes.Main} {...props}>
++    {children}
++  </main>
++)
+ 
+ /*
+ "
+1126,3154652967,https://github.com/dotnet/sdk/pull/49459,src/Tasks/Microsoft.NET.Build.Tasks/GenerateRuntimeConfigurationFiles.cs,2,Reduce rebuilding size,,"The diff removes the MemoryStream/StreamWriter/JsonTextWriter block for hashing (deleted_blocks/inlining), replaces the file-writing StreamWriter+JsonTextWriter with File.Create+CopyTo (method_name_change, object_creation, name_modification), and reuses a pre-existing contentStream instead of recreating objects.",3:deleted_blocks(0.95)@L4-12; 15:statement_splitting(0.84)@L13-14; 14:object_creation(0.88)@L24-28,"The diff removes a serialization-to-MemoryStream block, introduces separate stream-position/reset steps and disposal statements around an existing early-return path, and changes file writing to create and use a FileStream for CopyTo.",full_disagree,,"@@ -408,31 +420,26 @@ private static void WriteToJsonFile(string fileName, object value)
+                 // Hash new content using streaming approach
+                 Span<byte> newHashBuffer = stackalloc byte[XxHash64.HashSizeInBytes];
+                 var newHasher = new XxHash64();
+-                using (var memoryStream = new MemoryStream())
+-                using (var streamWriter = new StreamWriter(memoryStream, Encoding.UTF8, leaveOpen: true))
+-                using (var jsonWriter = new JsonTextWriter(streamWriter))
+-                {
+-                    serializer.Serialize(jsonWriter, value);
+-                    jsonWriter.Flush();
+-                    streamWriter.Flush();
+-                    memoryStream.Position = 0;
+-                    newHasher.Append(memoryStream);
+-                }
++                contentStream.Position = 0;
++                newHasher.Append(contentStream);
+                 newHasher.GetCurrentHash(newHashBuffer);
+                 
+                 // If hashes are equal, content is the same - don't write
+                 if (existingHashBuffer.SequenceEqual(newHashBuffer))
+                 {
++                    contentStream?.Dispose();
+                     return;
+                 }
+             }
+ 
+-            // Write the new content to file
+-            using (var fileWriter = new StreamWriter(fileName, false, Encoding.UTF8))
+-            using (var jsonWriter = new JsonTextWriter(fileWriter))
++            // Write the new content to file using CopyTo
++            using (var fileStream = File.Create(fileName))
+             {
+-                serializer.Serialize(jsonWriter, value);
++                contentStream.Position = 0;
++                contentStream.CopyTo(fileStream);
+             }
++            
++            contentStream?.Dispose();
+         }
+     }
+ }"
+1155,3186031697,https://github.com/mochilang/mochi/pull/3946,runtime/vm/vm.go,3,Remove Unnecessary Method Calls,6:method_name_change(0.97)@L4-5,The method call `freshConst` is renamed to `constReg` while all arguments remain identical.,12:name_modification(0.98)@L5-5,"The only clear change is a method call rename from fc.freshConst(...) to fc.constReg(...), which is a name modification.",full_disagree,,"@@ -2541,7 +2535,7 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
+ 		tmp := make([]struct{ k, v int }, len(p.Map.Items))
+ 		for i, it := range p.Map.Items {
+ 			if name, ok := identName(it.Key); ok {
+-				tmp[i].k = fc.freshConst(it.Pos, Value{Tag: ValueStr, Str: name})
++				tmp[i].k = fc.constReg(it.Pos, Value{Tag: ValueStr, Str: name})
+ 			} else {
+ 				tmp[i].k = fc.compileExpr(it.Key)
+ 			}
+"
+1183,3250286583,https://github.com/mochilang/mochi/pull/11614,compile/ts/compiler.go,3,Remove code bloat by removing optional features,,"A single new line calling c.useHelper(""_iter"") is added before the existing for-loop write, which is an added code statement not previously present in the function.",0:added_code_from_github(0.89)@L4-4,"The diff adds a new executable statement calling c.useHelper(""_iter""), without clearly matching any more specific mutation category.",full_disagree,,"@@ -190,6 +192,7 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
+ 	if err != nil {
+ 		return err
+ 	}
++	c.useHelper(""_iter"")
+ 	c.writeIndent()
+ 	c.buf.WriteString(fmt.Sprintf(""for (const %s of _iter(%s)) {\n"", name, src))
+ 	c.indent++
+"
+1184,3250286583,https://github.com/mochilang/mochi/pull/11614,compile/ts/compiler.go,4,Remove code bloat by removing optional features,,"The diff adds two calls to `c.useHelper(...)` before existing format expressions, which are new method calls inserted into the existing control flow — this is additional code being added (likely from the same codebase to register helper usage), with no deletions, type changes, or other patterns clearly present.",0:added_code_from_github(0.98)@L6-13,"The diff adds two new helper-registration method calls, which is a clear addition of executable code without other mutation patterns like control-flow, type, or operator changes.",full_disagree,,"@@ -282,12 +285,14 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
+ 					return """", err
+ 				}
+ 			}
++			c.useHelper(""_slice"")
+ 			expr = fmt.Sprintf(""_slice(%s, %s, %s)"", expr, start, end)
+ 		} else {
+ 			idxExpr, err := c.compileExpr(idx.Start)
+ 			if err != nil {
+ 				return """", err
+ 			}
++			c.useHelper(""_index"")
+ 			expr = fmt.Sprintf(""_index(%s, %s)"", expr, idxExpr)
+ 		}
+ 	}
+"
+1185,3250286583,https://github.com/mochilang/mochi/pull/11614,compile/ts/compiler.go,5,Remove code bloat by removing optional features,6:method_name_change(0.80)@L5-6,"A new call to `c.useHelper(""_len"")` is added before the return statement, and the format string now uses `_len(%s)` — this represents adding a helper registration call and effectively changing the function being called from a direct string interpolation to a helper-based approach, which is a method name change in the generated output.",0:added_code_from_github(0.92)@L4-4,"The diff adds a new executable statement `c.useHelper(""_len"")` without fitting more specific mutation categories like control flow, type, or return modification.",full_disagree,,"@@ -337,6 +342,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
+ 	case ""print"":
+ 		return fmt.Sprintf(""console.log(%s)"", argStr), nil
+ 	case ""len"":
++		c.useHelper(""_len"")
+ 		return fmt.Sprintf(""_len(%s)"", argStr), nil
+ 	case ""now"":
+ 		// performance.now() returns milliseconds as a float. Multiply
+"
+1198,3071077630,https://github.com/wieslawsoltes/Xaml.Behaviors/pull/78,src/Avalonia.Xaml.Interactions/Core/ChangePropertyAction.cs,6,Replace Reflection with Direct Method Calls,14:object_creation(0.85)@L6-14,"A new private static method `CreateSetter` is added that builds and compiles a lambda expression using `Expression` tree objects, representing new object/delegate creation; the method itself is arbitrary new code added likely from a performance optimization pattern found on GitHub.",0:added_code_from_github(0.98)@L2-14,"The diff adds an entirely new helper method, and within it introduces new expression-tree object/initializer creation via Expression.Parameter/Convert/Call/Lambda.",full_disagree,,"@@ -345,4 +384,16 @@ private void ValidateAvaloniaProperty(AvaloniaProperty? property)
+                 PropertyName));
+         }
+     }
++
++    private static Action<object, object?> CreateSetter(PropertyInfo propertyInfo)
++    {
++        var target = Expression.Parameter(typeof(object), ""target"");
++        var value = Expression.Parameter(typeof(object), ""value"");
++
++        var instance = Expression.Convert(target, propertyInfo.DeclaringType!);
++        var convertedValue = Expression.Convert(value, propertyInfo.PropertyType);
++        var call = Expression.Call(instance, propertyInfo.SetMethod!, convertedValue);
++        var lambda = Expression.Lambda<Action<object, object?>>(call, target, value);
++        return lambda.Compile();
++    }
+ }"
+1205,3106031006,https://github.com/TypedDevs/bashunit/pull/411,src/clock.sh,3,Select Algorithm Based on Instruction Speed,6:method_name_change(0.85)@L4-5; 8:inlining(0.90)@L4-5,"The call to `math::calculate` is replaced by an inline `printf '%d
+' $((...))` expression that directly computes the arithmetic, constituting inlining of the math function; the function name/call is also changed (method_name_change), and variable references are slightly modified in form.",12:name_modification(0.84)@L6-6; 16:arithmetic_manipulation(0.98)@L6-6,"The patch replaces a helper method call with a printf arithmetic expansion, clearly changing the called name and preserving/modifying the arithmetic expression on the changed line.",full_disagree,,"@@ -61,7 +69,7 @@ function clock::total_runtime_in_milliseconds() {
+ function clock::total_runtime_in_nanoseconds() {
+   end_time=$(clock::now)
+   if [[ -n $end_time ]]; then
+-    math::calculate ""($end_time-$_START_TIME)""
++    printf '%d\n' $((end_time - _START_TIME))
+   else
+     echo """"
+   fi"
+1206,3106031006,https://github.com/TypedDevs/bashunit/pull/411,src/runner.sh,1,Select Algorithm Based on Instruction Speed,6:method_name_change(0.90)@L4-7; 8:inlining(0.95)@L4-7,"The calls to `math::calculate` with string expressions are replaced by bash arithmetic expansion `$((...))`, which inlines the arithmetic computation directly at the call site and effectively eliminates the external function calls.",,"The diff replaces calls to math::calculate with direct arithmetic expansion in the assignments, which changes called names and effectively simplifies the statement structure without altering control flow or declared types.",full_disagree,,"@@ -178,8 +178,8 @@ function runner::run_test() {
+   exec 3>&-
+ 
+   local end_time=$(clock::now)
+-  local duration_ns=$(math::calculate ""($end_time - $start_time) "")
+-  local duration=$(math::calculate ""$duration_ns / 1000000"")
++  local duration_ns=$((end_time - start_time))
++  local duration=$((duration_ns / 1000000))
+ 
+   if env::is_verbose_enabled; then
+     if env::is_simple_output_enabled; then"
+1221,3246117305,https://github.com/mochilang/mochi/pull/10727,transpiler/x/ts/transpiler.go,1,Select Algorithm Based on Instruction Speed,14:object_creation(0.95)@L5-6; 12:name_modification(0.85)@L5-6,"The change replaces a `CallExpr` object creation (wrapping with `Number(...)`) with a `UnaryExpr` object creation (using unary `+` operator), which is a modification of object/struct instantiation, and also involves renaming the struct type from `CallExpr` to `UnaryExpr` with different fields.",,"The patch replaces one expression construction with another, changing initialization from a CallExpr object to a UnaryExpr object, without clearly matching other mutation categories.",full_disagree,,"@@ -1844,7 +1844,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
+ 				}
+ 				for i, a := range args {
+ 					if isNumericBool(a) {
+-						args[i] = &CallExpr{Func: ""Number"", Args: []Expr{a}}
++						args[i] = &UnaryExpr{Op: ""+"", Expr: a}
+ 					}
+ 				}
+ 			}"
+1228,3070165463,https://github.com/calcom/cal.com/pull/21371,packages/lib/slots.ts,1,Select Computationally Efficient Algorithms,14:object_creation(0.85)@L4-5,"A new constant `orderedDateRanges` is created by calling `.sort()` on `dateRanges` (object/value creation via a new expression assigned to a variable), and this extracts the sorted array into an intermediate variable that separates the sorting logic from its subsequent use.",16:arithmetic_manipulation(0.93)@L7-7,The patch adds an intermediate variable assignment for sorted date ranges and introduces a subtraction comparison expression in the sort callback.,full_disagree,,"@@ -40,6 +40,9 @@ function buildSlotsWithDateRanges({
+   frequency = minimumOfOne(frequency);
+   eventLength = minimumOfOne(eventLength);
+   offsetStart = offsetStart ? minimumOfOne(offsetStart) : 0;
++
++  const orderedDateRanges = dateRanges.sort((a, b) => a.start.valueOf() - b.start.valueOf());
++
+   // there can only ever be one slot at a given start time, and based on duration also only a single length.
+   const slots = new Map<
+     string,
+"
+1229,3070165463,https://github.com/calcom/cal.com/pull/21371,packages/lib/slots.ts,2,Select Computationally Efficient Algorithms,,"The diff removes the sorted array assignment and replaces it with a new Map<string, true> object creation, involving deleted code, a new object creation, a type change (array to Map), and a variable rename.",14:object_creation(0.94)@L5-6,"The diff removes the initialization of one variable and adds a new variable initialized with a new Map object, which is clearly object creation and also a variable name change.",full_disagree,,"@@ -66,7 +69,8 @@ function buildSlotsWithDateRanges({
+ 
+   const startTimeWithMinNotice = dayjs.utc().add(minimumBookingNotice, ""minute"");
+ 
+-  const orderedDateRanges = dateRanges.sort((a, b) => a.start.valueOf() - b.start.valueOf());
++  const slotBoundaries = new Map<string, true>();
++
+   orderedDateRanges.forEach((range) => {
+     const dateYYYYMMDD = range.start.format(""YYYY-MM-DD"");
+ 
+"
+1246,3077187183,https://github.com/econ-ark/HARK/pull/1562,HARK/core.py,1,Select Computationally Efficient Algorithms,6:method_name_change(0.90)@L4-5,"The condition `np.sum(self.who_dies) > 0` is replaced with `self.who_dies.any()`, which substitutes a numpy function call chain with a different method call that achieves the same logical result — this is a method name/call change (from np.sum+comparison to .any()).",,"The patch replaces the call np.sum(self.who_dies) with the method call self.who_dies.any(), which is a method/function name substitution without a clear control-flow or operator change.",full_disagree,,"@@ -1227,7 +1227,7 @@ def make_shock_history(self):
+             self.shock_history[""who_dies""][t, :] = self.who_dies
+ 
+             # Initial conditions of newborns
+-            if np.sum(self.who_dies) > 0:
++            if self.who_dies.any():
+                 for var_name in self.state_vars:
+                     # Check whether the state is idiosyncratic or an aggregate
+                     idio = (
+"
+1247,3077187183,https://github.com/econ-ark/HARK/pull/1562,HARK/core.py,2,Select Computationally Efficient Algorithms,6:method_name_change(0.85)@L6-7,"The condition `np.sum(who_dies) > 0` is replaced with `who_dies.any()`, which substitutes a numpy function call with a method call on the array — this is a method name/API change that achieves the same logical result but uses a different function.",,"The condition was changed from calling np.sum(who_dies) > 0 to calling who_dies.any(), which is a method/function name substitution without a clear operator/literal mutation category.",full_disagree,,"@@ -1277,7 +1277,7 @@ def get_mortality(self):
+         if self.read_shocks:
+             who_dies = self.shock_history[""who_dies""][self.t_sim, :]
+             # Instead of simulating births, assign the saved newborn initial conditions
+-            if np.sum(who_dies) > 0:
++            if who_dies.any():
+                 for var_name in self.state_now:
+                     if var_name in self.newborn_init_history.keys():
+                         # Copy only array-like idiosyncratic states. Aggregates should"
+1251,3084770989,https://github.com/elixr-games/elics/pull/42,src/Entity.ts,2,Select Computationally Efficient Algorithms,12:name_modification(0.85)@L4-5,"The call to `this.queryManager.updateEntity(this)` is modified to pass additional arguments `false` and `component`, which changes the invocation but not the method name itself; however, adding new arguments to a function call most closely fits name_modification in context, though the primary change is adding arguments to an existing method call which could also be considered a control_flow or object_creation change — ultimately the diff adds two new arguments (`false, component`) to the existing `updateEntity` call.",,"The only clear code change is adding boolean and object arguments to the method call (`false, component`), which is best captured as a literal/operator-level expression modification rather than a rename or control-flow change.",full_disagree,,"@@ -67,7 +67,7 @@ export class Entity {
+ 		);
+ 		this.bitmask.andNotInPlace(component.bitmask!);
+ 		this.vectorViews.delete(component);
+-		this.queryManager.updateEntity(this);
++		this.queryManager.updateEntity(this, false, component);
+ 		component.onDetach(component.data, this.index);
+ 		return this;
+ 	}
+"
+1269,3146327522,https://github.com/microsoft/onnxruntime/pull/25061,onnxruntime/core/providers/cpu/signal/dft.cc,4,Select Computationally Efficient Algorithms,,"The diff restructures a simple while-loop into a multi-branch if/else with if constexpr guards, adds an early return, changes the loop comparison operator from <= to <, adds multiple new return statements, and expands the power-of-2 computation into separate bit-manipulation statements.",13:control_flow(0.97)@L7-22; 16:arithmetic_manipulation(0.98)@L7-22; 5:return_statement_mods(0.93)@L7-22; 2:comment_modification(0.92)@L9-18; 3:deleted_blocks(0.84)@L7-24,"The patch replaces the old loop-based implementation with new conditional branches, bitwise/arithmetic operations, added comments, and explicit return statements while deleting the previous block-based logic.",full_disagree,,"@@ -191,12 +267,28 @@ static Status fft_radix2(OpKernelContext* /*ctx*/, const Tensor* X, Tensor* Y, s
+ 
+ template <typename T>
+ T next_power_of_2(T in) {
+-  in--;
+-  T out = 1;
+-  while (out <= in) {
+-    out <<= 1;
++  if (in <= 1) return 1;
++  
++  // For small integers, use the optimized bit manipulation approach
++  if constexpr (sizeof(T) <= sizeof(uint64_t)) {
++    in--;
++    in |= in >> 1;
++    in |= in >> 2;
++    in |= in >> 4;
++    in |= in >> 8;
++    in |= in >> 16;
++    if constexpr (sizeof(T) > sizeof(uint32_t)) {
++      in |= in >> 32;
++    }
++    return in + 1;
++  } else {
++    // Fallback for very large types
++    T out = 1;
++    while (out < in) {
++      out <<= 1;
++    }
++    return out;
+   }
+-  return out;
+ }
+ 
+ template <typename T, typename U>
+"
+1287,3186329921,https://github.com/mochilang/mochi/pull/3992,runtime/vm/liveness.go,1,Select Computationally Efficient Algorithms,12:name_modification(0.95)@L4-6,"The diff adds `OpSort` to an existing list of opcode names in a case statement, which is a name/identifier addition to an existing enumeration list.",0:added_code_from_github(0.80)@L7-8,"The diff adds a new opcode case entry (`OpSort`) to existing code, which is best classified as added code and does not clearly match any more specific mutation category.",full_disagree,,"@@ -617,7 +617,8 @@ func constFold(fn *Function) bool {
+ 				consts[ins.A] = cinfo{}
+ 			}
+ 		case OpNeg, OpNegInt, OpNegFloat, OpNot, OpStr, OpLen,
+-			OpCount, OpExists, OpAvg, OpSum, OpMin, OpMax, OpValues:
++			OpCount, OpExists, OpAvg, OpSum, OpMin, OpMax, OpValues,
++			OpSort:
+ 			b := consts[ins.B]
+ 			if b.known {
+ 				if val, ok := evalUnaryConst(ins.Op, b.val); ok {
+"
+1288,3186329921,https://github.com/mochilang/mochi/pull/3992,runtime/vm/liveness.go,2,Select Computationally Efficient Algorithms,13:control_flow(0.90)@L4-4,"Additional opcodes are added to a switch/case statement, expanding the set of cases handled by the existing control flow branch.",0:added_code_from_github(0.86)@L6-6,"The diff adds several opcode names to an existing case list, which is added code without a clearer match to more specific mutation categories.",full_disagree,,"@@ -637,6 +638,7 @@ func constFold(fn *Function) bool {
+ 			OpAddFloat, OpSubFloat, OpMulFloat, OpDivFloat, OpModFloat,
+ 			OpEqual, OpNotEqual, OpEqualInt, OpEqualFloat,
+ 			OpLess, OpLessEq, OpLessInt, OpLessFloat, OpLessEqInt, OpLessEqFloat,
++			OpAppend, OpUnionAll, OpUnion, OpExcept, OpIntersect,
+ 			OpIndex:
+ 			b := consts[ins.B]
+ 			c := consts[ins.C]
+"
+1292,3186332246,https://github.com/mochilang/mochi/pull/3994,runtime/vm/queryutil.go,2,Select Computationally Efficient Algorithms,,"Two entirely new functions (exprHasAggCall and exprUsesField) are added to the file, representing new code added from an external source rather than a transformation of existing code.",0:added_code_from_github(0.99)@L5-170; 2:comment_modification(0.96)@L5-6; 13:control_flow(0.97)@L13-170; 15:statement_splitting(0.90)@L8-11,"The diff mainly adds new helper functions and comments, introducing substantial new traversal/control-flow logic, local helper-variable/function setup, and a comparison inside the newly added field check.",full_disagree,,"@@ -242,3 +250,247 @@ func whereAlias(where *parser.Expr) (string, bool) {
+ 	}
+ 	return """", false
+ }
++
++// exprHasAggCall reports whether expression e contains a function call that
++// requires group items such as sum(), avg(), min(), max() or values().
++func exprHasAggCall(e *parser.Expr) bool {
++	found := false
++	var scanExpr func(*parser.Expr)
++	var scanUnary func(*parser.Unary)
++	var scanPostfix func(*parser.PostfixExpr)
++	var scanPrimary func(*parser.Primary)
++
++	scanExpr = func(e *parser.Expr) {
++		if found || e == nil || e.Binary == nil {
++			return
++		}
++		scanUnary(e.Binary.Left)
++		for _, op := range e.Binary.Right {
++			scanPostfix(op.Right)
++		}
++	}
++	scanUnary = func(u *parser.Unary) {
++		if found || u == nil {
++			return
++		}
++		scanPostfix(u.Value)
++	}
++	scanPostfix = func(p *parser.PostfixExpr) {
++		if found || p == nil {
++			return
++		}
++		scanPrimary(p.Target)
++		for _, op := range p.Ops {
++			if op.Call != nil {
++				for _, a := range op.Call.Args {
++					scanExpr(a)
++				}
++			}
++			if op.Index != nil {
++				scanExpr(op.Index.Start)
++				scanExpr(op.Index.End)
++				scanExpr(op.Index.Step)
++			}
++			if op.Field != nil {
++				// no-op
++			}
++		}
++	}
++	scanPrimary = func(p *parser.Primary) {
++		if found || p == nil {
++			return
++		}
++		if p.Call != nil {
++			if _, ok := aggNeedsItems[p.Call.Func]; ok {
++				found = true
++				return
++			}
++			for _, a := range p.Call.Args {
++				scanExpr(a)
++			}
++		}
++		if p.Struct != nil {
++			for _, f := range p.Struct.Fields {
++				scanExpr(f.Value)
++			}
++		}
++		if p.List != nil {
++			for _, el := range p.List.Elems {
++				scanExpr(el)
++			}
++		}
++		if p.Map != nil {
++			for _, it := range p.Map.Items {
++				scanExpr(it.Key)
++				scanExpr(it.Value)
++			}
++		}
++		if p.Group != nil {
++			scanExpr(p.Group)
++		}
++		if p.If != nil {
++			scanExpr(p.If.Cond)
++			scanExpr(p.If.Then)
++			scanExpr(p.If.Else)
++			if p.If.ElseIf != nil {
++				scanExpr(p.If.ElseIf.Cond)
++				scanExpr(p.If.ElseIf.Then)
++				scanExpr(p.If.ElseIf.Else)
++			}
++		}
++		if p.Query != nil {
++			// ignore nested query expressions
++		}
++		if p.FunExpr != nil {
++			scanExpr(p.FunExpr.ExprBody)
++			for _, st := range p.FunExpr.BlockBody {
++				// Only expressions from statements are scanned
++				if st.Return != nil {
++					scanExpr(st.Return.Value)
++				}
++				if st.Expr != nil {
++					scanExpr(st.Expr.Expr)
++				}
++			}
++		}
++		if p.Match != nil {
++			scanExpr(p.Match.Target)
++			for _, c := range p.Match.Cases {
++				scanExpr(c.Pattern)
++				scanExpr(c.Result)
++			}
++		}
++		if p.Generate != nil {
++			for _, f := range p.Generate.Fields {
++				scanExpr(f.Value)
++			}
++		}
++		if p.Fetch != nil {
++			scanExpr(p.Fetch.URL)
++			scanExpr(p.Fetch.With)
++		}
++		if p.Load != nil {
++			scanExpr(p.Load.With)
++		}
++		if p.Save != nil {
++			scanExpr(p.Save.Src)
++			scanExpr(p.Save.With)
++		}
++	}
++
++	scanExpr(e)
++	return found
++}
++
++// exprUsesField reports whether expression e references alias.field.
++func exprUsesField(e *parser.Expr, alias, field string) bool {
++	found := false
++	var scanExpr func(*parser.Expr)
++	var scanUnary func(*parser.Unary)
++	var scanPostfix func(*parser.PostfixExpr)
++	var scanPrimary func(*parser.Primary)
++
++	scanExpr = func(e *parser.Expr) {
++		if found || e == nil || e.Binary == nil {
++			return
++		}
++		scanUnary(e.Binary.Left)
++		for _, op := range e.Binary.Right {
++			scanPostfix(op.Right)
++		}
++	}
++	scanUnary = func(u *parser.Unary) {
++		if found || u == nil {
++			return
++		}
++		scanPostfix(u.Value)
++	}
++	scanPostfix = func(p *parser.PostfixExpr) {
++		if found || p == nil {
++			return
++		}
++		scanPrimary(p.Target)
++		for _, op := range p.Ops {
++			if op.Field != nil {
++				if p.Target != nil && p.Target.Selector != nil {
++					if p.Target.Selector.Root == alias {
++						for _, t := range append([]string{op.Field.Name}, op.Field.Name) {
++							if t == field {
++								found = true
++								return
++							}
++						}
++					}
++				}
++			}
++			if op.Call != nil {
++				for _, a := range op.Call.Args {
++					scanExpr(a)
++				}
++			}
++			if op.Index != nil {
++				scanExpr(op.Index.Start)
++				scanExpr(op.Index.End)
++				scanExpr(op.Index.Step)
++			}
++		}
++	}
++	scanPrimary = func(p *parser.Primary) {
++		if found || p == nil {
++			return
++		}
++		if p.Selector != nil {
++			if p.Selector.Root == alias {
++				for _, n := range p.Selector.Tail {
++					if n == field {
++						found = true
++						return
++					}
++				}
++			}
++		}
++		if p.Call != nil {
++			for _, a := range p.Call.Args {
++				scanExpr(a)
++			}
++		}
++		if p.Struct != nil {
++			for _, f := range p.Struct.Fields {
++				scanExpr(f.Value)
++			}
++		}
++		if p.List != nil {
++			for _, el := range p.List.Elems {
++				scanExpr(el)
++			}
++		}
++		if p.Map != nil {
++			for _, it := range p.Map.Items {
++				scanExpr(it.Key)
++				scanExpr(it.Value)
++			}
++		}
++		if p.Group != nil {
++			scanExpr(p.Group)
++		}
++	}
++
++	scanExpr(e)
++	return found
++}
++
++// groupNeedsItems determines whether GROUP BY query q requires storing
++// group items based on its SELECT, HAVING or SORT expressions.
++func groupNeedsItems(q *parser.QueryExpr) bool {
++	if q == nil || q.Group == nil {
++		return false
++	}
++	if exprHasAggCall(q.Select) || exprHasAggCall(q.Group.Having) || exprHasAggCall(q.Sort) {
++		return true
++	}
++	name := q.Group.Name
++	if exprUsesField(q.Select, name, ""items"") || exprUsesField(q.Group.Having, name, ""items"") || exprUsesField(q.Sort, name, ""items"") {
++		return true
++	}
++	return false
++}"
+1323,3234031765,https://github.com/stanford-crfm/levanter/pull/1066,src/levanter/layers/page_table.py,1,Select Computationally Efficient Algorithms,15:statement_splitting(0.95)@L4-4,A new intermediate variable `num_active` is introduced by extracting the sub-expression `hax.sum(updated_seqs < self.max_seqs).scalar()` into its own statement before it is (presumably) used later.,0:added_code_from_github(0.98)@L5-5; 16:arithmetic_manipulation(0.83)@L5-5,"The diff adds a new computation line introducing an intermediate variable (`num_active`), which counts entries using a comparison (`updated_seqs < self.max_seqs`) inside the added statement.",full_disagree,,"@@ -92,6 +92,8 @@ def allocate_for_seq(
+         token_seq_ids = hax.where(token_seq_ids < 0, self.max_seqs, token_seq_ids)
+         updated_seqs, new_counts = hax.unique_counts(token_seq_ids, self.max_Seq, fill_value=self.max_seqs)
+ 
++        num_active = int(hax.sum(updated_seqs < self.max_seqs).scalar())
++
+         new_counts = hax.where(updated_seqs >= self.max_seqs, 0, new_counts)
+ 
+         current_lens = hax.where(seq_lens < 0, 0, seq_lens)
+"
+1355,3257571628,https://github.com/MihaiCristianCondrea/Smart-Cleaner-for-Android/pull/219,app/src/main/kotlin/com/d4rk/cleaner/app/clean/scanner/utils/helpers/DuplicateUtils.kt,2,Select Computationally Efficient Algorithms,6:method_name_change(0.98)@L4-11,"The method called on `file` is renamed from `md5()` to `partialMd5()` in both occurrences, indicating a method name change to use a partial hash for performance improvement.",12:name_modification(0.98)@L4-11,"The only clear syntactic change is replacing the called method name `md5()` with `partialMd5()` in two places, which is a method call name modification.",full_disagree,,"@@ -11,13 +11,13 @@ import com.d4rk.cleaner.core.utils.extensions.md5
+ fun groupDuplicatesByOriginal(files: List<File>): List<List<File>> {
+     val hashMap = mutableMapOf<String, MutableList<File>>()
+     files.filter { it.isFile }.forEach { file ->
+-        val hash = file.md5() ?: return@forEach
++        val hash = file.partialMd5() ?: return@forEach
+         hashMap.getOrPut(hash) { mutableListOf() }.add(file)
+     }
+     val seenHashes = mutableSetOf<String>()
+     val groups = mutableListOf<List<File>>()
+     files.forEach { file ->
+-        val hash = file.md5() ?: return@forEach
++        val hash = file.partialMd5() ?: return@forEach
+         if (seenHashes.add(hash)) {
+             val group = hashMap[hash]?.sortedBy { it.lastModified() } ?: listOf(file)
+             groups.add(group)"
+1358,3262865664,https://github.com/mochilang/mochi/pull/13059,runtime/vm/vm.go,1,Select Computationally Efficient Algorithms,3:deleted_blocks(0.90)@L7-8,"The change removes the double-append pattern (`append(append([]Value(nil), items.List...), fr.regs[ins.C])`) and replaces it with a simpler single append (`append(items.List, fr.regs[ins.C])`), effectively deleting the unnecessary allocation of a new slice via `[]Value(nil)`.",16:arithmetic_manipulation(0.89)@L5-5,"The patch changes the append expression by removing the temporary slice initialization []Value(nil) and simplifying the call, which modifies object/initializer creation and also changes the expression structure at the edited line.",full_disagree,,"@@ -1284,7 +1284,7 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error)
+ 			if lst.Tag == ValueMap {
+ 				if flag, ok := lst.Map[""__group__""]; ok && flag.Tag == ValueBool && flag.Bool {
+ 					items := lst.Map[""items""]
+-					newItems := append(append([]Value(nil), items.List...), fr.regs[ins.C])
++					newItems := append(items.List, fr.regs[ins.C])
+ 					lst.Map[""items""] = Value{Tag: ValueList, List: newItems}
+ 					lst.Map[""count""] = Value{Tag: ValueInt, Int: len(newItems)}
+ 					fr.regs[ins.A] = lst
+"
+1359,3262865664,https://github.com/mochilang/mochi/pull/13059,runtime/vm/vm.go,2,Select Computationally Efficient Algorithms,3:deleted_blocks(0.85)@L6-7,"The change removes the extra `append([]Value(nil), lst.List...)` copy step, simplifying the append operation by directly appending to `lst.List` instead of creating a new slice copy first.",14:object_creation(0.93)@L7-8,"The patch changes the list initialization/expression by removing the copied slice creation from append([]Value(nil), lst.List...) to append(lst.List, ...), and the referenced expression inside that initialization is modified from a constructed temporary slice to the existing list field.",full_disagree,,"@@ -1294,7 +1294,7 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error)
+ 			if lst.Tag != ValueList {
+ 				return Value{}, m.newError(fmt.Errorf(""append expects list""), trace, ins.Line)
+ 			}
+-			newList := append(append([]Value(nil), lst.List...), fr.regs[ins.C])
++			newList := append(lst.List, fr.regs[ins.C])
+ 			fr.regs[ins.A] = Value{Tag: ValueList, List: newList}
+ 		case OpUnionAll:
+ 			a := fr.regs[ins.B]
+"
+1361,3073998720,https://github.com/MontrealAI/AGI-Alpha-Agent-v0/pull/367,alpha_factory_v1/demos/era_of_experience/alpha_detection.py,1,Streaming Implementation Or Optimization,14:object_creation(0.85)@L5-6,"The change adds the `nrows=1` argument to the `pd.read_csv()` call, modifying how the object/result is created/initialized by limiting it to only read the first row, which is a performance optimization.",16:arithmetic_manipulation(0.89)@L4-6,"The patch changes a numeric literal by adding the argument nrows=1 to the read_csv call, which fits arithmetic_manipulation under the rule that changed numeric/boolean literals count.",full_disagree,,"@@ -30,7 +30,7 @@ def _read_first_row(path: Path) -> Dict[str, str] | None:
+     """"""Return the first row of a CSV as a mapping or ``None`` if empty.""""""
+     if pd is not None:  # use pandas when available for convenience
+         try:
+-            df = pd.read_csv(path)
++            df = pd.read_csv(path, nrows=1)
+         except FileNotFoundError:
+             raise
+         except Exception:  # pragma: no cover - handle corrupt CSV gracefully"
+1378,3186657928,https://github.com/eplatonoff/pilorama/pull/89,src/PiloramaTimer.qml,1,Event-Driven Throttling,14:object_creation(0.85)@L4-4,"A new property 'trayUpdateCounter' is declared and initialized with a value of 0, which constitutes a new variable initialization/creation.",0:added_code_from_github(0.88)@L4-8,"The diff adds a new property declaration with an initializer (`property int trayUpdateCounter: 0`), which is clearly added code and also changes initialization by introducing a new primitive property initialized to `0`.",full_disagree,,"@@ -11,6 +11,7 @@ Pilorama.Timer {
+     property real splitDuration: 0
+ 
+     property real timerLimit: 6 * 3600
++    property int trayUpdateCounter: 0
+ 
+     onDurationChanged: {
+         window.checkClockMode();
+"
+1379,3186657928,https://github.com/eplatonoff/pilorama/pull/89,src/PiloramaTimer.qml,2,Event-Driven Throttling,,"Three new lines are added inside the `if (running)` block that set tray properties and reset a counter, representing new functionality added to the codebase.",0:added_code_from_github(0.97)@L5-7; 16:arithmetic_manipulation(0.86)@L5-5,"The diff adds three new executable statements, including extracting timer/tray updates into separate statements, and one added assignment uses a ternary conditional expression that changes boolean-controlled flow and selects between values.",full_disagree,,"@@ -24,6 +25,9 @@ Pilorama.Timer {
+         canvas.requestPaint();
+         if ( running ) {
+             durationBound = duration;
++            tray.runningTime = pomodoroQueue.infiniteMode ? splitDuration : duration
++            tray.setDialTime()
++            trayUpdateCounter = 0
+         }
+     }
+ 
+"
+1382,3137138306,https://github.com/moonbitlang/core/pull/2253,array/view.mbt,1,Optimize Object Use,8:inlining(0.85)@L6-14; 3:deleted_blocks(0.80)@L5-9; 6:method_name_change(0.90)@L8-13; 2:comment_modification(0.95)@L9-10,"The diff removes the `separator.to_string()` call and a TODO comment, replaces `buf.write_string(separator)` with `buf.write_substring(separator.data(), separator.start_offset(), separator.length())` which inlines the view's components directly into the call (inlining the string conversion) while also changing the method name from write_string to write_substring and deleting the intermediate variable and comment.",15:statement_splitting(0.93)@L7-10,"The patch removes a local conversion/commented call path and replaces a single write_string call with a multi-line call using extracted sub-expressions, while the edited else-branch loop body constitutes a block/control-flow modification.",full_disagree,,"@@ -439,10 +439,12 @@ pub fn View::join(self : ArrayView[String], separator : @string.View) -> String
+           buf.write_string(s)
+         }
+       } else {
+-        let separator = separator.to_string()
+         for s in tl {
+-          // TODO : use `write_view` when available
+-          buf.write_string(separator)
++          buf.write_substring(
++            separator.data(),
++            separator.start_offset(),
++            separator.length(),
++          )
+           buf.write_string(s)
+         }
+       }"
+1408,3258539679,https://github.com/CarGuo/gsy_github_app_flutter/pull/913,lib/widget/gsy_flex_button.dart,1,Optimize Object Use,,ERROR: Expecting property name enclosed in double quotes: line 6 column 23 (char 520),14:object_creation(0.93)@L18-19; 15:statement_splitting(0.86)@L35-41,"The diff introduces a new static EdgeInsets constant and replaces the inline padding initializer with that named constant, which is mainly object creation plus extraction of an inline expression into an intermediate named field (statement splitting), with an added new identifier.",full_disagree,,"@@ -5,51 +5,54 @@ import 'package:flutter/material.dart';
+ /// Date: 2018-07-16
+ class GSYFlexButton extends StatelessWidget {
+   final String? text;
+-
+   final Color? color;
+-
+   final Color textColor;
+-
+   final VoidCallback? onPress;
+-
+   final double fontSize;
+   final int maxLines;
+-
+   final MainAxisAlignment mainAxisAlignment;
+ 
+-  const GSYFlexButton(
+-      {super.key,
+-      this.text,
+-      this.color,
+-      this.textColor = Colors.black,
+-      this.onPress,
+-      this.fontSize = 20.0,
+-      this.mainAxisAlignment = MainAxisAlignment.center,
+-      this.maxLines = 1});
++  static const EdgeInsets _defaultPadding = 
++      EdgeInsets.only(left: 20.0, top: 10.0, right: 20.0, bottom: 10.0);
++
++  const GSYFlexButton({
++    super.key,
++    this.text,
++    this.color,
++    this.textColor = Colors.black,
++    this.onPress,
++    this.fontSize = 20.0,
++    this.mainAxisAlignment = MainAxisAlignment.center,
++    this.maxLines = 1,
++  });
+ 
+   @override
+   Widget build(BuildContext context) {
+     return ElevatedButton(
+-        style: TextButton.styleFrom(
+-            backgroundColor: color,
+-            padding: const EdgeInsets.only(
+-                left: 20.0, top: 10.0, right: 20.0, bottom: 10.0)),
+-        child: Flex(
+-          mainAxisAlignment: mainAxisAlignment,
+-          direction: Axis.horizontal,
+-          children: <Widget>[
+-            Expanded(
+-              child: Text(text!,
+-                  style: TextStyle(
+-                      color: textColor, fontSize: fontSize, height: 1),
+-                  textAlign: TextAlign.center,
+-                  maxLines: maxLines,
+-                  overflow: TextOverflow.ellipsis),
+-            )
+-          ],
+-        ),
+-        onPressed: () {
+-          onPress?.call();
+-        });
++      style: TextButton.styleFrom(
++        backgroundColor: color,
++        padding: _defaultPadding,
++      ),
++      onPressed: onPress,
++      child: Flex(
++        mainAxisAlignment: mainAxisAlignment,
++        direction: Axis.horizontal,
++        children: <Widget>[
++          Expanded(
++            child: Text(
++              text!,
++              style: TextStyle(
++                color: textColor, 
++                fontSize: fontSize, 
++                height: 1,
++              ),
++              textAlign: TextAlign.center,
++              maxLines: maxLines,
++              overflow: TextOverflow.ellipsis,
++            ),
++          )
++        ],
++      ),
++    );
+   }
+ }"

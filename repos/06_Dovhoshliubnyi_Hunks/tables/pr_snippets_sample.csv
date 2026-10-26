@@ -1,0 +1,2541 @@
+pr_id,pr_url,final_sub_pattern,hunk_index,filename,category_id,category_name,confidence,line_range,hunk_content
+3034997303,https://github.com/vercel/vercel/pull/13284,Performance-Optimized Dependency Selection,1,packages/cli/src/util/inline/strip-ansi.ts,0,added_code_from_github,0.95,L1-35,"@@ -0,0 +1,35 @@
++/**
++ * Inlined version of the 'strip-ansi' package
++ * Original: https://github.com/chalk/strip-ansi
++ * License: MIT
++ *
++ * Also includes inlined version of 'ansi-regex' package
++ * Original: https://github.com/chalk/ansi-regex
++ * License: MIT
++ */
++
++/**
++ * Inlined ansi-regex functionality
++ */
++function ansiRegex({ onlyFirst = false } = {}): RegExp {
++  const ST = '(?:\\u0007|\\u001B\\u005C|\\u009C)';
++  const pattern = [
++    `[\\u001B\\u009B][[\\]()#;?]*(?:(?:(?:(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]+)*|[a-zA-Z\\d]+(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]*)*)?${ST})`,
++    '(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PR-TZcf-nq-uy=><~]))',
++  ].join('|');
++
++  return new RegExp(pattern, onlyFirst ? undefined : 'g');
++}
++
++const regex = ansiRegex();
++
++/**
++ * Strip ANSI escape codes from a string
++ */
++export default function stripAnsi(string: string): string {
++  if (typeof string !== 'string') {
++    throw new TypeError(`Expected a \`string\`, got \`${typeof string}\``);
++  }
++
++  return string.replace(regex, '');
++}"
+3034997303,https://github.com/vercel/vercel/pull/13284,Performance-Optimized Dependency Selection,1,packages/cli/src/util/inline/bytes.ts,0,added_code_from_github,0.95,L1-164,"@@ -0,0 +1,164 @@
++/**
++ * Inlined version of the 'bytes' package
++ * Original: https://github.com/visionmedia/bytes.js
++ * License: MIT
++ *
++ * Copyright(c) 2012-2014 TJ Holowaychuk
++ * Copyright(c) 2015 Jed Watson
++ */
++
++/**
++ * Module variables.
++ * @private
++ */
++
++const formatThousandsRegExp = /\B(?=(\d{3})+(?!\d))/g;
++const formatDecimalsRegExp = /(?:\.0*|(\.[^0]+)0+)$/;
++
++const map = {
++  b: 1,
++  kb: 1 << 10,
++  mb: 1 << 20,
++  gb: 1 << 30,
++  tb: Math.pow(1024, 4),
++  pb: Math.pow(1024, 5),
++};
++
++const parseRegExp = /^((-|\+)?(\d+(?:\.\d+)?)) *(kb|mb|gb|tb|pb)$/i;
++
++/**
++ * Options for formatting bytes
++ */
++export interface BytesOptions {
++  case?: string;
++  decimalPlaces?: number;
++  fixedDecimals?: boolean;
++  thousandsSeparator?: string;
++  unitSeparator?: string;
++  unit?: string;
++}
++
++/**
++ * Convert the given value in bytes into a string or parse to string to an integer in bytes.
++ *
++ * @param {string|number} value
++ * @param {BytesOptions} [options] bytes options.
++ *
++ * @returns {string|number|null}
++ */
++function bytes(
++  value: string | number,
++  options?: BytesOptions
++): string | number | null {
++  if (typeof value === 'string') {
++    return parse(value);
++  }
++
++  if (typeof value === 'number') {
++    return format(value, options);
++  }
++
++  return null;
++}
++
++/**
++ * Format the given value in bytes into a string.
++ *
++ * If the value is negative, it is kept as such. If it is a float,
++ * it is rounded.
++ *
++ * @param {number} value
++ * @param {BytesOptions} [options]
++ *
++ * @returns {string|null}
++ * @public
++ */
++export function format(value: number, options?: BytesOptions): string | null {
++  if (!Number.isFinite(value)) {
++    return null;
++  }
++
++  const mag = Math.abs(value);
++  const thousandsSeparator = (options && options.thousandsSeparator) || '';
++  const unitSeparator = (options && options.unitSeparator) || '';
++  const decimalPlaces =
++    options && options.decimalPlaces !== undefined ? options.decimalPlaces : 2;
++  const fixedDecimals = Boolean(options && options.fixedDecimals);
++  let unit = (options && options.unit) || '';
++
++  if (!unit || !map[unit.toLowerCase() as keyof typeof map]) {
++    if (mag >= map.pb) {
++      unit = 'PB';
++    } else if (mag >= map.tb) {
++      unit = 'TB';
++    } else if (mag >= map.gb) {
++      unit = 'GB';
++    } else if (mag >= map.mb) {
++      unit = 'MB';
++    } else if (mag >= map.kb) {
++      unit = 'KB';
++    } else {
++      unit = 'B';
++    }
++  }
++
++  const val = value / map[unit.toLowerCase() as keyof typeof map];
++  let str = val.toFixed(decimalPlaces);
++
++  if (!fixedDecimals) {
++    str = str.replace(formatDecimalsRegExp, '$1');
++  }
++
++  if (thousandsSeparator) {
++    str = str
++      .split('.')
++      .map((s, i) => {
++        return i === 0
++          ? s.replace(formatThousandsRegExp, thousandsSeparator)
++          : s;
++      })
++      .join('.');
++  }
++
++  return str + unitSeparator + unit;
++}
++
++/**
++ * Parse the string value into an integer in bytes.
++ *
++ * If no unit is given, it is assumed the value is in bytes.
++ *
++ * @param {number|string} val
++ *
++ * @returns {number|null}
++ * @public
++ */
++export function parse(val: number | string): number | null {
++  if (typeof val === 'number' && !isNaN(val)) {
++    return val;
++  }
++
++  if (typeof val !== 'string') {
++    return null;
++  }
++
++  const results = parseRegExp.exec(val);
++  let floatValue: number;
++  let unit = 'b';
++
++  if (!results) {
++    floatValue = parseInt(val, 10);
++    unit = 'b';
++  } else {
++    floatValue = parseFloat(results[1]);
++    unit = results[4].toLowerCase();
++  }
++
++  if (isNaN(floatValue)) {
++    return null;
++  }
++
++  return Math.floor(map[unit as keyof typeof map] * floatValue);
++}
++
++export default bytes;"
+3217675934,https://github.com/gmathi/NovelLibrary/pull/246,Enable Build-Time Optimizations,1,app/src/main/java/io/github/gmathi/novellibrary/util/ImageOptimizer.kt,0,added_code_from_github,0.9,L1-193,"@@ -0,0 +1,193 @@
++package io.github.gmathi.novellibrary.util
++
++import android.content.Context
++import android.graphics.Bitmap
++import android.graphics.BitmapFactory
++import android.util.LruCache
++import coil.ImageLoader
++import coil.request.ImageRequest
++import coil.size.Size
++import io.github.gmathi.novellibrary.network.NetworkHelperOptimized
++import kotlinx.coroutines.Dispatchers
++import kotlinx.coroutines.withContext
++import java.io.File
++import java.io.FileOutputStream
++
++/**
++ * Image optimization utility for better performance and memory management
++ */
++class ImageOptimizer(private val context: Context) {
++    
++    companion object {
++        private const val CACHE_SIZE = 20 * 1024 * 1024 // 20MB cache
++        private const val MAX_IMAGE_SIZE = 1024 // Max dimension for loaded images
++        private const val COMPRESSION_QUALITY = 85 // JPEG compression quality
++    }
++    
++    // Memory cache for bitmaps
++    private val memoryCache = object : LruCache<String, Bitmap>(
++        (Runtime.getRuntime().maxMemory() / 1024 / 8).toInt() // 1/8 of available memory
++    ) {
++        override fun sizeOf(key: String, bitmap: Bitmap): Int {
++            return bitmap.byteCount / 1024
++        }
++    }
++    
++    private val networkHelper = NetworkHelperOptimized(context)
++    
++    /**
++     * Load and optimize image with caching
++     */
++    suspend fun loadOptimizedImage(url: String, width: Int = MAX_IMAGE_SIZE, height: Int = MAX_IMAGE_SIZE): Bitmap? {
++        return withContext(Dispatchers.IO) {
++            try {
++                // Check memory cache first
++                memoryCache.get(url)?.let { return@withContext it }
++                
++                // Check disk cache
++                val cachedFile = getCachedImageFile(url)
++                if (cachedFile.exists()) {
++                    val bitmap = loadBitmapFromFile(cachedFile, width, height)
++                    bitmap?.let { memoryCache.put(url, it) }
++                    return@withContext bitmap
++                }
++                
++                // Load from network with Coil
++                val request = ImageRequest.Builder(context)
++                    .data(url)
++                    .size(Size(width, height))
++                    .build()
++                
++                val result = networkHelper.imageLoader.execute(request)
++                val bitmap = result.drawable?.toBitmap()
++                
++                // Cache the result
++                bitmap?.let {
++                    val optimizedBitmap = optimizeBitmap(it, width, height)
++                    memoryCache.put(url, optimizedBitmap)
++                    cacheImageToDisk(url, optimizedBitmap)
++                    return@withContext optimizedBitmap
++                }
++                
++                null
++            } catch (e: Exception) {
++                Logs.error(""ImageOptimizer"", ""Error loading image: $url"", e)
++                null
++            }
++        }
++    }
++    
++    /**
++     * Optimize bitmap size and quality
++     */
++    private fun optimizeBitmap(bitmap: Bitmap, maxWidth: Int, maxHeight: Int): Bitmap {
++        val width = bitmap.width
++        val height = bitmap.height
++        
++        // Calculate new dimensions maintaining aspect ratio
++        val ratio = minOf(maxWidth.toFloat() / width, maxHeight.toFloat() / height)
++        val newWidth = (width * ratio).toInt()
++        val newHeight = (height * ratio).toInt()
++        
++        return if (ratio < 1.0f) {
++            Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, true)
++        } else {
++            bitmap
++        }
++    }
++    
++    /**
++     * Load bitmap from file with size optimization
++     */
++    private fun loadBitmapFromFile(file: File, maxWidth: Int, maxHeight: Int): Bitmap? {
++        return try {
++            val options = BitmapFactory.Options().apply {
++                inJustDecodeBounds = true
++            }
++            BitmapFactory.decodeFile(file.absolutePath, options)
++            
++            // Calculate sample size
++            options.inSampleSize = calculateInSampleSize(options, maxWidth, maxHeight)
++            options.inJustDecodeBounds = false
++            
++            BitmapFactory.decodeFile(file.absolutePath, options)
++        } catch (e: Exception) {
++            Logs.error(""ImageOptimizer"", ""Error loading bitmap from file"", e)
++            null
++        }
++    }
++    
++    /**
++     * Calculate sample size for bitmap loading
++     */
++    private fun calculateInSampleSize(options: BitmapFactory.Options, reqWidth: Int, reqHeight: Int): Int {
++        val height = options.outHeight
++        val width = options.outWidth
++        var inSampleSize = 1
++        
++        if (height > reqHeight || width > reqWidth) {
++            val halfHeight = height / 2
++            val halfWidth = width / 2
++            
++            while (halfHeight / inSampleSize >= reqHeight && halfWidth / inSampleSize >= reqWidth) {
++                inSampleSize *= 2
++            }
++        }
++        
++        return inSampleSize
++    }
++    
++    /**
++     * Cache image to disk
++     */
++    private fun cacheImageToDisk(url: String, bitmap: Bitmap) {
++        try {
++            val file = getCachedImageFile(url)
++            FileOutputStream(file).use { out ->
++                bitmap.compress(Bitmap.CompressFormat.JPEG, COMPRESSION_QUALITY, out)
++            }
++        } catch (e: Exception) {
++            Logs.error(""ImageOptimizer"", ""Error caching image to disk"", e)
++        }
++    }
++    
++    /**
++     * Get cached image file
++     */
++    private fun getCachedImageFile(url: String): File {
++        val fileName = url.hashCode().toString()
++        return File(context.cacheDir, ""optimized_images/$fileName.jpg"")
++    }
++    
++    /**
++     * Clear memory cache
++     */
++    fun clearMemoryCache() {
++        memoryCache.evictAll()
++    }
++    
++    /**
++     * Clear disk cache
++     */
++    fun clearDiskCache() {
++        val cacheDir = File(context.cacheDir, ""optimized_images"")
++        if (cacheDir.exists()) {
++            cacheDir.deleteRecursively()
++        }
++    }
++    
++    /**
++     * Preload images for better UX
++     */
++    suspend fun preloadImages(urls: List<String>) {
++        withContext(Dispatchers.IO) {
++            urls.take(5).forEach { url -> // Limit preloading to 5 images
++                try {
++                    loadOptimizedImage(url, 512, 512) // Smaller size for preloading
++                } catch (e: Exception) {
++                    // Ignore preload errors
++                }
++            }
++        }
++    }
++}
+\ No newline at end of file"
+3075349977,https://github.com/unibeck/solstatus/pull/55,Enable Build-Time Optimizations,2,src/components/app-sidebar.tsx,2,comment_modification,1.0,L4-8,"@@ -32,9 +32,9 @@ import {
+   SidebarMenuItem,
+ } from ""@/registry/new-york-v4/ui/sidebar""
+ 
+-const unbounded = Unbounded({
+-  subsets: [""latin""],
+-})
++// const unbounded = Unbounded({
++//   subsets: [""latin""],
++// })
+ 
+ const data = {
+   navMain: [
+"
+3215138589,https://github.com/jxxghp/MoviePilot/pull/4579,Select Computationally Efficient Algorithms,11,app/helper/memory.py,2,comment_modification,1.0,L5-45,"@@ -387,39 +630,47 @@ def _write_detailed_system_analysis(self, f):
+         
+         f.write(""\n"" + ""="" * 100 + ""\n\n"")
+ 
+-    def _write_detailed_python_analysis(self, f):
++    def _write_detailed_python_analysis_optimized(self, f):
+         """"""
+-        写入详细的Python对象分析
++        写入优化的Python对象分析
+         """"""
+-        f.write(""2. Python对象深度分析\n"")
++        f.write(""2. Python对象深度分析 (优化版)\n"")
+         f.write(""-"" * 50 + ""\n"")
+         
+         # 强制垃圾回收
+         collected = gc.collect()
+         f.write(f""垃圾回收清理对象数: {collected}\n\n"")
+         
+-        # 获取所有对象
++        # 获取所有对象（限制数量）
+         all_objects = muppy.get_objects()
++        if len(all_objects) > self._max_objects_to_analyze:
++            import random
++            all_objects = random.sample(all_objects, self._max_objects_to_analyze)
++            f.write(f""对象数量过多，采样分析 {self._max_objects_to_analyze} 个对象\n\n"")
++        
+         f.write(f""总对象数: {len(all_objects):,}\n"")
+         
+-        # 按类型统计
++        # 按类型统计（简化版）
+         type_stats = {}
+         for obj in all_objects:
+-            obj_type = type(obj).__name__
+-            if obj_type not in type_stats:
+-                type_stats[obj_type] = {'count': 0, 'size': 0}
+-            type_stats[obj_type]['count'] += 1
+-            type_stats[obj_type]['size'] += sys.getsizeof(obj)
++            try:
++                obj_type = type(obj).__name__
++                if obj_type not in type_stats:
++                    type_stats[obj_type] = {'count': 0, 'size': 0}
++                type_stats[obj_type]['count'] += 1
++                type_stats[obj_type]['size'] += sys.getsizeof(obj)
++            except:
++                continue
+         
+         # 按大小排序
+         sorted_types = sorted(type_stats.items(), key=lambda x: x[1]['size'], reverse=True)
+         
+-        f.write(""对象类型统计 (按内存大小排序):\n"")
++        f.write(""对象类型统计 (按内存大小排序，前15个):\n"")
+         f.write(f""{'类型':<20} {'数量':<10} {'总大小(MB)':<12} {'平均大小(B)':<12}\n"")
+         f.write(""-"" * 60 + ""\n"")
+         
+         total_python_memory = 0
+-        for obj_type, stats in sorted_types[:20]:  # 只显示前20个
++        for obj_type, stats in sorted_types[:15]:  # 只显示前15个
+             size_mb = stats['size'] / 1024 / 1024
+             avg_size = stats['size'] / stats['count'] if stats['count'] > 0 else 0
+             total_python_memory += size_mb
+"
+3154548302,https://github.com/carverauto/serviceradar/pull/951,Concurrency Control / Rate Limiting,3,cmd/zen-consumer/src/main.rs,2,comment_modification,1.0,L7-11,"@@ -227,9 +229,13 @@ async fn main() -> Result<()> {
+         let mut messages = consumer
+             .stream()
+             .max_messages_per_batch(10)
++            .expires(BATCH_TIMEOUT)
+             .messages()
+             .await?;
+-        debug!(""waiting for up to 10 messages"");
++        debug!(
++            ""waiting for up to 10 messages or {:?} timeout"",
++            BATCH_TIMEOUT
++        );
+         while let Some(message) = messages.next().await {
+             let message = message.map_err(|e| anyhow::anyhow!(e.to_string()))?;
+             if let Err(e) = process_message(&engine, &cfg, &js, &message).await {"
+3215138589,https://github.com/jxxghp/MoviePilot/pull/4579,Select Computationally Efficient Algorithms,14,app/helper/memory.py,3,deleted_blocks,0.99,L1-97,"@@ -579,312 +828,6 @@ def _write_memory_leak_detection(self, f):
+         
+         f.write(""\n"" + ""="" * 100 + ""\n\n"")
+ 
+-    def _append_class_analysis(self, snapshot_file):
+-        """"""
+-        分析并追加类实例内存使用情况
+-        """"""
+-        with open(snapshot_file, 'a', encoding='utf-8') as f:
+-            f.write(""\n"" + ""="" * 80 + ""\n"")
+-            f.write(""类实例内存使用情况 (按内存大小排序):\n"")
+-            f.write(""-"" * 80 + ""\n"")
+-            f.write(""正在分析中...\n"")
+-            # 立即刷新，让用户知道这部分开始了
+-            f.flush()
+-
+-        try:
+-            logger.debug(""开始分析类实例内存使用情况"")
+-            class_objects = self._get_class_memory_usage()
+-
+-            # 重新打开文件，移除""正在分析中...""并写入实际结果
+-            with open(snapshot_file, 'r', encoding='utf-8') as f:
+-                content = f.read()
+-
+-            # 替换""正在分析中...""
+-            content = content.replace(""正在分析中...\n"", """")
+-
+-            with open(snapshot_file, 'w', encoding='utf-8') as f:
+-                f.write(content)
+-
+-                if class_objects:
+-                    # 只显示前100个类
+-                    for i, class_info in enumerate(class_objects[:100], 1):
+-                        f.write(f""{i:3d}. {class_info['name']:<50} ""
+-                                f""{class_info['size_mb']:>8.2f} MB ({class_info['count']} 个实例)\n"")
+-                else:
+-                    f.write(""未找到有效的类实例信息\n"")
+-
+-                f.flush()
+-
+-        except Exception as e:
+-            logger.error(f""获取类实例信息失败: {e}"")
+-
+-            # 即使出错也要更新文件
+-            with open(snapshot_file, 'r', encoding='utf-8') as f:
+-                content = f.read()
+-
+-            content = content.replace(""正在分析中...\n"", f""获取类实例信息失败: {e}\n"")
+-
+-            with open(snapshot_file, 'w', encoding='utf-8') as f:
+-                f.write(content)
+-                f.flush()
+-
+-        logger.debug(""类实例分析已完成并写入"")
+-
+-    def _append_variable_analysis(self, snapshot_file):
+-        """"""
+-        分析并追加大内存变量详情
+-        """"""
+-        with open(snapshot_file, 'a', encoding='utf-8') as f:
+-            f.write(""\n"" + ""="" * 80 + ""\n"")
+-            f.write(""大内存变量详情 (前100个):\n"")
+-            f.write(""-"" * 80 + ""\n"")
+-            f.write(""正在分析中...\n"")
+-            # 立即刷新，让用户知道这部分开始了
+-            f.flush()
+-
+-        try:
+-            logger.debug(""开始分析大内存变量"")
+-            large_variables = self._get_large_variables(100)
+-
+-            # 重新打开文件，移除""正在分析中...""并写入实际结果
+-            with open(snapshot_file, 'r', encoding='utf-8') as f:
+-                content = f.read()
+-
+-            # 替换最后的""正在分析中...""
+-            content = content.replace(""正在分析中...\n"", """")
+-
+-            with open(snapshot_file, 'w', encoding='utf-8') as f:
+-                f.write(content)
+-
+-                if large_variables:
+-                    for i, var_info in enumerate(large_variables, 1):
+-                        f.write(
+-                            f""{i:3d}. {var_info['name']:<30} {var_info['type']:<15} {var_info['size_mb']:>8.2f} MB\n"")
+-                else:
+-                    f.write(""未找到大内存变量\n"")
+-
+-                f.flush()
+-
+-        except Exception as e:
+-            logger.error(f""获取大内存变量信息失败: {e}"")
+-
+-            # 即使出错也要更新文件
+-            with open(snapshot_file, 'r', encoding='utf-8') as f:
+-                content = f.read()
+-
+-            content = content.replace(""正在分析中...\n"", f""获取变量信息失败: {e}\n"")
+-
+-            with open(snapshot_file, 'w', encoding='utf-8') as f:
+-                f.write(content)
+-                f.flush()
+-
+-        logger.debug(""大内存变量分析已完成并写入"")
+-
+-    def _cleanup_old_snapshots(self):
+-        """"""
+-        清理过期的内存快照文件，只保留最近的指定数量文件
+-        """"""
+-        try:
+-            snapshot_files = list(self._memory_snapshot_dir.glob(""memory_snapshot_*.txt""))
+-            if len(snapshot_files) > self._keep_count:
+-                # 按修改时间排序，删除最旧的文件
+-                snapshot_files.sort(key=lambda x: x.stat().st_mtime)
+-                for old_file in snapshot_files[:-self._keep_count]:
+-                    old_file.unlink()
+-                    logger.debug(f""已删除过期内存快照: {old_file}"")
+-        except Exception as e:
+-            logger.error(f""清理过期快照失败: {e}"")
+-
+-    @staticmethod
+-    def _get_class_memory_usage():
+-        """"""
+-        获取所有类实例的内存使用情况，按内存大小排序
+-        """"""
+-        class_info = {}
+-        processed_count = 0
+-        error_count = 0
+-
+-        # 获取所有对象
+-        all_objects = muppy.get_objects()
+-        logger.debug(f""开始分析 {len(all_objects)} 个对象的类实例内存使用情况"")
+-
+-        for obj in all_objects:
+-            try:
+-                # 跳过类对象本身，统计类的实例
+-                if isinstance(obj, type):
+-                    continue
+-
+-                # 获取对象的类名 - 这里可能会出错
+-                obj_class = type(obj)
+-
+-                # 安全地获取类名
+-                try:
+-                    if hasattr(obj_class, '__module__') and hasattr(obj_class, '__name__'):
+-                        class_name = f""{obj_class.__module__}.{obj_class.__name__}""
+-                    else:
+-                        class_name = str(obj_class)
+-                except Exception as e:
+-                    # 如果获取类名失败，使用简单的类型描述
+-                    class_name = f""<unknown_class_{id(obj_class)}>""
+-                    logger.debug(f""获取类名失败: {e}"")
+-
+-                # 计算对象本身的内存使用（不包括引用对象，避免重复计算）
+-                size_bytes = sys.getsizeof(obj)
+-                if size_bytes < 100:  # 跳过太小的对象
+-                    continue
+-
+-                size_mb = size_bytes / 1024 / 1024
+-                processed_count += 1
+-
+-                if class_name in class_info:
+-                    class_info[class_name]['size_mb'] += size_mb
+-                    class_info[class_name]['count'] += 1
+-                else:
+-                    class_info[class_name] = {
+-                        'name': class_name,
+-                        'size_mb': size_mb,
+-                        'count': 1
+-                    }
+-
+-            except Exception as e:
+-                # 捕获所有可能的异常，包括SQLAlchemy、ORM等框架的异常
+-                error_count += 1
+-                if error_count <= 5:  # 只记录前5个错误，避免日志过多
+-                    logger.debug(f""分析对象时出错: {e}"")
+-                continue
+-
+-        logger.debug(f""类实例分析完成: 处理了 {processed_count} 个对象, 遇到 {error_count} 个错误"")
+-
+-        # 按内存大小排序
+-        sorted_classes = sorted(class_info.values(), key=lambda x: x['size_mb'], reverse=True)
+-        return sorted_classes
+-
+-    def _get_large_variables(self, limit=100):
+-        """"""
+-        获取大内存变量信息，按内存大小排序
+-        使用已计算对象集合避免重复计算
+-        """"""
+-        large_vars = []
+-        processed_count = 0
+-        calculated_objects = set()  # 避免重复计算
+-
+-        # 获取所有对象
+-        all_objects = muppy.get_objects()
+-        logger.debug(f""开始分析 {len(all_objects)} 个对象的内存使用情况"")
+-
+-        for obj in all_objects:
+-            # 跳过类对象
+-            if isinstance(obj, type):
+-                continue
+-
+-            # 跳过已经计算过的对象
+-            obj_id = id(obj)
+-            if obj_id in calculated_objects:
+-                continue
+-
+-            try:
+-                # 首先使用 sys.getsizeof 快速筛选
+-                shallow_size = sys.getsizeof(obj)
+-                if shallow_size < 1024:  # 只处理大于1KB的对象
+-                    continue
+-
+-                # 对于较大的对象，使用 asizeof 进行深度计算
+-                size_bytes = asizeof.asizeof(obj)
+-
+-                # 只处理大于10KB的对象，提高分析效率
+-                if size_bytes < 10240:
+-                    continue
+-
+-                size_mb = size_bytes / 1024 / 1024
+-                processed_count += 1
+-                calculated_objects.add(obj_id)
+-
+-                # 获取对象信息
+-                var_info = self._get_variable_info(obj, size_mb)
+-                if var_info:
+-                    large_vars.append(var_info)
+-
+-                # 如果已经找到足够多的大对象，可以提前结束
+-                if len(large_vars) >= limit * 2:  # 多收集一些，后面排序筛选
+-                    break
+-
+-            except Exception as e:
+-                # 更广泛的异常捕获
+-                logger.debug(f""分析对象失败: {e}"")
+-                continue
+-
+-        logger.debug(f""处理了 {processed_count} 个大对象，找到 {len(large_vars)} 个有效变量"")
+-
+-        # 按内存大小排序并返回前N个
+-        large_vars.sort(key=lambda x: x['size_mb'], reverse=True)
+-        return large_vars[:limit]
+-
+-    def _get_variable_info(self, obj, size_mb):
+-        """"""
+-        获取变量的描述信息
+-        """"""
+-        try:
+-            obj_type = type(obj).__name__
+-
+-            # 尝试获取变量名
+-            var_name = self._get_variable_name(obj)
+-
+-            # 生成描述性信息
+-            if isinstance(obj, dict):
+-                key_count = len(obj)
+-                if key_count > 0:
+-                    sample_keys = list(obj.keys())[:3]
+-                    var_name += f"" ({key_count}项, 键: {sample_keys})""
+-            elif isinstance(obj, (list, tuple, set)):
+-                var_name += f"" ({len(obj)}个元素)""
+-            elif isinstance(obj, str):
+-                if len(obj) > 50:
+-                    var_name += f"" (长度: {len(obj)}, 内容: '{obj[:50]}...')""
+-                else:
+-                    var_name += f"" ('{obj}')""
+-            elif hasattr(obj, '__class__') and hasattr(obj.__class__, '__name__'):
+-                if hasattr(obj, '__dict__'):
+-                    attr_count = len(obj.__dict__)
+-                    var_name += f"" ({attr_count}个属性)""
+-
+-            return {
+-                'name': var_name,
+-                'type': obj_type,
+-                'size_mb': size_mb
+-            }
+-
+-        except Exception as e:
+-            logger.debug(f""获取变量信息失败: {e}"")
+-            return None
+-
+-    @staticmethod
+-    def _get_variable_name(obj):
+-        """"""
+-        尝试获取变量名
+-        """"""
+-        try:
+-            # 尝试通过gc获取引用该对象的变量名
+-            referrers = gc.get_referrers(obj)
+-
+-            for referrer in referrers:
+-                if isinstance(referrer, dict):
+-                    # 检查是否在某个模块的全局变量中
+-                    for name, value in referrer.items():
+-                        if value is obj and isinstance(name, str):
+-                            return name
+-                elif hasattr(referrer, '__dict__'):
+-                    # 检查是否在某个实例的属性中
+-                    for name, value in referrer.__dict__.items():
+-                        if value is obj and isinstance(name, str):
+-                            return f""{type(referrer).__name__}.{name}""
+-
+-            # 如果找不到变量名，返回对象类型和id
+-            return f""{type(obj).__name__}_{id(obj)}""
+-
+-        except Exception as e:
+-            logger.debug(f""获取变量名失败: {e}"")
+-            return f""{type(obj).__name__}_{id(obj)}""
+-
+     def get_memory_summary(self) -> Dict[str, float]:
+         """"""
+         获取内存使用摘要
+"
+3134374490,https://github.com/microsoft/react-native-windows/pull/14756,Lazy Loading / Deferred Initialization,2,vnext/Microsoft.ReactNative/Fabric/Composition/CompositionDynamicAutomationProvider.cpp,3,deleted_blocks,0.98,L1-17,"@@ -31,18 +32,7 @@ CompositionDynamicAutomationProvider::CompositionDynamicAutomationProvider(
+     AddSelectionItemsToContainer(this);
+   }
+ 
+-  if (strongView.try_as<winrt::Microsoft::ReactNative::Composition::implementation::WindowsTextInputComponentView>() ||
+-      strongView.try_as<winrt::Microsoft::ReactNative::Composition::implementation::ParagraphComponentView>()) {
+-    m_textProvider = winrt::make<CompositionTextProvider>(
+-                         strongView.as<winrt::Microsoft::ReactNative::Composition::ComponentView>(), this)
+-                         .try_as<ITextProvider2>();
+-  }
+ 
+-  if (strongView.try_as<winrt::Microsoft::ReactNative::Composition::implementation::ViewComponentView>()) {
+-    m_annotationProvider = winrt::make<CompositionAnnotationProvider>(
+-                               strongView.as<winrt::Microsoft::ReactNative::Composition::ComponentView>(), this)
+-                               .try_as<IAnnotationProvider>();
+-  }
+ }
+ 
+ CompositionDynamicAutomationProvider::CompositionDynamicAutomationProvider(
+"
+3242666013,https://github.com/ohcnetwork/care_fe/pull/12979,Remove duplicate code,3,src/pages/Encounters/tabs/EncounterOverviewTab.tsx,3,deleted_blocks,0.97,L1-10,"@@ -54,14 +51,6 @@ export const EncounterOverviewTab = () => {
+     facilityId,
+   } = useEncounter();
+ 
+-  const { data: allergies } = useQuery({
+-    queryKey: [""allergy-intolerance"", patientId, ""confirmed""],
+-    queryFn: query(allergyIntoleranceApi.getAllergy, {
+-      pathParams: { patientId },
+-      queryParams: { verification_status: ""confirmed"" },
+-    }),
+-  });
+-
+   const canAccess = canViewEncounter || canViewClinicalData;
+   const canEdit =
+     !!facilityId &&
+"
+3160620876,https://github.com/onnx/onnx/pull/7057,Select Computationally Efficient Algorithms,1,onnx/reference/ops/op_resize.py,4,duplicate_code,0.99,L2-113,"@@ -305,6 +305,318 @@ def _get_all_coords(data: np.ndarray) -> np.ndarray:
+     )
+ 
+ 
++def _interpolate_nd_vectorized(
++    data: np.ndarray,
++    get_coeffs: Callable[[float, float], np.ndarray],
++    output_size: list[int],
++    scale_factors: list[float],
++    roi: np.ndarray | None = None,
++    exclude_outside: bool = False,
++    coordinate_transformation_mode: str = ""half_pixel"",
++    **kwargs: Any,
++) -> np.ndarray:
++    """"""Vectorized implementation of n-dimensional interpolation.
++    
++    This function is optimized for performance by avoiding the expensive
++    coordinate iteration loop in the original implementation.
++    """"""
++    # Only apply vectorization for specific cases that are safe and common
++    # Check if this is linear interpolation
++    test_coeffs = get_coeffs(0.5, 1.0)
++    is_linear = len(test_coeffs) == 2 and np.allclose(test_coeffs, [0.5, 0.5])
++    
++    # Only vectorize for simple cases to maintain correctness
++    if (not is_linear or 
++        roi is not None or 
++        exclude_outside or
++        coordinate_transformation_mode not in [""half_pixel"", ""asymmetric""]):
++        # Fall back to original implementation for complex cases
++        return _interpolate_nd_original(
++            data, get_coeffs, output_size, scale_factors, roi, exclude_outside, **kwargs
++        )
++    
++    # For linear interpolation with simple coordinate transformations,
++    # use pure numpy vectorized interpolation
++    try:
++        return _interpolate_nd_numpy_vectorized(
++            data, output_size, scale_factors, coordinate_transformation_mode
++        )
++    except Exception:
++        # If anything goes wrong, fall back to original
++        return _interpolate_nd_original(
++            data, get_coeffs, output_size, scale_factors, roi, exclude_outside, **kwargs
++        )
++
++
++def _interpolate_nd_vectorized(
++    data: np.ndarray,
++    get_coeffs: Callable[[float, float], np.ndarray],
++    output_size: list[int],
++    scale_factors: list[float],
++    roi: np.ndarray | None = None,
++    exclude_outside: bool = False,
++    coordinate_transformation_mode: str = ""half_pixel"",
++    **kwargs: Any,
++) -> np.ndarray:
++    """"""Vectorized implementation of n-dimensional interpolation.
++    
++    This function is optimized for performance by avoiding the expensive
++    coordinate iteration loop in the original implementation.
++    """"""
++    # Only apply vectorization for specific cases that are safe and common
++    # Check if this is linear interpolation
++    test_coeffs = get_coeffs(0.5, 1.0)
++    is_linear = len(test_coeffs) == 2 and np.allclose(test_coeffs, [0.5, 0.5])
++    
++    # Only vectorize for simple cases to maintain correctness
++    if (not is_linear or 
++        roi is not None or 
++        exclude_outside or
++        coordinate_transformation_mode not in [""half_pixel"", ""asymmetric""]):
++        # Fall back to original implementation for complex cases
++        return _interpolate_nd_original(
++            data, get_coeffs, output_size, scale_factors, roi, exclude_outside, **kwargs
++        )
++    
++    # For linear interpolation with simple coordinate transformations,
++    # use pure numpy vectorized interpolation
++    try:
++        return _interpolate_nd_numpy_vectorized(
++            data, output_size, scale_factors, coordinate_transformation_mode
++        )
++    except Exception:
++        # If anything goes wrong, fall back to original
++        return _interpolate_nd_original(
++            data, get_coeffs, output_size, scale_factors, roi, exclude_outside, **kwargs
++        )
++
++
++def _interpolate_nd_numpy_vectorized(
++    data: np.ndarray,
++    output_size: list[int],
++    scale_factors: list[float],
++    coordinate_transformation_mode: str = ""half_pixel"",
++) -> np.ndarray:
++    """"""Pure numpy vectorized interpolation for linear interpolation.""""""
++    # Create output coordinate grids
++    coords = np.meshgrid(*[np.arange(s, dtype=np.float64) for s in output_size], indexing='ij')
++    
++    # Transform coordinates to input space for each dimension
++    input_coords = []
++    for dim, (coord_grid, scale_factor) in enumerate(zip(coords, scale_factors)):
++        if coordinate_transformation_mode == ""half_pixel"":
++            input_coord = (coord_grid + 0.5) / scale_factor - 0.5
++        elif coordinate_transformation_mode == ""asymmetric"":
++            input_coord = coord_grid / scale_factor
++        else:
++            input_coord = coord_grid / scale_factor
++        
++        # Clamp to valid range
++        input_coord = np.clip(input_coord, 0, data.shape[dim] - 1)
++        input_coords.append(input_coord)
++    
++    # Perform multilinear interpolation using numpy operations
++    result = _numpy_multilinear_interpolate(data, input_coords)
++    
++    return result
++
++
++def _numpy_multilinear_interpolate(data: np.ndarray, coords: list[np.ndarray]) -> np.ndarray:
++    """"""Perform multilinear interpolation using pure numpy operations.""""""
++    ndim = len(coords)
++    
++    # Get integer and fractional parts for each dimension
++    coords_int = []
++    coords_frac = []
++    
++    for i, coord in enumerate(coords):
++        coord_int = np.floor(coord).astype(np.int64)
++        coord_frac = coord - coord_int
++        
++        # Ensure we don't go out of bounds
++        coord_int = np.clip(coord_int, 0, data.shape[i] - 1)
++        coord_frac = np.where(coord_int == data.shape[i] - 1, 0.0, coord_frac)
++        
++        coords_int.append(coord_int)
++        coords_frac.append(coord_frac)
++    
++    # For efficiency, handle common cases specially
++    if ndim == 1:
++        return _interpolate_1d_vectorized(data, coords_int[0], coords_frac[0])
++    elif ndim == 2:
++        return _interpolate_2d_vectorized(data, coords_int, coords_frac)
++    elif ndim == 3:
++        return _interpolate_3d_vectorized(data, coords_int, coords_frac)
++    elif ndim == 4:
++        return _interpolate_4d_vectorized(data, coords_int, coords_frac)
++    else:
++        # For higher dimensions, use a general but slower approach
++        return _interpolate_nd_general_vectorized(data, coords_int, coords_frac)
++
++
++def _interpolate_1d_vectorized(data: np.ndarray, coord_int: np.ndarray, coord_frac: np.ndarray) -> np.ndarray:
++    """"""Vectorized 1D linear interpolation.""""""
++    i0 = coord_int
++    i1 = np.clip(coord_int + 1, 0, data.shape[0] - 1)
++    
++    w0 = 1.0 - coord_frac
++    w1 = coord_frac
++    
++    return w0 * data[i0] + w1 * data[i1]
++
++
++def _interpolate_2d_vectorized(data: np.ndarray, coords_int: list[np.ndarray], coords_frac: list[np.ndarray]) -> np.ndarray:
++    """"""Vectorized 2D bilinear interpolation.""""""
++    i0, j0 = coords_int
++    fi, fj = coords_frac
++    
++    i1 = np.clip(i0 + 1, 0, data.shape[0] - 1)
++    j1 = np.clip(j0 + 1, 0, data.shape[1] - 1)
++    
++    # Bilinear weights
++    w00 = (1.0 - fi) * (1.0 - fj)
++    w01 = (1.0 - fi) * fj
++    w10 = fi * (1.0 - fj)
++    w11 = fi * fj
++    
++    # Perform bilinear interpolation
++    result = (w00 * data[i0, j0] + 
++              w01 * data[i0, j1] + 
++              w10 * data[i1, j0] + 
++              w11 * data[i1, j1])
++    
++    return result
++
++
++def _interpolate_3d_vectorized(data: np.ndarray, coords_int: list[np.ndarray], coords_frac: list[np.ndarray]) -> np.ndarray:
++    """"""Vectorized 3D trilinear interpolation.""""""
++    i0, j0, k0 = coords_int
++    fi, fj, fk = coords_frac
++    
++    i1 = np.clip(i0 + 1, 0, data.shape[0] - 1)
++    j1 = np.clip(j0 + 1, 0, data.shape[1] - 1)
++    k1 = np.clip(k0 + 1, 0, data.shape[2] - 1)
++    
++    # Trilinear weights
++    w000 = (1.0 - fi) * (1.0 - fj) * (1.0 - fk)
++    w001 = (1.0 - fi) * (1.0 - fj) * fk
++    w010 = (1.0 - fi) * fj * (1.0 - fk)
++    w011 = (1.0 - fi) * fj * fk
++    w100 = fi * (1.0 - fj) * (1.0 - fk)
++    w101 = fi * (1.0 - fj) * fk
++    w110 = fi * fj * (1.0 - fk)
++    w111 = fi * fj * fk
++    
++    # Perform trilinear interpolation
++    result = (w000 * data[i0, j0, k0] + 
++              w001 * data[i0, j0, k1] + 
++              w010 * data[i0, j1, k0] + 
++              w011 * data[i0, j1, k1] + 
++              w100 * data[i1, j0, k0] + 
++              w101 * data[i1, j0, k1] + 
++              w110 * data[i1, j1, k0] + 
++              w111 * data[i1, j1, k1])
++    
++    return result
++
++
++def _interpolate_4d_vectorized(data: np.ndarray, coords_int: list[np.ndarray], coords_frac: list[np.ndarray]) -> np.ndarray:
++    """"""Vectorized 4D multilinear interpolation.""""""
++    i0, j0, k0, l0 = coords_int
++    fi, fj, fk, fl = coords_frac
++    
++    i1 = np.clip(i0 + 1, 0, data.shape[0] - 1)
++    j1 = np.clip(j0 + 1, 0, data.shape[1] - 1)
++    k1 = np.clip(k0 + 1, 0, data.shape[2] - 1)
++    l1 = np.clip(l0 + 1, 0, data.shape[3] - 1)
++    
++    # 4D multilinear weights (16 combinations)
++    weights = []
++    indices = []
++    
++    for di in [0, 1]:
++        for dj in [0, 1]:
++            for dk in [0, 1]:
++                for dl in [0, 1]:
++                    wi = fi if di else (1.0 - fi)
++                    wj = fj if dj else (1.0 - fj)
++                    wk = fk if dk else (1.0 - fk)
++                    wl = fl if dl else (1.0 - fl)
++                    
++                    weight = wi * wj * wk * wl
++                    ii = i1 if di else i0
++                    jj = j1 if dj else j0
++                    kk = k1 if dk else k0
++                    ll = l1 if dl else l0
++                    
++                    weights.append(weight)
++                    indices.append((ii, jj, kk, ll))
++    
++    # Perform 4D multilinear interpolation
++    result = np.zeros_like(weights[0])
++    for weight, (ii, jj, kk, ll) in zip(weights, indices):
++        result += weight * data[ii, jj, kk, ll]
++    
++    return result
++
++
++def _interpolate_nd_general_vectorized(data: np.ndarray, coords_int: list[np.ndarray], coords_frac: list[np.ndarray]) -> np.ndarray:
++    """"""General vectorized n-dimensional multilinear interpolation.""""""
++    ndim = len(coords_int)
++    
++    # Generate all 2^ndim corner combinations
++    result = np.zeros(coords_int[0].shape, dtype=data.dtype)
++    
++    for corner in range(2 ** ndim):
++        # Extract which corner we're at for each dimension
++        indices = []
++        weight = np.ones_like(coords_frac[0])
++        
++        for dim in range(ndim):
++            if corner & (1 << dim):
++                # Use the +1 index and fractional weight
++                idx = np.clip(coords_int[dim] + 1, 0, data.shape[dim] - 1)
++                w = coords_frac[dim]
++            else:
++                # Use the base index and (1 - fractional) weight
++                idx = coords_int[dim]
++                w = 1.0 - coords_frac[dim]
++            
++            indices.append(idx)
++            weight *= w
++        
++        # Add this corner's contribution
++        result += weight * data[tuple(indices)]
++    
++    return result
++
++
++def _interpolate_nd_original(
++    data: np.ndarray,
++    get_coeffs: Callable[[float, float], np.ndarray],
++    output_size: list[int],
++    scale_factors: list[float],
++    roi: np.ndarray | None = None,
++    exclude_outside: bool = False,
++    **kwargs: Any,
++) -> np.ndarray:
++    """"""Original implementation kept for compatibility and complex cases.""""""
++    ret = np.zeros(output_size, dtype=data.dtype)
++    for x in _get_all_coords(ret):
++        ret[tuple(x)] = _interpolate_nd_with_x(
++            data,
++            len(data.shape),
++            scale_factors,
++            output_size,
++            x,
++            get_coeffs,
++            roi=roi,
++            exclude_outside=exclude_outside,
++            **kwargs,
++        )
++    return ret
++
++
+ def _interpolate_nd(
+     data: np.ndarray,
+     get_coeffs: Callable[[float, float], np.ndarray],
+"
+3113051088,https://github.com/celestiaorg/rsmt2d/pull/361,Optimize Object Use,2,extendeddatasquare.go,5,return_statement_mods,1.0,L7-8,"@@ -282,8 +292,10 @@ func (eds *ExtendedDataSquare) Width() uint {
+ }
+ 
+ // Flattened returns the extended data square as a flattened slice of bytes.
++// The returned slice references internal data and should not be modified.
++// If modification is needed, the caller should make a copy using deepCopy().
+ func (eds *ExtendedDataSquare) Flattened() [][]byte {
+-	return deepCopy(eds.dataSquare.Flattened())
++	return eds.dataSquare.Flattened()
+ }
+ 
+ // FlattenedODS returns the original data square as a flattened slice of bytes."
+3077200502,https://github.com/OWASP-BLT/BLT/pull/4290,Cache Eviction Policy,1,website/static/js/jquery.tablesorter.js,5,return_statement_mods,0.98,L5-5,"@@ -161,34 +161,32 @@
+             /* parsers utils */
+ 
+             function buildParserCache(table, $headers) {
+-
+                 if (table.config.debug) {
+                     var parsersDebug = """";
+                 }
+ 
+-                if (table.tBodies.length == 0) return; // In the case of empty tables
++                if (table.tBodies.length == 0) return []; // In the case of empty tables
+                 var rows = table.tBodies[0].rows;
+ 
+                 if (rows[0]) {
+-
+                     var list = [],
+                         cells = rows[0].cells,
+                         l = cells.length;
+ 
+                     for (var i = 0; i < l; i++) {
+-
+                         var p = false;
+-
+-                        if ($.metadata && ($($headers[i]).metadata() && $($headers[i]).metadata().sorter)) {
+-
+-                            p = getParserById($($headers[i]).metadata().sorter);
+-
+-                        } else if ((table.config.headers[i] && table.config.headers[i].sorter)) {
+-
+-                            p = getParserById(table.config.headers[i].sorter);
++                        
++                        // Memory optimization: cache parser lookups
++                        var headerMetadata = $.metadata && $($headers[i]).metadata();
++                        var configHeaders = table.config.headers[i];
++                        
++                        if (headerMetadata && headerMetadata.sorter) {
++                            p = getParserById(headerMetadata.sorter);
++                        } else if (configHeaders && configHeaders.sorter) {
++                            p = getParserById(configHeaders.sorter);
+                         }
++                        
+                         if (!p) {
+-
+                             p = detectParserForColumn(table, rows, -1, i);
+                         }
+ 
+"
+3193183157,https://github.com/Z3Prover/z3/pull/7710,Rearranging for early return,1,src/ast/datatype_decl_plugin.cpp,5,return_statement_mods,0.97,L7-7,"@@ -1070,6 +1070,12 @@ namespace datatype {
+         plugin().add_ast(con);
+         plugin().m_vectors.push_back(res);
+         plugin().m_constructor2accessors.insert(con, res);
++        
++        // Early return for 0-ary constructors - they have no accessors by definition
++        if (con->get_arity() == 0) {
++            return res;
++        }
++        
+         sort * datatype = con->get_range();
+         def const& d = get_def(datatype);
+         for (constructor const* c : d) {"
+3215138589,https://github.com/jxxghp/MoviePilot/pull/4579,Select Computationally Efficient Algorithms,11,app/helper/memory.py,6,method_name_change,1.0,L3-4,"@@ -387,39 +630,47 @@ def _write_detailed_system_analysis(self, f):
+         
+         f.write(""\n"" + ""="" * 100 + ""\n\n"")
+ 
+-    def _write_detailed_python_analysis(self, f):
++    def _write_detailed_python_analysis_optimized(self, f):
+         """"""
+-        写入详细的Python对象分析
++        写入优化的Python对象分析
+         """"""
+-        f.write(""2. Python对象深度分析\n"")
++        f.write(""2. Python对象深度分析 (优化版)\n"")
+         f.write(""-"" * 50 + ""\n"")
+         
+         # 强制垃圾回收
+         collected = gc.collect()
+         f.write(f""垃圾回收清理对象数: {collected}\n\n"")
+         
+-        # 获取所有对象
++        # 获取所有对象（限制数量）
+         all_objects = muppy.get_objects()
++        if len(all_objects) > self._max_objects_to_analyze:
++            import random
++            all_objects = random.sample(all_objects, self._max_objects_to_analyze)
++            f.write(f""对象数量过多，采样分析 {self._max_objects_to_analyze} 个对象\n\n"")
++        
+         f.write(f""总对象数: {len(all_objects):,}\n"")
+         
+-        # 按类型统计
++        # 按类型统计（简化版）
+         type_stats = {}
+         for obj in all_objects:
+-            obj_type = type(obj).__name__
+-            if obj_type not in type_stats:
+-                type_stats[obj_type] = {'count': 0, 'size': 0}
+-            type_stats[obj_type]['count'] += 1
+-            type_stats[obj_type]['size'] += sys.getsizeof(obj)
++            try:
++                obj_type = type(obj).__name__
++                if obj_type not in type_stats:
++                    type_stats[obj_type] = {'count': 0, 'size': 0}
++                type_stats[obj_type]['count'] += 1
++                type_stats[obj_type]['size'] += sys.getsizeof(obj)
++            except:
++                continue
+         
+         # 按大小排序
+         sorted_types = sorted(type_stats.items(), key=lambda x: x[1]['size'], reverse=True)
+         
+-        f.write(""对象类型统计 (按内存大小排序):\n"")
++        f.write(""对象类型统计 (按内存大小排序，前15个):\n"")
+         f.write(f""{'类型':<20} {'数量':<10} {'总大小(MB)':<12} {'平均大小(B)':<12}\n"")
+         f.write(""-"" * 60 + ""\n"")
+         
+         total_python_memory = 0
+-        for obj_type, stats in sorted_types[:20]:  # 只显示前20个
++        for obj_type, stats in sorted_types[:15]:  # 只显示前15个
+             size_mb = stats['size'] / 1024 / 1024
+             avg_size = stats['size'] / stats['count'] if stats['count'] > 0 else 0
+             total_python_memory += size_mb
+"
+2991070962,https://github.com/calcom/cal.com/pull/20676,Caching,2,packages/trpc/server/routers/viewer/eventTypes/getEventTypesFromGroup.handler.ts,6,method_name_change,0.99,L3-4,"@@ -56,7 +57,7 @@ export const getEventTypesFromGroup = async ({
+     };
+ 
+     const [nonChildEventTypes, childEventTypes] = await Promise.all([
+-      EventTypeRepository.findAllByUpId(
++      EventTypeRepository.findAllByUpIdLightweight(
+         {
+           upId: userProfile.upId,
+           userId: ctx.user.id,
+"
+3215138589,https://github.com/jxxghp/MoviePilot/pull/4579,Select Computationally Efficient Algorithms,12,app/helper/memory.py,6,method_name_change,0.98,L50-51,"@@ -435,105 +686,103 @@ def _write_detailed_python_analysis(self, f):
+         
+         f.write(""\n"" + ""="" * 100 + ""\n\n"")
+ 
+-    def _write_detailed_memory_maps(self, f):
++    def _write_detailed_memory_maps_simple(self, f):
+         """"""
+-        写入详细的内存映射分析
++        写入简化的内存映射分析
+         """"""
+-        f.write(""3. 内存映射详细分析\n"")
++        f.write(""3. 内存映射分析 (简化版)\n"")
+         f.write(""-"" * 50 + ""\n"")
+         
+-        process = psutil.Process()
+-        memory_maps = process.memory_maps()
+-        
+-        # 按权限分类
+-        perm_stats = {}
+-        file_stats = {}
+-        
+-        for mmap in memory_maps:
+-            size_mb = mmap.size / 1024 / 1024
+-            perms = mmap.perms
+-            
+-            # 按权限统计
+-            if perms not in perm_stats:
+-                perm_stats[perms] = {'count': 0, 'size': 0}
+-            perm_stats[perms]['count'] += 1
+-            perm_stats[perms]['size'] += size_mb
+-            
+-            # 按文件统计
+-            if mmap.path:
+-                if mmap.path not in file_stats:
+-                    file_stats[mmap.path] = {'count': 0, 'size': 0}
+-                file_stats[mmap.path]['count'] += 1
+-                file_stats[mmap.path]['size'] += size_mb
+-        
+-        f.write(""按权限分类的内存映射:\n"")
+-        f.write(f""{'权限':<10} {'数量':<8} {'大小(MB)':<12}\n"")
+-        f.write(""-"" * 35 + ""\n"")
+-        for perms, stats in sorted(perm_stats.items(), key=lambda x: x[1]['size'], reverse=True):
+-            f.write(f""{perms:<10} {stats['count']:<8} {stats['size']:<12.2f}\n"")
+-        
+-        f.write(f""\n按文件分类的内存映射 (前10个):\n"")
+-        f.write(f""{'文件路径':<50} {'大小(MB)':<12}\n"")
+-        f.write(""-"" * 70 + ""\n"")
+-        for path, stats in sorted(file_stats.items(), key=lambda x: x[1]['size'], reverse=True)[:10]:
+-            if len(path) > 47:
+-                path = path[:44] + ""...""
+-            f.write(f""{path:<50} {stats['size']:<12.2f}\n"")
++        try:
++            process = psutil.Process()
++            memory_maps = process.memory_maps()
++            
++            # 按权限分类
++            perm_stats = {}
++            
++            for mmap in memory_maps:
++                size_mb = mmap.size / 1024 / 1024
++                perms = mmap.perms
++                
++                # 按权限统计
++                if perms not in perm_stats:
++                    perm_stats[perms] = {'count': 0, 'size': 0}
++                perm_stats[perms]['count'] += 1
++                perm_stats[perms]['size'] += size_mb
++            
++            f.write(""按权限分类的内存映射:\n"")
++            f.write(f""{'权限':<10} {'数量':<8} {'大小(MB)':<12}\n"")
++            f.write(""-"" * 35 + ""\n"")
++            for perms, stats in sorted(perm_stats.items(), key=lambda x: x[1]['size'], reverse=True):
++                f.write(f""{perms:<10} {stats['count']:<8} {stats['size']:<12.2f}\n"")
++            
++        except Exception as e:
++            f.write(f""内存映射分析失败: {e}\n"")
+         
+         f.write(""\n"" + ""="" * 100 + ""\n\n"")
+ 
+-    def _write_detailed_large_objects(self, f):
++    def _write_detailed_large_objects_optimized(self, f):
+         """"""
+-        写入大对象详细分析
++        写入优化的大对象详细分析
+         """"""
+-        f.write(""4. 大对象详细分析\n"")
++        f.write(""4. 大对象详细分析 (优化版)\n"")
+         f.write(""-"" * 50 + ""\n"")
+         
+-        all_objects = muppy.get_objects()
+-        large_objects = []
+-        
+-        for obj in all_objects:
+-            try:
+-                size = asizeof.asizeof(obj)
+-                if size > 1024 * 1024:  # 大于1MB的对象
+-                    large_objects.append((obj, size))
+-            except:
+-                continue
+-        
+-        # 按大小排序
+-        large_objects.sort(key=lambda x: x[1], reverse=True)
+-        
+-        f.write(f""大对象 (>1MB) 数量: {len(large_objects)}\n\n"")
+-        
+-        for i, (obj, size) in enumerate(large_objects[:20], 1):  # 只显示前20个
+-            size_mb = size / 1024 / 1024
+-            obj_type = type(obj).__name__
++        def analyze_large_objects():
++            large_objects = []
+             
+-            f.write(f""{i:2d}. {obj_type} - {size_mb:.2f} MB\n"")
++            # 获取所有对象（限制数量）
++            all_objects = muppy.get_objects()
++            if len(all_objects) > self._max_objects_to_analyze:
++                import random
++                all_objects = random.sample(all_objects, self._max_objects_to_analyze)
+             
+-            # 尝试获取更多信息
+-            try:
+-                if isinstance(obj, dict):
+-                    f.write(f""    字典项数: {len(obj)}\n"")
+-                    if obj:
+-                        sample_keys = list(obj.keys())[:3]
+-                        f.write(f""    示例键: {sample_keys}\n"")
+-                elif isinstance(obj, (list, tuple)):
+-                    f.write(f""    元素数量: {len(obj)}\n"")
+-                elif isinstance(obj, str):
+-                    f.write(f""    字符串长度: {len(obj)}\n"")
+-                    if len(obj) > 100:
+-                        f.write(f""    内容预览: {obj[:100]}...\n"")
+-                    else:
+-                        f.write(f""    内容: {obj}\n"")
+-                elif hasattr(obj, '__dict__'):
+-                    f.write(f""    属性数量: {len(obj.__dict__)}\n"")
+-                    if hasattr(obj, '__class__'):
+-                        f.write(f""    类名: {obj.__class__.__name__}\n"")
+-            except:
+-                pass
++            for obj in all_objects:
++                try:
++                    # 快速筛选
++                    shallow_size = sys.getsizeof(obj)
++                    if shallow_size < self._large_object_threshold:
++                        continue
++                    
++                    # 深度计算
++                    size = asizeof.asizeof(obj)
++                    if size > self._large_object_threshold:
++                        large_objects.append((obj, size))
++                    
++                    # 限制数量
++                    if len(large_objects) >= 20:
++                        break
++                        
++                except:
++                    continue
+             
+-            f.write(""\n"")
++            return large_objects
++        
++        large_objects = self._run_with_timeout(analyze_large_objects)
++        
++        if large_objects:
++            f.write(f""大对象 (>1MB) 数量: {len(large_objects)}\n\n"")
++            
++            for i, (obj, size) in enumerate(large_objects, 1):
++                size_mb = size / 1024 / 1024
++                obj_type = type(obj).__name__
++                
++                f.write(f""{i:2d}. {obj_type} - {size_mb:.2f} MB\n"")
++                
++                # 简化的对象信息
++                try:
++                    if isinstance(obj, dict):
++                        f.write(f""    字典项数: {len(obj)}\n"")
++                    elif isinstance(obj, (list, tuple)):
++                        f.write(f""    元素数量: {len(obj)}\n"")
++                    elif isinstance(obj, str):
++                        f.write(f""    字符串长度: {len(obj)}\n"")
++                except:
++                    pass
++                
++                f.write(""\n"")
++        else:
++            f.write(""大对象分析超时或未找到大对象\n"")
+         
+         f.write(""="" * 100 + ""\n\n"")
+ 
+"
+3204565892,https://github.com/quarylabs/sqruff/pull/1749,Darwinian Data Structure Selection,2,crates/lib/src/rules/layout/lt01.rs,7,type_change,1.0,L4-5,"@@ -10,7 +10,7 @@ use crate::utils::reflow::sequence::{Filter, ReflowSequence};
+ pub struct RuleLT01;
+ 
+ impl Rule for RuleLT01 {
+-    fn load_from_config(&self, _config: &AHashMap<String, Value>) -> Result<ErasedRule, String> {
++    fn load_from_config(&self, _config: &FxHashMap<String, Value>) -> Result<ErasedRule, String> {
+         Ok(RuleLT01.erased())
+     }
+     fn name(&self) -> &'static str {"
+3204565892,https://github.com/quarylabs/sqruff/pull/1749,Darwinian Data Structure Selection,2,crates/lib/src/core/rules/context.rs,7,type_change,1.0,L5-6,"@@ -25,7 +25,7 @@ pub struct RuleContext<'a> {
+     /// raw_stack: All the raw segments so far in the file
+     pub raw_stack: Vec<ErasedSegment>,
+     /// memory: Arbitrary storage for the rule
+-    pub memory: Rc<RefCell<AHashMap<TypeId, Box<dyn Any>>>>,
++    pub memory: Rc<RefCell<FxHashMap<TypeId, Box<dyn Any>>>>,
+     /// segment_idx: The index of this segment in the parent
+     pub segment_idx: usize,
+ }
+"
+3257665431,https://github.com/MihaiCristianCondrea/Smart-Cleaner-for-Android/pull/220,Darwinian Data Structure Selection,1,app/src/main/kotlin/com/d4rk/cleaner/app/clean/scanner/domain/data/model/ui/UiScannerModel.kt,7,type_change,1.0,L5-6,"@@ -22,7 +22,8 @@ data class UiAnalyzeModel(
+     var scannedFileList : List<FileEntry> = emptyList() ,
+     var emptyFolderList : List<FileEntry> = emptyList() ,
+     var areAllFilesSelected : Boolean = false ,
+-    var fileSelectionMap : Map<FileEntry , Boolean> = emptyMap() ,
++    /** Map of file paths to selection state */
++    var fileSelectionMap : Map<String , Boolean> = emptyMap() ,
+     var selectedFilesCount : Int = 0 ,
+     var groupedFiles : Map<String , List<FileEntry>> = emptyMap() ,
+     /** Set of original files when duplicates are detected */"
+3202700175,https://github.com/mochilang/mochi/pull/5046,Remove Unnecessary Method Calls,3,compile/x/c/compiler.go,8,inlining,0.9,L1-8,"@@ -1763,8 +1763,8 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) string {
+ 				}
+ 				name := c.newTemp()
+ 				if isStr {
+-					c.need(needSliceString)
+-					c.writeln(fmt.Sprintf(""char* %s = slice_string(%s, %s, %s);"", name, expr, start, end))
++					c.need(needStringHeader)
++					c.writeln(fmt.Sprintf(""char* %s = ({ int _len = strlen(%s); int _s = %s; int _e = %s; if (_s < 0) _s += _len; if (_e < 0) _e += _len; if (_s < 0) _s = 0; if (_e > _len) _e = _len; if (_s > _e) _s = _e; char* _b = (char*)malloc(_e - _s + 1); memcpy(_b, %s + _s, _e - _s); _b[_e - _s] = '\\0'; _b; });"", name, expr, start, end, expr))
+ 					if c.env != nil {
+ 						c.env.SetVar(name, types.StringType{}, true)
+ 					}"
+3202700175,https://github.com/mochilang/mochi/pull/5046,Remove Unnecessary Method Calls,2,compile/x/c/compiler.go,8,inlining,0.85,L5-6,"@@ -1735,8 +1735,8 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) string {
+ 				idx := c.compileExpr(op.Index.Start)
+ 				if isStr && op.Index.End == nil {
+ 					name := c.newTemp()
+-					c.need(needIndexString)
+-					c.writeln(fmt.Sprintf(""char* %s = _index_string(%s, %s);"", name, expr, idx))
++					c.need(needStringHeader)
++					c.writeln(fmt.Sprintf(""char* %s = ({ int _len = strlen(%s); int _i = %s; if (_i < 0) _i += _len; if (_i < 0 || _i >= _len) { fprintf(stderr, \""index out of range\\n\""); exit(1); } char* _b = (char*)malloc(2); _b[0] = %s[_i]; _b[1] = '\\0'; _b; });"", name, expr, idx, expr))
+ 					if c.env != nil {
+ 						c.env.SetVar(name, types.StringType{}, true)
+ 					}
+"
+3215138589,https://github.com/jxxghp/MoviePilot/pull/4579,Select Computationally Efficient Algorithms,11,app/helper/memory.py,9,exception_handling,1.0,L27-35,"@@ -387,39 +630,47 @@ def _write_detailed_system_analysis(self, f):
+         
+         f.write(""\n"" + ""="" * 100 + ""\n\n"")
+ 
+-    def _write_detailed_python_analysis(self, f):
++    def _write_detailed_python_analysis_optimized(self, f):
+         """"""
+-        写入详细的Python对象分析
++        写入优化的Python对象分析
+         """"""
+-        f.write(""2. Python对象深度分析\n"")
++        f.write(""2. Python对象深度分析 (优化版)\n"")
+         f.write(""-"" * 50 + ""\n"")
+         
+         # 强制垃圾回收
+         collected = gc.collect()
+         f.write(f""垃圾回收清理对象数: {collected}\n\n"")
+         
+-        # 获取所有对象
++        # 获取所有对象（限制数量）
+         all_objects = muppy.get_objects()
++        if len(all_objects) > self._max_objects_to_analyze:
++            import random
++            all_objects = random.sample(all_objects, self._max_objects_to_analyze)
++            f.write(f""对象数量过多，采样分析 {self._max_objects_to_analyze} 个对象\n\n"")
++        
+         f.write(f""总对象数: {len(all_objects):,}\n"")
+         
+-        # 按类型统计
++        # 按类型统计（简化版）
+         type_stats = {}
+         for obj in all_objects:
+-            obj_type = type(obj).__name__
+-            if obj_type not in type_stats:
+-                type_stats[obj_type] = {'count': 0, 'size': 0}
+-            type_stats[obj_type]['count'] += 1
+-            type_stats[obj_type]['size'] += sys.getsizeof(obj)
++            try:
++                obj_type = type(obj).__name__
++                if obj_type not in type_stats:
++                    type_stats[obj_type] = {'count': 0, 'size': 0}
++                type_stats[obj_type]['count'] += 1
++                type_stats[obj_type]['size'] += sys.getsizeof(obj)
++            except:
++                continue
+         
+         # 按大小排序
+         sorted_types = sorted(type_stats.items(), key=lambda x: x[1]['size'], reverse=True)
+         
+-        f.write(""对象类型统计 (按内存大小排序):\n"")
++        f.write(""对象类型统计 (按内存大小排序，前15个):\n"")
+         f.write(f""{'类型':<20} {'数量':<10} {'总大小(MB)':<12} {'平均大小(B)':<12}\n"")
+         f.write(""-"" * 60 + ""\n"")
+         
+         total_python_memory = 0
+-        for obj_type, stats in sorted_types[:20]:  # 只显示前20个
++        for obj_type, stats in sorted_types[:15]:  # 只显示前15个
+             size_mb = stats['size'] / 1024 / 1024
+             avg_size = stats['size'] / stats['count'] if stats['count'] > 0 else 0
+             total_python_memory += size_mb
+"
+3160620876,https://github.com/onnx/onnx/pull/7057,Select Computationally Efficient Algorithms,2,onnx/reference/ops/op_resize.py,9,exception_handling,0.99,L7-32,"@@ -373,20 +685,28 @@ def round_half_up(x: float) -> int:
+     if output_size is None:
+         raise ValueError(""output_size is None."")
+ 
+-    ret = np.zeros(output_size)
+-    for x in _get_all_coords(ret):
+-        ret[tuple(x)] = _interpolate_nd_with_x(
++    # Use vectorized implementation when possible
++    try:
++        return _interpolate_nd_vectorized(
+             data,
+-            len(data.shape),
+-            scale_factors,
++            get_coeffs,
+             output_size,
+-            x,
++            scale_factors,
++            roi=roi,
++            exclude_outside=exclude_outside,
++            **kwargs,
++        )
++    except Exception:
++        # Fall back to original implementation if vectorized version fails
++        return _interpolate_nd_original(
++            data,
+             get_coeffs,
++            output_size,
++            scale_factors,
+             roi=roi,
+             exclude_outside=exclude_outside,
+             **kwargs,
+         )
+-    return ret
+ 
+ 
+ class Resize(OpRun):"
+3215138589,https://github.com/jxxghp/MoviePilot/pull/4579,Select Computationally Efficient Algorithms,12,app/helper/memory.py,9,exception_handling,0.98,L22-47,"@@ -435,105 +686,103 @@ def _write_detailed_python_analysis(self, f):
+         
+         f.write(""\n"" + ""="" * 100 + ""\n\n"")
+ 
+-    def _write_detailed_memory_maps(self, f):
++    def _write_detailed_memory_maps_simple(self, f):
+         """"""
+-        写入详细的内存映射分析
++        写入简化的内存映射分析
+         """"""
+-        f.write(""3. 内存映射详细分析\n"")
++        f.write(""3. 内存映射分析 (简化版)\n"")
+         f.write(""-"" * 50 + ""\n"")
+         
+-        process = psutil.Process()
+-        memory_maps = process.memory_maps()
+-        
+-        # 按权限分类
+-        perm_stats = {}
+-        file_stats = {}
+-        
+-        for mmap in memory_maps:
+-            size_mb = mmap.size / 1024 / 1024
+-            perms = mmap.perms
+-            
+-            # 按权限统计
+-            if perms not in perm_stats:
+-                perm_stats[perms] = {'count': 0, 'size': 0}
+-            perm_stats[perms]['count'] += 1
+-            perm_stats[perms]['size'] += size_mb
+-            
+-            # 按文件统计
+-            if mmap.path:
+-                if mmap.path not in file_stats:
+-                    file_stats[mmap.path] = {'count': 0, 'size': 0}
+-                file_stats[mmap.path]['count'] += 1
+-                file_stats[mmap.path]['size'] += size_mb
+-        
+-        f.write(""按权限分类的内存映射:\n"")
+-        f.write(f""{'权限':<10} {'数量':<8} {'大小(MB)':<12}\n"")
+-        f.write(""-"" * 35 + ""\n"")
+-        for perms, stats in sorted(perm_stats.items(), key=lambda x: x[1]['size'], reverse=True):
+-            f.write(f""{perms:<10} {stats['count']:<8} {stats['size']:<12.2f}\n"")
+-        
+-        f.write(f""\n按文件分类的内存映射 (前10个):\n"")
+-        f.write(f""{'文件路径':<50} {'大小(MB)':<12}\n"")
+-        f.write(""-"" * 70 + ""\n"")
+-        for path, stats in sorted(file_stats.items(), key=lambda x: x[1]['size'], reverse=True)[:10]:
+-            if len(path) > 47:
+-                path = path[:44] + ""...""
+-            f.write(f""{path:<50} {stats['size']:<12.2f}\n"")
++        try:
++            process = psutil.Process()
++            memory_maps = process.memory_maps()
++            
++            # 按权限分类
++            perm_stats = {}
++            
++            for mmap in memory_maps:
++                size_mb = mmap.size / 1024 / 1024
++                perms = mmap.perms
++                
++                # 按权限统计
++                if perms not in perm_stats:
++                    perm_stats[perms] = {'count': 0, 'size': 0}
++                perm_stats[perms]['count'] += 1
++                perm_stats[perms]['size'] += size_mb
++            
++            f.write(""按权限分类的内存映射:\n"")
++            f.write(f""{'权限':<10} {'数量':<8} {'大小(MB)':<12}\n"")
++            f.write(""-"" * 35 + ""\n"")
++            for perms, stats in sorted(perm_stats.items(), key=lambda x: x[1]['size'], reverse=True):
++                f.write(f""{perms:<10} {stats['count']:<8} {stats['size']:<12.2f}\n"")
++            
++        except Exception as e:
++            f.write(f""内存映射分析失败: {e}\n"")
+         
+         f.write(""\n"" + ""="" * 100 + ""\n\n"")
+ 
+-    def _write_detailed_large_objects(self, f):
++    def _write_detailed_large_objects_optimized(self, f):
+         """"""
+-        写入大对象详细分析
++        写入优化的大对象详细分析
+         """"""
+-        f.write(""4. 大对象详细分析\n"")
++        f.write(""4. 大对象详细分析 (优化版)\n"")
+         f.write(""-"" * 50 + ""\n"")
+         
+-        all_objects = muppy.get_objects()
+-        large_objects = []
+-        
+-        for obj in all_objects:
+-            try:
+-                size = asizeof.asizeof(obj)
+-                if size > 1024 * 1024:  # 大于1MB的对象
+-                    large_objects.append((obj, size))
+-            except:
+-                continue
+-        
+-        # 按大小排序
+-        large_objects.sort(key=lambda x: x[1], reverse=True)
+-        
+-        f.write(f""大对象 (>1MB) 数量: {len(large_objects)}\n\n"")
+-        
+-        for i, (obj, size) in enumerate(large_objects[:20], 1):  # 只显示前20个
+-            size_mb = size / 1024 / 1024
+-            obj_type = type(obj).__name__
++        def analyze_large_objects():
++            large_objects = []
+             
+-            f.write(f""{i:2d}. {obj_type} - {size_mb:.2f} MB\n"")
++            # 获取所有对象（限制数量）
++            all_objects = muppy.get_objects()
++            if len(all_objects) > self._max_objects_to_analyze:
++                import random
++                all_objects = random.sample(all_objects, self._max_objects_to_analyze)
+             
+-            # 尝试获取更多信息
+-            try:
+-                if isinstance(obj, dict):
+-                    f.write(f""    字典项数: {len(obj)}\n"")
+-                    if obj:
+-                        sample_keys = list(obj.keys())[:3]
+-                        f.write(f""    示例键: {sample_keys}\n"")
+-                elif isinstance(obj, (list, tuple)):
+-                    f.write(f""    元素数量: {len(obj)}\n"")
+-                elif isinstance(obj, str):
+-                    f.write(f""    字符串长度: {len(obj)}\n"")
+-                    if len(obj) > 100:
+-                        f.write(f""    内容预览: {obj[:100]}...\n"")
+-                    else:
+-                        f.write(f""    内容: {obj}\n"")
+-                elif hasattr(obj, '__dict__'):
+-                    f.write(f""    属性数量: {len(obj.__dict__)}\n"")
+-                    if hasattr(obj, '__class__'):
+-                        f.write(f""    类名: {obj.__class__.__name__}\n"")
+-            except:
+-                pass
++            for obj in all_objects:
++                try:
++                    # 快速筛选
++                    shallow_size = sys.getsizeof(obj)
++                    if shallow_size < self._large_object_threshold:
++                        continue
++                    
++                    # 深度计算
++                    size = asizeof.asizeof(obj)
++                    if size > self._large_object_threshold:
++                        large_objects.append((obj, size))
++                    
++                    # 限制数量
++                    if len(large_objects) >= 20:
++                        break
++                        
++                except:
++                    continue
+             
+-            f.write(""\n"")
++            return large_objects
++        
++        large_objects = self._run_with_timeout(analyze_large_objects)
++        
++        if large_objects:
++            f.write(f""大对象 (>1MB) 数量: {len(large_objects)}\n\n"")
++            
++            for i, (obj, size) in enumerate(large_objects, 1):
++                size_mb = size / 1024 / 1024
++                obj_type = type(obj).__name__
++                
++                f.write(f""{i:2d}. {obj_type} - {size_mb:.2f} MB\n"")
++                
++                # 简化的对象信息
++                try:
++                    if isinstance(obj, dict):
++                        f.write(f""    字典项数: {len(obj)}\n"")
++                    elif isinstance(obj, (list, tuple)):
++                        f.write(f""    元素数量: {len(obj)}\n"")
++                    elif isinstance(obj, str):
++                        f.write(f""    字符串长度: {len(obj)}\n"")
++                except:
++                    pass
++                
++                f.write(""\n"")
++        else:
++            f.write(""大对象分析超时或未找到大对象\n"")
+         
+         f.write(""="" * 100 + ""\n\n"")
+ 
+"
+3146327522,https://github.com/microsoft/onnxruntime/pull/25061,Select Computationally Efficient Algorithms,3,onnxruntime/core/providers/cpu/signal/dft.cc,11,synchronization,0.98,L11-60,"@@ -154,27 +182,75 @@ static Status fft_radix2(OpKernelContext* /*ctx*/, const Tensor* X, Tensor* Y, s
+     size_t midpoint = i >> 1;
+     current_significant_bits++;
+ 
+-    for (size_t k = 0; k < midpoint; k++) {
+-      auto first_idx = bit_reverse(k, current_significant_bits);
+-      auto second_idx = bit_reverse(midpoint + k, current_significant_bits);
+-      for (size_t j = 0; j < dft_length; j += i) {
+-        auto even_index = k + j;
+-        auto odd_index = k + j + midpoint;
+-        std::complex<T>* even = (Y_data + even_index * Y_data_stride);
+-        std::complex<T>* odd = (Y_data + odd_index * Y_data_stride);
+-        std::complex<T> first = *even + (V[first_idx] * *odd);
+-        std::complex<T> second = *even + (V[second_idx] * *odd);
+-        *even = first;
+-        *odd = second;
++    // Parallelize the k loop for better performance
++    auto threadpool = ctx->GetOperatorThreadPool();
++    const size_t num_butterflies = dft_length / i;
++    const size_t total_work = midpoint * num_butterflies;
++    
++    // Use threading for larger workloads
++    if (total_work > 64 && threadpool != nullptr) {
++      onnxruntime::concurrency::ThreadPool::TryParallelFor(
++        threadpool, 
++        static_cast<std::ptrdiff_t>(midpoint),
++        static_cast<double>(num_butterflies * 10), // cost estimate
++        [&](std::ptrdiff_t k_start, std::ptrdiff_t k_end) {
++          for (auto k = k_start; k < k_end; k++) {
++            auto first_idx = bit_reverse(static_cast<size_t>(k), current_significant_bits);
++            auto second_idx = bit_reverse(midpoint + static_cast<size_t>(k), current_significant_bits);
++            for (size_t j = 0; j < dft_length; j += i) {
++              auto even_index = static_cast<size_t>(k) + j;
++              auto odd_index = static_cast<size_t>(k) + j + midpoint;
++              std::complex<T>* even = (Y_data + even_index * Y_data_stride);
++              std::complex<T>* odd = (Y_data + odd_index * Y_data_stride);
++              std::complex<T> first = *even + (V[first_idx] * *odd);
++              std::complex<T> second = *even + (V[second_idx] * *odd);
++              *even = first;
++              *odd = second;
++            }
++          }
++        });
++    } else {
++      // Use sequential execution for smaller workloads
++      for (size_t k = 0; k < midpoint; k++) {
++        auto first_idx = bit_reverse(k, current_significant_bits);
++        auto second_idx = bit_reverse(midpoint + k, current_significant_bits);
++        for (size_t j = 0; j < dft_length; j += i) {
++          auto even_index = k + j;
++          auto odd_index = k + j + midpoint;
++          std::complex<T>* even = (Y_data + even_index * Y_data_stride);
++          std::complex<T>* odd = (Y_data + odd_index * Y_data_stride);
++          std::complex<T> first = *even + (V[first_idx] * *odd);
++          std::complex<T> second = *even + (V[second_idx] * *odd);
++          *even = first;
++          *odd = second;
++        }
+       }
+     }
+   }
+ 
+   // Scale the output if inverse
+   if (inverse) {
+-    for (size_t i = 0; i < dft_length; i++) {
+-      std::complex<T>& val = *(Y_data + i * Y_data_stride);
+-      val /= static_cast<T>(dft_length);
++    auto threadpool = ctx->GetOperatorThreadPool();
++    if (dft_length > 256 && threadpool != nullptr) {
++      // Use parallel scaling for larger transforms
++      onnxruntime::concurrency::ThreadPool::TryParallelFor(
++        threadpool,
++        static_cast<std::ptrdiff_t>(dft_length),
++        1.0, // low cost per element
++        [&](std::ptrdiff_t start, std::ptrdiff_t end) {
++          const T scale_factor = static_cast<T>(1.0) / static_cast<T>(dft_length);
++          for (auto i = start; i < end; i++) {
++            std::complex<T>& val = *(Y_data + static_cast<size_t>(i) * Y_data_stride);
++            val *= scale_factor;
++          }
++        });
++    } else {
++      // Use sequential scaling for smaller transforms
++      const T scale_factor = static_cast<T>(1.0) / static_cast<T>(dft_length);
++      for (size_t i = 0; i < dft_length; i++) {
++        std::complex<T>& val = *(Y_data + i * Y_data_stride);
++        val *= scale_factor;
++      }
+     }
+   }
+ 
+"
+3146327522,https://github.com/microsoft/onnxruntime/pull/25061,Select Computationally Efficient Algorithms,2,onnxruntime/core/providers/cpu/signal/dft.cc,11,synchronization,0.98,L8-24,"@@ -141,11 +141,39 @@ static Status fft_radix2(OpKernelContext* /*ctx*/, const Tensor* X, Tensor* Y, s
+     }
+   }
+ 
+-  for (size_t i = 0; i < dft_length; i++) {
+-    size_t bit_reversed_index = bit_reverse(i, significant_bits);
+-    auto x = (bit_reversed_index < number_of_samples) ? *(X_data + bit_reversed_index * X_stride) : 0;
+-    auto window_element = window_data ? *(window_data + bit_reversed_index) : 1;
+-    *(Y_data + i * Y_data_stride) = std::complex<T>(1, 0) * x * window_element;
++  // Copy input data with bit-reversed indexing, with optional parallelization
++  auto threadpool = ctx->GetOperatorThreadPool();
++  if (dft_length > 256 && threadpool != nullptr) {
++    onnxruntime::concurrency::ThreadPool::TryParallelFor(
++      threadpool,
++      static_cast<std::ptrdiff_t>(dft_length),
++      2.0, // cost estimate for bit reverse and multiplication
++      [&](std::ptrdiff_t start, std::ptrdiff_t end) {
++        for (auto i = start; i < end; i++) {
++          size_t bit_reversed_index = bit_reverse(static_cast<size_t>(i), significant_bits);
++          auto x = (bit_reversed_index < number_of_samples) 
++                   ? *(X_data + bit_reversed_index * X_stride) 
++                   : static_cast<U>(0);
++          auto window_element = window_data 
++                               ? *(window_data + bit_reversed_index) 
++                               : static_cast<U>(1);
++          *(Y_data + static_cast<size_t>(i) * Y_data_stride) = 
++            std::complex<T>(static_cast<T>(x * window_element), static_cast<T>(0));
++        }
++      });
++  } else {
++    // Sequential copying for smaller transforms
++    for (size_t i = 0; i < dft_length; i++) {
++      size_t bit_reversed_index = bit_reverse(i, significant_bits);
++      auto x = (bit_reversed_index < number_of_samples) 
++               ? *(X_data + bit_reversed_index * X_stride) 
++               : static_cast<U>(0);
++      auto window_element = window_data 
++                           ? *(window_data + bit_reversed_index) 
++                           : static_cast<U>(1);
++      *(Y_data + i * Y_data_stride) = 
++        std::complex<T>(static_cast<T>(x * window_element), static_cast<T>(0));
++    }
+   }
+ 
+   // Run fft_radix2
+"
+3146327522,https://github.com/microsoft/onnxruntime/pull/25061,Select Computationally Efficient Algorithms,6,onnxruntime/core/providers/cpu/signal/dft.cc,11,synchronization,0.97,L7-22,"@@ -272,24 +386,58 @@ static Status dft_bluestein_z_chirp(
+   const auto& X_shape = X->Shape();
+   size_t number_of_samples = static_cast<size_t>(X_shape[onnxruntime::narrow<size_t>(axis)]);
+ 
+-  // Prepare ""a"" signal
+-  for (size_t n = 0; n < number_of_samples; n++) {
+-    std::complex<T>& a_n = *(a_data + n);
+-    std::complex<T>& chirp_n = *(chirp_data + n);
+-    auto window_n = window_data ? *(window_data + n) : 1;
+-    a_n = *(X_data + n * X_stride);  // input
+-    a_n *= window_n;
+-    a_n *= chirp_n;
++  // Prepare ""a"" signal with optional parallelization
++  if (number_of_samples > 128 && ctx->GetOperatorThreadPool() != nullptr) {
++    onnxruntime::concurrency::ThreadPool::TryParallelFor(
++      ctx->GetOperatorThreadPool(),
++      static_cast<std::ptrdiff_t>(number_of_samples),
++      3.0, // cost estimate for multiplication operations
++      [&](std::ptrdiff_t start, std::ptrdiff_t end) {
++        for (auto n = start; n < end; n++) {
++          std::complex<T>& a_n = *(a_data + n);
++          std::complex<T>& chirp_n = *(chirp_data + n);
++          auto window_n = window_data ? *(window_data + n) : static_cast<U>(1);
++          a_n = *(X_data + static_cast<size_t>(n) * X_stride);  // input
++          a_n *= window_n;
++          a_n *= chirp_n;
++        }
++      });
++  } else {
++    // Sequential preparation for smaller sizes
++    for (size_t n = 0; n < number_of_samples; n++) {
++      std::complex<T>& a_n = *(a_data + n);
++      std::complex<T>& chirp_n = *(chirp_data + n);
++      auto window_n = window_data ? *(window_data + n) : static_cast<U>(1);
++      a_n = *(X_data + n * X_stride);  // input
++      a_n *= window_n;
++      a_n *= chirp_n;
++    }
+   }
+ 
+   // Forward FFT radix2 for the ""a"" signal
+   ORT_RETURN_IF_ERROR((fft_radix2<T, std::complex<T>>(ctx, &a, &a_fft, 0, 1, 0, 1, 1, M, nullptr,
+                                                       false, false, V, temp_output)));
+ 
+-  for (size_t i = 0; i < M; i++) {
+-    std::complex<T>& a_i = *(a_fft_data + i);
+-    std::complex<T>& b_i = *(b_fft_data + i);
+-    a_i *= b_i;
++  // Complex multiplication of FFT results with optional parallelization
++  if (M > 256 && ctx->GetOperatorThreadPool() != nullptr) {
++    onnxruntime::concurrency::ThreadPool::TryParallelFor(
++      ctx->GetOperatorThreadPool(),
++      static_cast<std::ptrdiff_t>(M),
++      2.0, // cost estimate for complex multiplication
++      [&](std::ptrdiff_t start, std::ptrdiff_t end) {
++        for (auto i = start; i < end; i++) {
++          std::complex<T>& a_i = *(a_fft_data + i);
++          std::complex<T>& b_i = *(b_fft_data + i);
++          a_i *= b_i;
++        }
++      });
++  } else {
++    // Sequential multiplication for smaller sizes
++    for (size_t i = 0; i < M; i++) {
++      std::complex<T>& a_i = *(a_fft_data + i);
++      std::complex<T>& b_i = *(b_fft_data + i);
++      a_i *= b_i;
++    }
+   }
+ 
+   // Inverse FFT radix2 for the ""a"" signal
+"
+3204565892,https://github.com/quarylabs/sqruff/pull/1749,Darwinian Data Structure Selection,2,crates/lib/src/rules/convention/cv09.rs,12,name_modification,1.0,L1-23,"@@ -9,19 +9,19 @@ use crate::core::rules::{Erased, ErasedRule, LintResult, Rule, RuleGroups};
+ 
+ #[derive(Default, Clone, Debug)]
+ pub struct RuleCV09 {
+-    blocked_words: AHashSet<String>,
++    blocked_words: FxHashSet<String>,
+     blocked_regex: Vec<regex::Regex>,
+     match_source: bool,
+ }
+ 
+ impl Rule for RuleCV09 {
+-    fn load_from_config(&self, config: &AHashMap<String, Value>) -> Result<ErasedRule, String> {
++    fn load_from_config(&self, config: &FxHashMap<String, Value>) -> Result<ErasedRule, String> {
+         let blocked_words = config[""blocked_words""]
+             .as_string()
+             .map_or(Default::default(), |it| {
+                 it.split(',')
+                     .map(|s| s.to_string().to_uppercase())
+-                    .collect::<AHashSet<_>>()
++                    .collect::<FxHashSet<_>>()
+             });
+         let blocked_regex = config[""blocked_regex""]
+             .as_array()"
+3242128024,https://github.com/mochilang/mochi/pull/9492,Remove Unnecessary Method Calls,2,compiler/x/python/compiler.go,12,name_modification,0.99,L1-33,"@@ -465,32 +467,32 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
+ 				}
+ 				switch op {
+ 				case ""union_all"":
+-					if _, ok := lType.(types.ListType); ok {
+-						if _, ok := rType.(types.ListType); ok {
++					if _, ok := lBase.(types.ListType); ok {
++						if _, ok := rBase.(types.ListType); ok {
+ 							expr = fmt.Sprintf(""%s + %s"", lExpr, rExpr)
+ 							t = types.ListType{Elem: elem}
+ 							break
+ 						}
+ 					}
+ 				case ""except"":
+-					if _, ok := lType.(types.ListType); ok {
+-						if _, ok := rType.(types.ListType); ok {
++					if _, ok := lBase.(types.ListType); ok {
++						if _, ok := rBase.(types.ListType); ok {
+ 							expr = fmt.Sprintf(""[it for it in %s if it not in %s]"", lExpr, rExpr)
+ 							t = types.ListType{Elem: elem}
+ 							break
+ 						}
+ 					}
+ 				case ""union"":
+-					if _, ok := lType.(types.ListType); ok {
+-						if _, ok := rType.(types.ListType); ok {
++					if _, ok := lBase.(types.ListType); ok {
++						if _, ok := rBase.(types.ListType); ok {
+ 							expr = fmt.Sprintf(""list(dict.fromkeys(%s + %s))"", lExpr, rExpr)
+ 							t = types.ListType{Elem: elem}
+ 							break
+ 						}
+ 					}
+ 				case ""intersect"":
+-					if _, ok := lType.(types.ListType); ok {
+-						if _, ok := rType.(types.ListType); ok {
++					if _, ok := lBase.(types.ListType); ok {
++						if _, ok := rBase.(types.ListType); ok {
+ 							expr = fmt.Sprintf(""list(dict.fromkeys([it for it in %s if it in %s]))"", lExpr, rExpr)
+ 							t = types.ListType{Elem: elem}
+ 							break"
+3034997303,https://github.com/vercel/vercel/pull/13284,Performance-Optimized Dependency Selection,1,packages/cli/src/util/output/link.ts,12,name_modification,0.95,L1-4,"@@ -1,5 +1,5 @@
+-import chalk from 'chalk';
++import pc from 'picocolors';
+ 
+-const link = chalk.cyan.underline;
++const link = pc.cyan.underline;
+ 
+ export default link;"
+3146327522,https://github.com/microsoft/onnxruntime/pull/25061,Select Computationally Efficient Algorithms,5,onnxruntime/core/providers/cpu/signal/dft.cc,13,control_flow,1.0,L8-38,"@@ -230,15 +322,37 @@ static Status dft_bluestein_z_chirp(
+     memset(reinterpret_cast<void*>(b_fft_data), 0, b_fft.SizeInBytes());
+     memset(reinterpret_cast<void*>(chirp_data), 0, chirp.SizeInBytes());
+ 
+-    for (size_t n = 0; n < N; n++) {
+-      std::complex<T>& chirp_n = *(chirp_data + n);
+-      // chirp
+-      auto exponent = direction * pi * n * n / N;
+-      chirp_n = std::complex<T>(cos(exponent), sin(exponent));
+-
+-      // b
+-      std::complex<T>& b_n = *(b_data + n);
+-      b_n = std::conj(chirp_n);
++    // Compute chirp coefficients in parallel for better performance
++    auto threadpool = ctx->GetOperatorThreadPool();
++    if (N > 128 && threadpool != nullptr) {
++      onnxruntime::concurrency::ThreadPool::TryParallelFor(
++        threadpool,
++        static_cast<std::ptrdiff_t>(N),
++        10.0, // cost estimate for trig functions
++        [&](std::ptrdiff_t start, std::ptrdiff_t end) {
++          for (auto n = start; n < end; n++) {
++            std::complex<T>& chirp_n = *(chirp_data + n);
++            // chirp
++            auto exponent = direction * pi * static_cast<T>(n * n) / static_cast<T>(N);
++            chirp_n = std::complex<T>(cos(exponent), sin(exponent));
++
++            // b
++            std::complex<T>& b_n = *(b_data + n);
++            b_n = std::conj(chirp_n);
++          }
++        });
++    } else {
++      // Sequential computation for smaller sizes
++      for (size_t n = 0; n < N; n++) {
++        std::complex<T>& chirp_n = *(chirp_data + n);
++        // chirp
++        auto exponent = direction * pi * static_cast<T>(n * n) / static_cast<T>(N);
++        chirp_n = std::complex<T>(cos(exponent), sin(exponent));
++
++        // b
++        std::complex<T>& b_n = *(b_data + n);
++        b_n = std::conj(chirp_n);
++      }
+     }
+ 
+     for (size_t n = M - N + 1; n < M; n++) {
+"
+3246122368,https://github.com/Stirling-Tools/Stirling-PDF/pull/3992,Concurrency Control / Rate Limiting,3,app/common/src/main/java/stirling/software/common/service/TempFileCleanupService.java,13,control_flow,1.0,L13-19,"@@ -394,17 +398,32 @@ private void cleanupDirectoryStreaming(
+                         try {
+                             Files.deleteIfExists(path);
+                             onDeleteCallback.accept(path);
++                            consecutiveFailures = 0; // Reset failure count on success
+                         } catch (IOException e) {
++                            consecutiveFailures++;
+                             if (e.getMessage() != null
+                                     && e.getMessage().contains(""being used by another process"")) {
+                                 log.debug(""File locked, skipping delete: {}"", path);
+                             } else {
+                                 log.warn(""Failed to delete temp file: {}"", path, e);
+                             }
++                            
++                            if (consecutiveFailures >= MAX_CONSECUTIVE_FAILURES) {
++                                log.error(""Aborting directory cleanup after {} consecutive failures in: {}"", 
++                                    consecutiveFailures, directory);
++                                return; // Early exit from cleanup
++                            }
+                         }
+                     }
+                 } catch (Exception e) {
++                    consecutiveFailures++;
+                     log.warn(""Error processing path: {}"", path, e);
++                    
++                    if (consecutiveFailures >= MAX_CONSECUTIVE_FAILURES) {
++                        log.error(""Aborting directory cleanup after {} consecutive failures in: {}"", 
++                            consecutiveFailures, directory);
++                        return; // Early exit from cleanup
++                    }
+                 }
+ 
+                 processed++;"
+3215138589,https://github.com/jxxghp/MoviePilot/pull/4579,Select Computationally Efficient Algorithms,11,app/helper/memory.py,13,control_flow,1.0,L18-22,"@@ -387,39 +630,47 @@ def _write_detailed_system_analysis(self, f):
+         
+         f.write(""\n"" + ""="" * 100 + ""\n\n"")
+ 
+-    def _write_detailed_python_analysis(self, f):
++    def _write_detailed_python_analysis_optimized(self, f):
+         """"""
+-        写入详细的Python对象分析
++        写入优化的Python对象分析
+         """"""
+-        f.write(""2. Python对象深度分析\n"")
++        f.write(""2. Python对象深度分析 (优化版)\n"")
+         f.write(""-"" * 50 + ""\n"")
+         
+         # 强制垃圾回收
+         collected = gc.collect()
+         f.write(f""垃圾回收清理对象数: {collected}\n\n"")
+         
+-        # 获取所有对象
++        # 获取所有对象（限制数量）
+         all_objects = muppy.get_objects()
++        if len(all_objects) > self._max_objects_to_analyze:
++            import random
++            all_objects = random.sample(all_objects, self._max_objects_to_analyze)
++            f.write(f""对象数量过多，采样分析 {self._max_objects_to_analyze} 个对象\n\n"")
++        
+         f.write(f""总对象数: {len(all_objects):,}\n"")
+         
+-        # 按类型统计
++        # 按类型统计（简化版）
+         type_stats = {}
+         for obj in all_objects:
+-            obj_type = type(obj).__name__
+-            if obj_type not in type_stats:
+-                type_stats[obj_type] = {'count': 0, 'size': 0}
+-            type_stats[obj_type]['count'] += 1
+-            type_stats[obj_type]['size'] += sys.getsizeof(obj)
++            try:
++                obj_type = type(obj).__name__
++                if obj_type not in type_stats:
++                    type_stats[obj_type] = {'count': 0, 'size': 0}
++                type_stats[obj_type]['count'] += 1
++                type_stats[obj_type]['size'] += sys.getsizeof(obj)
++            except:
++                continue
+         
+         # 按大小排序
+         sorted_types = sorted(type_stats.items(), key=lambda x: x[1]['size'], reverse=True)
+         
+-        f.write(""对象类型统计 (按内存大小排序):\n"")
++        f.write(""对象类型统计 (按内存大小排序，前15个):\n"")
+         f.write(f""{'类型':<20} {'数量':<10} {'总大小(MB)':<12} {'平均大小(B)':<12}\n"")
+         f.write(""-"" * 60 + ""\n"")
+         
+         total_python_memory = 0
+-        for obj_type, stats in sorted_types[:20]:  # 只显示前20个
++        for obj_type, stats in sorted_types[:15]:  # 只显示前15个
+             size_mb = stats['size'] / 1024 / 1024
+             avg_size = stats['size'] / stats['count'] if stats['count'] > 0 else 0
+             total_python_memory += size_mb
+"
+3104683212,https://github.com/MontrealAI/AGI-Alpha-Agent-v0/pull/1245,Optimize Object Use,2,alpha_factory_v1/demos/alpha_agi_insight_v1/src/interface/api_server.py,14,object_creation,0.95,L5-5,"@@ -97,21 +99,25 @@ def __init__(self, app: FastAPI, limit: int = 60, window: int = 60) -> None:
+             super().__init__(app)
+             self.limit = int(os.getenv(""API_RATE_LIMIT"", str(limit)))
+             self.window = window
+-            self.counters: dict[str, tuple[int, float]] = {}
++            # Use TTLCache so inactive IP entries expire automatically.
++            self.counters: TTLCache[str, deque[float]] = TTLCache(maxsize=1024, ttl=window)
+             self.lock = asyncio.Lock()
+ 
+         async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
+             ip = request.client.host if request.client else ""unknown""
+             now = time.time()
+             async with self.lock:
+-                count, start = self.counters.get(ip, (0, now))
+-                if now - start > self.window:
+-                    count = 0
+-                    start = now
+-                count += 1
+-                self.counters[ip] = (count, start)
+-                if count > self.limit:
++                dq = self.counters.get(ip)
++                if dq is None:
++                    dq = deque()
++                while dq and now - dq[0] > self.window:
++                    dq.popleft()
++                if len(dq) >= self.limit:
++                    dq.append(now)
++                    self.counters[ip] = dq
+                     return Response(""Too Many Requests"", status_code=429)
++                dq.append(now)
++                self.counters[ip] = dq
+             return await call_next(request)
+ 
+     async def verify_token("
+3087231593,https://github.com/Rello/analytics/pull/469,Optimize Object Use,10,js/filter.js,14,object_creation,0.95,L11-12,"@@ -310,37 +339,44 @@ OCA.Analytics.Filter = {
+         OCA.Analytics.Notification.dialogClose();
+     },
+ 
++    /**
++     * Render the currently active filters as clickable labels.
++     */
+     refreshFilterVisualisation: function () {
+-        document.getElementById('filterVisualisation').innerHTML = '';
+-        let filterDimensions = OCA.Analytics.currentReportData.dimensions;
+-        let filterOptions = OCA.Analytics.currentReportData.options.filteroptions;
+-        if (filterOptions !== null && filterOptions['filter'] !== undefined) {
+-            for (let filterDimension of Object.keys(filterOptions['filter'])) {
+-                let optionText = OCA.Analytics.Filter.optionTextsArray[filterOptions['filter'][filterDimension]['option']];
+-                let span = document.createElement('span');
+-                let filterValue = filterOptions['filter'][filterDimension]['value'];
+-
++        const visContainer = document.getElementById(""filterVisualisation"");
++        visContainer.innerHTML = """";
++        const fragment = document.createDocumentFragment();
++        const filterDimensions = OCA.Analytics.currentReportData.dimensions;
++        const filterOptions = OCA.Analytics.currentReportData.options.filteroptions;
++        if (filterOptions && filterOptions[""filter""]) {
++            for (const filterDimension of Object.keys(filterOptions[""filter""])) {
++                let optionText = OCA.Analytics.Filter.optionTextsArray[filterOptions[""filter""][filterDimension][""option""]];
++                const span = document.createElement(""span"");
++                let filterValue = filterOptions[""filter""][filterDimension][""value""];
+                 if (filterValue.match(/%/g) && filterValue.match(/%/g).length === 2) {
+-                    // text variable used
+-                    optionText = '';
+-                    filterValue = filterValue.replace(/%/g, '');
+-                    filterValue = filterValue.replace(/\(.*?\)/g, '');
++                    optionText = """";
++                    filterValue = filterValue.replace(/%/g, """");
++                    filterValue = filterValue.replace(/\(.*?\)/g, """");
+                 }
+-                span.innerText = filterDimensions[filterDimension] + ' ' + optionText + ' ' + filterValue;
+-                span.classList.add('filterVisualizationItem');
++                span.innerText = filterDimensions[filterDimension] + "" "" + optionText + "" "" + filterValue;
++                span.classList.add(""filterVisualizationItem"");
+                 span.id = filterDimension;
+-                span.addEventListener('click', OCA.Analytics.Filter.removeFilter)
+-                document.getElementById('filterVisualisation').appendChild(span);
++                span.addEventListener(""click"", OCA.Analytics.Filter.removeFilter);
++                fragment.appendChild(span);
+             }
+         }
++        visContainer.appendChild(fragment);
++        const saveIcon = document.getElementById(""saveIcon"");
+         if (OCA.Analytics.unsavedFilters === true) {
+-            document.getElementById('saveIcon').style.removeProperty('display');
++            saveIcon.style.removeProperty(""display"");
+         } else {
+-            document.getElementById('saveIcon').style.display = 'none';
++            saveIcon.style.display = ""none"";
+         }
+-
+     },
+ 
++    /**
++     * Remove a single active filter label and reload the data.
++     */
+     removeFilter: function (evt) {
+         let filterDimension = evt.target.id;
+         let filterOptions = OCA.Analytics.currentReportData.options.filteroptions;
+"
+3087231593,https://github.com/Rello/analytics/pull/469,Optimize Object Use,2,js/filter.js,14,object_creation,0.95,L4-4,"@@ -40,6 +44,7 @@ OCA.Analytics.Filter = {
+         const availableDimensions = OCA.Analytics.currentReportData.dimensions;
+         const filterOptions = OCA.Analytics.currentReportData.options.filteroptions;
+ 
++        const fragment = document.createDocumentFragment();
+         Object.keys(availableDimensions).forEach((dimension, index) => {
+             const row = document.createElement('div');
+             row.style.display = 'table-row';
+"
+3071083444,https://github.com/wieslawsoltes/Xaml.Behaviors/pull/82,Select Computationally Efficient Algorithms,2,src/Avalonia.Xaml.Interactivity/Interaction.cs,15,statement_splitting,0.99,L6-9,"@@ -265,8 +265,9 @@ private static void Visual_AttachedToVisualTree_FromGetter(object? sender, Visua
+             return;
+         }
+ 
+-        GetBehaviors(d).Attach(d);
+-        GetBehaviors(d).AttachedToVisualTree();
++        var behaviors = GetBehaviors(d);
++        behaviors.Attach(d);
++        behaviors.AttachedToVisualTree();
+     }
+ 
+     private static void Visual_DetachedFromVisualTree_FromGetter(object? sender, VisualTreeAttachmentEventArgs e)
+"
+3071083444,https://github.com/wieslawsoltes/Xaml.Behaviors/pull/82,Select Computationally Efficient Algorithms,22,src/Avalonia.Xaml.Interactivity/Interaction.cs,15,statement_splitting,0.99,L1-11,"@@ -481,9 +501,10 @@ private static void TopLevel_Opened_FromGetter(object? sender, EventArgs e)
+             return;
+         }
+ 
+-        GetBehaviors(d).Attach(d);
+-        GetBehaviors(d).AttachedToVisualTree();
+-        GetBehaviors(d).AttachedToLogicalTree();
++        var behaviors = GetBehaviors(d);
++        behaviors.Attach(d);
++        behaviors.AttachedToVisualTree();
++        behaviors.AttachedToLogicalTree();
+     }
+ 
+     private static void TopLevel_Opened_FromChangedEvent(object? sender, EventArgs e)
+"
+3071083444,https://github.com/wieslawsoltes/Xaml.Behaviors/pull/82,Select Computationally Efficient Algorithms,3,src/Avalonia.Xaml.Interactivity/Interaction.cs,15,statement_splitting,0.99,L5-8,"@@ -276,8 +277,9 @@ private static void Visual_DetachedFromVisualTree_FromGetter(object? sender, Vis
+             return;
+         }
+ 
+-        GetBehaviors(d).DetachedFromVisualTree();
+-        GetBehaviors(d).Detach();
++        var behaviors = GetBehaviors(d);
++        behaviors.DetachedFromVisualTree();
++        behaviors.Detach();
+     }
+  
+     private static void Visual_AttachedToVisualTree_FromChangedEvent(object? sender, VisualTreeAttachmentEventArgs e)
+"
+3262845265,https://github.com/mochilang/mochi/pull/13057,Select Algorithm Based on Instruction Speed,1,runtime/vm/vm.go,16,arithmetic_manipulation,0.98,L13-19,"@@ -1262,12 +1262,18 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error)
+ 			}
+ 			fmt.Fprintln(m.writer, strings.TrimSpace(sb.String()))
+ 		case OpNow:
+-			if seededNow {
+-				nowSeed = (nowSeed*1664525 + 1013904223) % 2147483647
+-				fr.regs[ins.A] = Value{Tag: ValueInt, Int: int(nowSeed)}
+-			} else {
+-				fr.regs[ins.A] = Value{Tag: ValueInt, Int: int(time.Now().UnixNano())}
+-			}
++			if !seededNow {
++				seededNow = true
++				nowSeed = time.Now().UnixNano()
++			}
++			// Use a fast xorshift PRNG to avoid expensive modulus
++			// operations when generating pseudo-random numbers.
++			s := nowSeed
++			s ^= s << 13
++			s ^= s >> 7
++			s ^= s << 17
++			nowSeed = s
++			fr.regs[ins.A] = Value{Tag: ValueInt, Int: int(s & 0x7fffffff)}
+ 		case OpMem:
+ 			var ms runtime.MemStats
+ 			runtime.ReadMemStats(&ms)
+"
+3084684604,https://github.com/elixr-games/elics/pull/39,Optimize Object Use,1,src/Entity.ts,16,arithmetic_manipulation,0.95,L8-8,"@@ -154,12 +154,14 @@ export class Entity {
+ 		assertCondition(this.active, ErrorMessages.ModifyDestroyedEntity, this);
+ 		this.entityManager.releaseEntityInstance(this);
+ 		this.active = false;
+-		const bitArray = this.bitmask.toArray();
+-		for (const typeId of bitArray) {
+-			const component = this.componentManager.getComponentByTypeId(typeId)!;
+-			component.onDetach(component.data, this.index);
++		const bits = this.bitmask.bits;
++		for (let i = 0; i < 32; i++) {
++			if (bits & (1 << i)) {
++				const c = this.componentManager.getComponentByTypeId(i)!;
++				c.onDetach(c.data, this.index);
++			}
+ 		}
+-		this.bitmask = new BitSet();
++		this.bitmask.bits = 0;
+ 		this.vectorViews.clear();
+ 		this.queryManager.resetEntity(this);
+ 	}"
+3077200502,https://github.com/OWASP-BLT/BLT/pull/4290,Cache Eviction Policy,2,blt/settings.py,16,arithmetic_manipulation,0.95,L4-5,"@@ -431,7 +441,7 @@
+             ""default"": {
+                 ""BACKEND"": ""django_pylibmc.memcached.PyLibMCCache"",
+                 ""BINARY"": True,
+-                ""TIMEOUT"": None,
++                ""TIMEOUT"": 300,  # 5 minutes instead of None (never expire)
+                 ""OPTIONS"": {
+                     ""tcp_nodelay"": True,
+                     ""tcp_keepalive"": True,
+"
+3226639011,https://github.com/mediar-ai/terminator/pull/201,Select Computationally Efficient Algorithms,3,terminator/src/platforms/windows.rs,17,dead_code,0.85,L57-58,"@@ -1110,35 +1121,55 @@ impl AccessibilityEngine for WindowsEngine {
+                     root_ele.get_name().unwrap_or_default()
+                 );
+ 
+-                let mut matcher_builder = self
+-                    .automation
+-                    .0
+-                    .create_matcher()
+-                    .from_ref(root_ele)
+-                    .control_type(win_control_type)
+-                    .depth(50) // Default depth for find_element
+-                    .timeout(timeout_ms as u64);
++                // We try a fast search first with a shallow depth. In most real-world UIs the
++                // control of interest is no deeper than 10-15 levels below the window root, so a
++                // shallow search finishes much quicker. If that fails we gracefully fall back to
++                // the old, deeper search to retain full coverage.
+ 
+-                if let Some(name) = name {
+-                    // use contains_name, its undetermined right now
+-                    // wheather we should use `name` or `contains_name`
+-                    matcher_builder = matcher_builder.filter(Box::new(NameFilter {
+-                        value: name.clone(),
+-                        casesensitive: false,
+-                        partial: true,
+-                    }));
+-                }
++                let search_depths: &[u32] = &[DEFAULT_ROLE_NAME_SEARCH_DEPTH, 50];
+ 
+-                let element = matcher_builder.find_first().map_err(|e| {
+-                    AutomationError::ElementNotFound(format!(
+-                        ""Role: '{role}' (mapped to {win_control_type:?}), Name: {name:?}, Root: {root:?}, Err: {e}""
+-                    ))
+-                })?;
++                for &d in search_depths {
++                    let mut matcher_builder = self
++                        .automation
++                        .0
++                        .create_matcher()
++                        .from_ref(root_ele)
++                        .control_type(win_control_type)
++                        .depth(d)
++                        .timeout(timeout_ms as u64);
++
++                    if let Some(name) = name {
++                        matcher_builder = matcher_builder.filter(Box::new(NameFilter {
++                            value: name.clone(),
++                            casesensitive: false,
++                            partial: true,
++                        }));
++                    }
+ 
+-                let arc_ele = ThreadSafeWinUIElement(Arc::new(element));
+-                Ok(UIElement::new(Box::new(WindowsUIElement {
+-                    element: arc_ele,
+-                })))
++                    match matcher_builder.find_first() {
++                        Ok(element) => {
++                            let arc_ele = ThreadSafeWinUIElement(Arc::new(element));
++                            return Ok(UIElement::new(Box::new(WindowsUIElement {
++                                element: arc_ele,
++                            })));
++                        }
++                        Err(err) => {
++                            debug!(
++                                ""role+name fast search (depth={}) failed: {}. Will fallback if possible"",
++                                d, err
++                            );
++                            // If this was the last depth we're trying, bubble the error up.
++                            if d == *search_depths.last().unwrap() {
++                                return Err(AutomationError::ElementNotFound(format!(
++                                    ""Role: '{role}' (mapped to {win_control_type:?}), Name: {name:?}, Root: {root:?}, Err: {err}""
++                                )));
++                            }
++                        }
++                    }
++                }
++
++                // Unreachable: the loop either returns on success or on the final failure.
++                unreachable!()
+             }
+             Selector::Id(id) => {
+                 debug!(""Searching for element with ID: {}"", id);"

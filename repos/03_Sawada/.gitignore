@@ -1,0 +1,20 @@
+# blame_analysis内の.env
+blame_analysis/.env
+
+# parquet形式の大容量データセットは無視
+dataset/**.parquet
+
+# 大容量CSVファイル
+results/EASE-results/csv/step1_all_files.csv
+results/EASE-results/csv/old_step1_all_files.csv
+results/MSR-results
+
+# PySSZ関連の出力ファイル（追加推奨）
+pyszz_v2/
+
+FirstLook-at-CCS/**
+
+.idea/
+.vscode/
+
+src/.env

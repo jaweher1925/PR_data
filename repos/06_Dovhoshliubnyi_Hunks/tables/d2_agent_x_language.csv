@@ -1,0 +1,12 @@
+language,agent,top_category,pct,n_hunks
+TypeScript,Devin,name_modification,77.4,461
+TypeScript,Copilot,object_creation,60.0,25
+TypeScript,Codex,control_flow,44.4,27
+TypeScript,Cursor,comment_modification,66.7,24
+Rust,Devin,type_change,83.3,36
+Rust,Copilot,type_change,95.4,219
+Rust,Codex,name_modification,100.0,1
+Rust,Cursor,comment_modification,100.0,3
+Go,Devin,arithmetic_manipulation,100.0,1
+Go,Copilot,comment_modification,100.0,2
+Go,Codex,control_flow,63.3,120

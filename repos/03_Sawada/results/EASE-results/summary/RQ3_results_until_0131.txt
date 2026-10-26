@@ -1,0 +1,53 @@
+AI Created Files
+Total Commits: 1543
+feat: 336 (21.78%)
+refactor: 219 (14.19%)
+chore: 206 (13.35%)
+fix: 181 (11.73%)
+docs: 166 (10.76%)
+build: 155 (10.05%)
+test: 94 (6.09%)
+style: 75 (4.86%)
+ci: 69 (4.47%)
+perf: 31 (2.01%)
+revert: 5 (0.32%)
+fe: 3 (0.19%)
+fetch_error: 1 (0.06%)
+i18: 1 (0.06%)
+platform: 1 (0.06%)
+
+Human Created Files Commit Classification:
+Total Commits: 1695
+fix: 284 (16.76%)
+docs: 275 (16.22%)
+feat: 256 (15.10%)
+refactor: 256 (15.10%)
+chore: 195 (11.50%)
+build: 136 (8.02%)
+test: 107 (6.31%)
+ci: 77 (4.54%)
+style: 67 (3.95%)
+perf: 38 (2.24%)
+i18: 2 (0.12%)
+tests: 1 (0.06%)
+i18n: 1 (0.06%)
+
+| Category    | Description                                       | Human          | AI             | Diff (%) |
+|-------------|---------------------------------------------------|----------------|----------------|----------|
+| feat        | Addition of new features                          | 256 (15.10%)   | 336 (21.78%)   |  +6.68   |
+| build       | Changes related to the build system               | 136 ( 8.02%)   | 155 (10.05%)   |  +2.03   |
+| chore       | Miscellaneous tasks or other changes              | 195 (11.50%)   | 206 (13.35%)   |  +1.85   |
+| style       | Code style changes                                |  67 ( 3.95%)   |  75 ( 4.86%)   |  +0.91   |
+| revert      | Reverting previous commits                        |   0 ( 0.00%)   |   5 ( 0.32%)   |  +0.32   |
+| fe          | Front-end related changes                         |   0 ( 0.00%)   |   3 ( 0.19%)   |  +0.19   |
+| fetch_error | Fetch error fixes                                 |   0 ( 0.00%)   |   1 ( 0.06%)   |  +0.06   |
+| platform    | Platform specific changes                         |   0 ( 0.00%)   |   1 ( 0.06%)   |  +0.06   |
+| i18         | Internationalization                              |   2 ( 0.12%)   |   1 ( 0.06%)   |  -0.06   |
+| tests       | Addition or improvement of tests                  |   1 ( 0.06%)   |   0 ( 0.00%)   |  -0.06   |
+| i18n        | Internationalization                              |   1 ( 0.06%)   |   0 ( 0.00%)   |  -0.06   |
+| ci          | Changes related to continuous integration (CI)    |  77 ( 4.54%)   |  69 ( 4.47%)   |  -0.07   |
+| test        | Addition or improvement of tests                  | 107 ( 6.31%)   |  94 ( 6.09%)   |  -0.22   |
+| perf        | Performance improvements                          |  38 ( 2.24%)   |  31 ( 2.01%)   |  -0.23   |
+| refactor    | Code refactoring (internal structural changes)    | 256 (15.10%)   | 219 (14.19%)   |  -0.91   |
+| fix         | Bug fixes                                         | 284 (16.76%)   | 181 (11.73%)   |  -5.03   |
+| docs        | Documentation-only changes                        | 275 (16.22%)   | 166 (10.76%)   |  -5.46   |

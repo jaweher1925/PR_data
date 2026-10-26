@@ -4,7 +4,9 @@ __pycache__/
 *.pyc
 # Office temp files
 ~$*
-# downloaded repositories (clone_all.py / miner.py) - too big, re-download with the scripts
-repos/
+# reports stay on the PC only
+reports/
+# bare clones from miner.py (too big)
+repos/bare/
 # test outputs
 test_out.jsonl

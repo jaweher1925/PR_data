@@ -1,0 +1,17 @@
+category,Algorithm-Level,Build & Infrastructure,Code Smells,Control-Flow & Branching,Data Structure,I/O & Sync,Loop Transforms,Memory & Locality,Network & DB
+comment_modification,37,23,5,4,9,9,1,73,6
+control_flow,77,10,23,20,6,21,1,88,16
+object_creation,33,56,11,2,103,20,0,96,9
+statement_splitting,64,7,16,1,9,12,1,112,10
+name_modification,21,345,11,0,34,1,1,48,2
+deleted_blocks,26,9,11,2,1,4,1,31,5
+arithmetic_manipulation,33,4,4,4,0,8,0,25,2
+type_change,4,2,1,0,253,2,0,20,2
+return_statement_mods,14,2,1,6,2,2,0,27,2
+method_name_change,5,5,0,1,2,3,0,8,0
+added_code_from_github,0,8,0,0,1,3,0,4,0
+exception_handling,5,1,0,0,0,7,0,4,0
+synchronization,4,2,0,0,0,2,0,2,0
+inlining,0,0,2,0,0,0,0,0,0
+duplicate_code,1,0,0,0,0,0,0,0,0
+dead_code,1,0,0,0,0,0,0,0,0

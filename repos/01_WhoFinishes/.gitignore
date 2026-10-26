@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.venv/
+
+# Secrets — never commit.
+.env
+.env.*
+!.env.example
+
+# The rebuilt data lake and regenerable outputs (reproduction path B).
+data/raw/
+data/interim/
+data/duckdb/
+data/processed/
+
+# data/digests/ mixes the committed pins with path-B derived output, so ignore
+# the directory and un-ignore exactly the pins the package ships.
+data/digests/*
+!data/digests/rq1_crosscohort_strata.csv
+!data/digests/rq1_survival_frame.csv
+!data/digests/rq2_fixer_frame.csv
+!data/digests/rq3_commit_classes.csv
+!data/digests/rq4_signal_stats.csv
+*.duckdb
+*.duckdb.wal
+*.parquet
+figures/
+github_cache/
+human-annotation/data/rq1_pairs_diff_snapshot.json
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/

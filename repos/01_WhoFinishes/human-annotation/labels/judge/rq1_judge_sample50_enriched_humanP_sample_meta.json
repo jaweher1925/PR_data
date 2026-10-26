@@ -1,0 +1,26 @@
+{
+  "mode": "enriched",
+  "n": 50,
+  "seed": 42,
+  "pos_frac": 0.6,
+  "pop_csv": "data/judge/rq1_llm_judge_pop_humanP_anthropic_claude-opus-4-8_low.csv",
+  "population_total_nonerror": 2206,
+  "population_label_counts": {
+    "Unrelated/mislabeled": 1439,
+    "Related touch": 606,
+    "Direct fix": 157,
+    "Indeterminate": 4
+  },
+  "strata": {
+    "positive": {
+      "population": 157,
+      "sampled": 30,
+      "weight": 5.233333333333333
+    },
+    "decoy": {
+      "population": 2049,
+      "sampled": 20,
+      "weight": 102.45
+    }
+  }
+}
