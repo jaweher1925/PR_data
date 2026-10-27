@@ -3,21 +3,19 @@
 ```
 Thesis_Data_Analysis/
 ├── code-data_Analysis/          ← the code (open this in VS Code)
-│   ├── common.py                  helpers used by every notebook (vertical charts)
+│   ├── common.py                  helpers used by every notebook
 │   ├── requirements.txt           pip install -r requirements.txt
-│   ├── 00_AIDev/ … 09_Khemissi_References/
-│   │   └── analysis.ipynb         one notebook per paper: first look, per agent, charts, final figure, fixes
-│   │   └── charts/  tables/       results of the notebook
-│   ├── 10_Build_AI_PRs_Dataset/   builds the list of AI-generated PRs (input of linker.py) → data/AI_PRS_DATASET/
-│   ├── 11_Agent_Report/           one row per dataset: latest date, size, PRs per agent, how the agent is involved, Python
-│   ├── 99_Fixes_All_Papers/       merges the fixes found by all papers → data/FINAL_DATASET/ (run after 01–09)
-│   └── tools/                     miner.py (GitHub mining), build_clean_pr_dataset.py, add_dates.py, clone_all.py
-├── data/                        ← the data (one folder per paper, same names as the code folders)
-│   ├── 01_WhoFinishes/ … 09_Khemissi_References/   (big files are .gz – the notebooks read them directly)
-│   ├── AI_PRS_DATASET/            34,352 AI PRs (AIDev-pop + Watanabe) with agent, language, task type, fixed later
-│   ├── ENRICH/                    data mined from public GitHub: agents for Xia & Miller, dates, code patches
-│   ├── CLEAN_PR_DATASET/          323 clean AI PR → fix PR pairs (+ code patches)
-│   └── FINAL_DATASET/             9,619 fixes of AI code from all papers (5,679 with code)
+│   ├── 1_Papers/                  one notebook per paper (00_AIDev … 09_Khemissi_References)
+│   ├── 2_AI_PRs_Dataset/          the AI-generated PRs (input of linker.py)
+│   │   ├── 10_Build_AI_PRs_Dataset   AIDev-pop + Watanabe + paper labels  → data/AI_PRS_DATASET/
+│   │   ├── 11_Agent_Report           per dataset: latest date, size, agents, Python
+│   │   └── 13_Clean_AI_PRs_Dataset   CLEAN dataset: AIDev v4 + AIDev-pop + Watanabe (2.74M) → data/AI_PRS_CLEAN/
+│   ├── 3_Fixes_Dataset/           the fixes the papers already found (to check linker.py)
+│   │   └── 99_Fixes_All_Papers       9,619 fixes → data/FINAL_DATASET/
+│   ├── 4_Linker_Test/             run Mohamed's linker.py and look at the results
+│   │   └── 12_Run_Linker             step1 … step5 (see its README)
+│   └── tools/                     miner.py, build_clean_pr_dataset.py, add_dates.py, clone_all.py
+├── data/                        ← all the data (one folder per paper + the datasets we built)
 └── repos/                       the papers' code (clone_all.py)
 ```
 
@@ -25,9 +23,9 @@ Thesis_Data_Analysis/
 
 | Folder | Question it answers | 1 row = | Output |
 |---|---|---|---|
-| 10_Build_AI_PRs_Dataset | Which AI-generated PRs do we study? | 1 AI PR | data/AI_PRS_DATASET/ (input of linker.py) |
-| 11_Agent_Report | For each dataset: latest date, size, agents, how the agent is involved, Python? | 1 dataset | tables/Agent_report.xlsx |
-| 99_Fixes_All_Papers | Which fixes of AI code did the papers already find? | 1 fix | data/FINAL_DATASET/ (to check linker.py) |
+| 2_AI_PRs_Dataset/10_Build_AI_PRs_Dataset | Which AI-generated PRs do we study? | 1 AI PR | data/AI_PRS_DATASET/ (input of linker.py) |
+| 2_AI_PRs_Dataset/11_Agent_Report | For each dataset: latest date, size, agents, how the agent is involved, Python? | 1 dataset | tables/Agent_report.xlsx |
+| 3_Fixes_Dataset/99_Fixes_All_Papers | Which fixes of AI code did the papers already find? | 1 fix | data/FINAL_DATASET/ (to check linker.py) |
 
 ## How to run
 1. `cd code-data_Analysis` → `pip install -r requirements.txt`

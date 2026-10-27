@@ -13,3 +13,8 @@ test_out.jsonl
 # full AIDev v4 copy (255 MB, too big for GitHub) - rebuilt by 10_Build_AI_PRs_Dataset section 8
 data/AI_PRS_DATASET/AI_PRS_AIDEV_V4_FULL.parquet
 AGENT_REPORT/
+# clean AI PR dataset: big files (rebuilt by 13_Clean_AI_PRs_Dataset)
+data/AI_PRS_CLEAN/AI_PRS_CLEAN_ALL.parquet
+data/AI_PRS_CLEAN/AI_PRS_CLEAN_PYTHON.csv
+# linker_v5 pair files can be large (rebuilt by step4)
+code-data_Analysis/4_Linker_Test/13_Linker_v5/results/*/candidate_pairs.csv

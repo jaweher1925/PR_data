@@ -13,8 +13,9 @@ pd.set_option("display.max_colwidth", 60)
 BLUE, ORANGE, GREY, LIGHT = "#1F4E79", "#C55A11", "#A6A6A6", "#D9E2F3"
 plt.rcParams.update({"figure.dpi": 110, "axes.spines.top": False, "axes.spines.right": False,
                      "axes.titlesize": 11, "axes.titleweight": "bold"})
-# data of this notebook = ../../data/<this folder name>
-DATA_DIR = os.path.join("..", "..", "data", os.path.basename(os.getcwd()))
+# data of this notebook = Thesis_Data_Analysis/data/<this folder name>
+DATA_ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data")
+DATA_DIR = os.path.join(DATA_ROOT, os.path.basename(os.getcwd()))
 os.makedirs("charts", exist_ok=True)
 os.makedirs("tables", exist_ok=True)
 

@@ -1,0 +1,143 @@
+
+==========================================================================================
+v3 (what linker.py uses): hao-li/AIDev @ v3
+==========================================================================================
+
+all_pull_request.parquet  (932,791 rows)
+   columns: id, number, title, body, agent, user_id, user, state, created_at, closed_at, merged_at, repo_id, repo_url, html_url
+   -> interesting columns: agent
+   -> agent values: {'OpenAI_Codex': np.int64(814522), 'Copilot': np.int64(50447), 'Cursor': np.int64(32941), 'Devin': np.int64(29744), 'Claude_Code': np.int64(5137)}
+
+all_repository.parquet  (116,211 rows)
+   columns: id, url, license, full_name, language, forks, stars
+
+all_user.parquet  (72,189 rows)
+   columns: id, login, followers, following, created_at
+
+human_pr_task_type.parquet  (6,618 rows)
+   columns: agent, id, title, reason, type, confidence
+   -> interesting columns: agent, type
+   -> agent values: {'Human': np.int64(6618)}
+   -> type values: {'feat': np.int64(1946), 'fix': np.int64(1778), 'chore': np.int64(847), 'build': np.int64(614), 'docs': np.int64(519), 'refactor': np.int64(369), 'test': np.int64(183), 'other': np.int64(115), 'ci': np.int64(100), 'perf': np.int64(88), 'style': np.int64(59)}
+
+human_pull_request.parquet  (6,618 rows)
+   columns: id, number, title, user, user_id, state, created_at, closed_at, merged_at, repo_url, html_url, body, agent
+   -> interesting columns: agent
+   -> agent values: {'Human': np.int64(6618)}
+
+issue.parquet  (4,614 rows)
+   columns: id, number, title, body, user, state, created_at, closed_at, html_url
+
+pr_comments.parquet  (39,122 rows)
+   columns: id, pr_id, user, user_id, user_type, created_at, body
+   -> interesting columns: user_type
+
+pr_commit_details.parquet  (711,923 rows)
+   columns: sha, pr_id, author, committer, message, commit_stats_total, commit_stats_additions, commit_stats_deletions, filename, status, additions, deletions, changes, patch
+
+pr_commits.parquet  (88,576 rows)
+   columns: sha, pr_id, author, committer, message
+
+pr_review_comments.parquet  (19,450 rows)
+   columns: id, pull_request_review_id, user, user_type, diff_hunk, path, position, original_position, commit_id, original_commit_id, body, pull_request_url, created_at, updated_at, in_reply_to_id
+   -> interesting columns: user_type
+
+pr_review_comments_v2.parquet  (26,868 rows)
+   columns: id, pull_request_review_id, user, user_type, diff_hunk, path, position, original_position, commit_id, original_commit_id, body, pull_request_url, created_at, updated_at, in_reply_to_id
+   -> interesting columns: user_type
+
+pr_reviews.parquet  (28,875 rows)
+   columns: id, pr_id, user, user_type, state, submitted_at, body
+   -> interesting columns: user_type
+
+pr_task_type.parquet  (33,596 rows)
+   columns: agent, id, title, reason, type, confidence
+   -> interesting columns: agent, type
+   -> agent values: {'OpenAI_Codex': np.int64(21799), 'Copilot': np.int64(4970), 'Devin': np.int64(4827), 'Cursor': np.int64(1541), 'Claude_Code': np.int64(459)}
+   -> type values: {'feat': np.int64(14450), 'fix': np.int64(8106), 'docs': np.int64(3887), 'test': np.int64(2356), 'refactor': np.int64(2288), 'chore': np.int64(896), 'build': np.int64(627), 'ci': np.int64(411), 'perf': np.int64(340), 'style': np.int64(188), 'other': np.int64(31), 'revert': np.int64(16)}
+
+pr_timeline.parquet  (325,500 rows)
+   columns: pr_id, event, commit_id, created_at, actor, assignee, label, message
+   -> interesting columns: label
+   -> label values: {nan: np.int64(296215), 'codex': np.int64(21398), 'community': np.int64(446), 'size/L': np.int64(321), 'size/M': np.int64(241), 'documentation': np.int64(186), 'auto-merge': np.int64(147), 'enhancement': np.int64(143), 'Review effort 2/5': np.int64(135), 'ready-for-e2e': np.int64(123), 'bug': np.int64(108), 'size/S': np.int64(95), 'size/XS': np.int64(92), 'size:M': np.int64(76), 'size:L': np.int64(74)}
+
+pull_request.parquet  (33,596 rows)
+   columns: id, number, title, body, agent, user_id, user, state, created_at, closed_at, merged_at, repo_id, repo_url, html_url
+   -> interesting columns: agent
+   -> agent values: {'OpenAI_Codex': np.int64(21799), 'Copilot': np.int64(4970), 'Devin': np.int64(4827), 'Cursor': np.int64(1541), 'Claude_Code': np.int64(459)}
+
+related_issue.parquet  (4,923 rows)
+   columns: pr_id, issue_id, source
+
+repository.parquet  (2,807 rows)
+   columns: id, url, license, full_name, language, forks, stars
+
+user.parquet  (1,796 rows)
+   columns: id, login, followers, following, created_at
+
+==========================================================================================
+v5 (AIDev-7.6M): hao-li/AIDev-7.6M @ main
+==========================================================================================
+
+all_pull_request.parquet  (7,685,281 rows)
+   columns: id, number, title, body, agent, user_id, user, state, created_at, closed_at, merged_at, repo_id, repo_url, html_url
+   -> interesting columns: agent
+   -> agent values: {'OpenAI_Codex': np.int64(3844602), 'Copilot': np.int64(1581924), 'Claude_Code': np.int64(1567100), 'Cursor': np.int64(317453), 'Google_Jules': np.int64(296411), 'Devin': np.int64(77791)}
+
+all_repository.parquet  (957,209 rows)
+   columns: id, url, license, full_name, is_forked, language, forks, stars
+
+all_user.parquet  (399,962 rows)
+   columns: id, login, followers, following, created_at
+
+issue.parquet  (72,664 rows)
+   columns: id, number, title, body, user, state, created_at, closed_at, html_url
+
+pr_comments.parquet  (676,098 rows)
+   columns: id, pr_id, user, user_id, user_type, created_at, body
+   -> interesting columns: user_type
+
+pr_commit_details.parquet  (12,116,310 rows)
+   columns: sha, pr_id, author, committer, message, commit_stats_total, commit_stats_additions, commit_stats_deletions, filename, status, additions, deletions, changes, patch
+
+pr_commits.parquet  (1,718,829 rows)
+   columns: sha, pr_id, author, committer, message
+
+pr_review_comments.parquet  (291,248 rows)
+   columns: id, pull_request_review_id, user, user_type, diff_hunk, path, position, original_position, commit_id, original_commit_id, body, pull_request_url, created_at, updated_at, in_reply_to_id
+   -> interesting columns: user_type
+
+pr_reviews.parquet  (541,831 rows)
+   columns: id, pr_id, pull_request_review_id, user, user_type, state, submitted_at, body
+   -> interesting columns: user_type
+
+pr_timeline.parquet  (6,515,552 rows)
+   columns: pr_id, event, commit_id, created_at, actor, assignee, label, message
+   -> interesting columns: label
+   -> label values: {nan: np.int64(6233607), 'codex': np.int64(44333), 'enhancement': np.int64(4200), 'bug': np.int64(3866), 'stale': np.int64(3548), 'lgtm': np.int64(2628), 'size: S': np.int64(2539), 'documentation': np.int64(2488), 'size: XS': np.int64(2395), 'size/XS': np.int64(2267), 'smoke': np.int64(2197), 'size:L': np.int64(2090), 'ai-reviewing': np.int64(2024), 'docs': np.int64(1909), 'agents': np.int64(1899)}
+
+pull_request.parquet  (361,296 rows)
+   columns: id, number, title, body, agent, user_id, user, state, created_at, closed_at, merged_at, repo_id, repo_url, html_url
+   -> interesting columns: agent
+   -> agent values: {'Claude_Code': np.int64(172597), 'Copilot': np.int64(98384), 'OpenAI_Codex': np.int64(62731), 'Cursor': np.int64(12908), 'Devin': np.int64(11219), 'Google_Jules': np.int64(3457)}
+
+related_issue.parquet  (100,050 rows)
+   columns: pr_id, issue_id, source
+
+repository.parquet  (25,402 rows)
+   columns: id, url, license, full_name, is_forked, language, forks, stars
+
+==========================================================================================
+v5 README / scripts: lines about task type or human PRs
+==========================================================================================
+README.md:137: > **Note on `# Developers`:** this counts distinct human PR authors. Copilot, Devin, and
+README.md:140: > and Devin by definition, and Google Jules is near zero, even though humans initiated the work.
+README.md:165: * The `pr_task_type` table is not shipped (since v4). It is still available for v3:
+README.md:166: `pd.read_parquet("hf://datasets/hao-li/AIDev@v3/pr_task_type.parquet")`.
+scripts/README.md:83: `productivity.py` no longer breaks results down by PR task type: the
+scripts/README.md:84: `pr_task_type` table is not part of v4 or v5 (see the dataset card). It is still
+scripts/README.md:86: `hf://datasets/hao-li/AIDev@v3/pr_task_type.parquet`.
+scripts/load_aidev.py:213: each PR received (from human users only).
+scripts/load_aidev.py:240: print(f"{len(prs):,} Devin PRs; human activity per PR (mean):")
+scripts/productivity.py:18: Note: earlier versions of AIDev shipped ``pr_task_type`` (LLM-labelled PR
+scripts/productivity.py:21: release via ``hf://datasets/hao-li/AIDev@v3/pr_task_type.parquet``.

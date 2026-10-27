@@ -1,0 +1,56 @@
+{
+  "candidate_mode": "fix_only",
+  "windows": [
+    30,
+    60
+  ],
+  "window_rule": "elapsed",
+  "file_match_mode": "commit_sub",
+  "p_side": "agent",
+  "cutoff": "own",
+  "observation_horizon": "2026-04-06 18:19:41",
+  "n_original_prs": 22496,
+  "n_censored": {
+    "30d": 5419,
+    "60d": 10786
+  },
+  "n_candidate_pairs": 67644,
+  "file_source_coverage": {
+    "n_pair_prs": 19475,
+    "n_without_files": 123,
+    "ids_without_files_sample": [
+      3262112767,
+      3290512926,
+      3297876914,
+      3339120015,
+      3450146606,
+      3462454964,
+      3466209100,
+      3466405143,
+      3467655069,
+      3478449417,
+      3480388489,
+      3480815595,
+      3481650262,
+      3481737497,
+      3483400885,
+      3483403493,
+      3484081665,
+      3492787601,
+      3492880692,
+      3493833782
+    ]
+  },
+  "relationship_status": "unverified_candidate",
+  "methodological_warning": "Candidate follow-up changes are identified through temporal and file-level relationships. These relationships do not establish corrective intent or demonstrate that the original AI-generated contribution introduced a deficiency. Such claims require subsequent code-level analysis and validation.",
+  "outputs": [
+    "per_pr.csv",
+    "per_agent.csv",
+    "candidate_pairs.csv",
+    "candidate_pairs.parquet"
+  ],
+  "code_revision": "8ed5ab3f7ad7555b93359136a3619489faa88052+dirty",
+  "dataset": "AIDev v5 (hao-li/AIDev-7.6M), agent follow-ups only",
+  "lake": "C:\\Users\\GIGABYTE\\Desktop\\code_theis\\evolution-assurance\\data\\duckdb\\aidev_v5.duckdb",
+  "generated_at": "2026-10-27T20:42:39+00:00"
+}
